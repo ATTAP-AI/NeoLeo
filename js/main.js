@@ -109,7 +109,7 @@
     }
     var src = scripts[idx++];
     var el = document.createElement('script');
-    el.src = src;
+    el.src = src + '?v=' + Date.now();
     el.onload = loadNext;
     el.onerror = function () {
       console.warn('[NeoLeo] Failed to load: ' + src + ' — continuing...');

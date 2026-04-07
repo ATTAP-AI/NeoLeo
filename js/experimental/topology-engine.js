@@ -548,6 +548,28 @@ function wireObjEvents(){
   });
 }
 
+/* ── Force-deactivate object mode (called by reset / undo / clear) ── */
+function deactivateObjMode(){
+  if(!OBJ.active) return;
+  /* Clear overlay */
+  if(OBJ.octx) OBJ.octx.clearRect(0,0,OBJ.overlay.width,OBJ.overlay.height);
+  /* Remove overlay canvas from DOM */
+  if(OBJ.overlay && OBJ.overlay.parentNode) OBJ.overlay.parentNode.removeChild(OBJ.overlay);
+  /* Reset all object state */
+  OBJ.active=false; OBJ.img=null; OBJ.w=0; OBJ.h=0; OBJ.angle=0; OBJ.scaleF=1;
+  OBJ.dragging=null; OBJ.overlay=null; OBJ.octx=null;
+  /* Reset cursor */
+  var ref=dv||cv; if(ref) ref.style.cursor='';
+  /* Reset button appearance */
+  var btn=document.getElementById('topo-obj-btn');
+  if(btn){
+    btn.textContent='ENABLE OBJECT MODE';
+    btn.style.borderColor='rgba(64,232,255,0.4)';
+    btn.style.color='#40e8ff';
+    btn.style.background='rgba(64,232,255,0.08)';
+  }
+}
+
 /* ── Toggle object mode ── */
 function toggleObjMode(){
   OBJ.active=!OBJ.active;
@@ -717,7 +739,8 @@ window._TOPO={
   randomise:randomise,
   cycle:cycle,
   onPaletteChange:onPaletteChange,
-  toggleObj:toggleObjMode
+  toggleObj:toggleObjMode,
+  deactivateObj:deactivateObjMode
 };
 
 })();

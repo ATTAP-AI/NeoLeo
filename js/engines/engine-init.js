@@ -23,6 +23,7 @@ function resetToBlank(){
   cv.style.opacity='1';lv.style.opacity='1';uv.style.zIndex='0';cv.style.zIndex='1';dv.style.zIndex='3';av.style.zIndex='4';
   document.getElementById('u-preview').style.display='none';
   var _isS=document.getElementById('is-sec');if(_isS){_isS.style.display='none';if(window._IS)window._IS.deactivate();}
+  if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
   if(window._adjReset)window._adjReset();
   document.getElementById('u-controls').style.display='none';
   try{document.getElementById('u-engine-sec').style.display='none';}catch(e){}
