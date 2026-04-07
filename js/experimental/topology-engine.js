@@ -553,10 +553,10 @@ function toggleObjMode(){
   OBJ.active=!OBJ.active;
   var btn=document.getElementById('topo-obj-btn');
   if(btn){
-    btn.textContent=OBJ.active?'Object: ON':'Object: OFF';
-    btn.style.borderColor=OBJ.active?'#40e8ff':'rgba(255,255,255,0.2)';
-    btn.style.color=OBJ.active?'#40e8ff':'rgba(255,255,255,0.5)';
-    btn.style.background=OBJ.active?'rgba(64,232,255,0.08)':'none';
+    btn.textContent=OBJ.active?'DISABLE OBJECT MODE':'ENABLE OBJECT MODE';
+    btn.style.borderColor=OBJ.active?'#40e8ff':'rgba(64,232,255,0.4)';
+    btn.style.color=OBJ.active?'#ffffff':'#40e8ff';
+    btn.style.background=OBJ.active?'rgba(64,232,255,0.25)':'rgba(64,232,255,0.08)';
   }
   if(OBJ.active){
     ensureOverlay();
