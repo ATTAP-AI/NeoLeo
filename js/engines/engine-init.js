@@ -145,6 +145,12 @@ document.getElementById('pal').onchange=function(){
     }
   }
 
+  /* Topological 3D: re-render with new palette */
+  var topoBody=document.getElementById('topo-body');
+  if(topoBody&&topoBody.style.display!=='none'&&window._TOPO){
+    setTimeout(function(){window._TOPO.onPaletteChange();},80);
+  }
+
   /* Normal generate for engines */
   if(_engineSelected&&typeof generate==='function')generate();
 };

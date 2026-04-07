@@ -867,6 +867,47 @@
     </div>
 
 
+    <!-- TOPOLOGICAL 3D — Mathematical topology shapes -->
+    <div id="topo-sec" style="border-top:1px solid #0a1a2a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="topo-toggle" onclick="(function(){var b=document.getElementById('topo-body');var t=document.getElementById('topo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,232,255,0.07)':'none';t.style.borderColor=open?'#40e8ff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40e8ff;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9674; Topological 3D</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="topo-cycle-btn" class="cycle-btn" onclick="window._TOPO&&window._TOPO.cycle()">Cycle</button>
+      </div>
+      <div id="topo-cycle-label" style="font-size:8px;color:#40e8ff;padding:2px 10px 3px;background:rgba(64,232,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="topo-cycle-name">--</span></div>
+      <div id="topo-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#97c3d0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Rubber-sheet geometry rendered in 3D. Sphere, torus, M&ouml;bius band, Klein bottle and beyond &mdash; continuous deformations of mathematical space.</div>
+
+        <!-- Shape list -->
+        <div style="font-size:8px;color:#40e8ff;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
+        <div id="topo-shape-list" style="margin-bottom:8px;"></div>
+
+        <!-- Description -->
+        <div id="topo-desc" style="display:none;"></div>
+
+        <!-- Parameter sliders -->
+        <div style="font-size:8px;color:#40e8ff;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn">Resolution</span><span class="pv" id="topo-resolution-v">50</span></div><input type="range" id="topo-resolution" min="12" max="120" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Zoom</span><span class="pv" id="topo-zoom-v">1.0&times;</span></div><input type="range" id="topo-zoom" min="10" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Rotation</span><span class="pv" id="topo-rotation-v">50%</span></div><input type="range" id="topo-rotation" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Wireframe</span><span class="pv" id="topo-wireframe-v">20%</span></div><input type="range" id="topo-wireframe" min="0" max="100" value="20"></div>
+        <div class="pm"><div class="pr"><span class="pn">Deformation</span><span class="pv" id="topo-deform-v">0%</span></div><input type="range" id="topo-deform" min="0" max="100" value="0"></div>
+        <div class="pm"><div class="pr"><span class="pn">Lighting</span><span class="pv" id="topo-lighting-v">75%</span></div><input type="range" id="topo-lighting" min="0" max="100" value="75"></div>
+        <div class="pm"><div class="pr"><span class="pn">Twist</span><span class="pv" id="topo-twist-v">0%</span></div><input type="range" id="topo-twist" min="0" max="100" value="0"></div>
+        <div class="pm"><div class="pr"><span class="pn">Tube Radius</span><span class="pv" id="topo-tube-v">40%</span></div><input type="range" id="topo-tube" min="5" max="100" value="40"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="topo-render-btn" class="fx-bb" style="flex:2;border-color:#40e8ff;color:#40e8ff;" onclick="window._TOPO&&window._TOPO.render()">&#9674; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#1a3040;color:#97c3d0;" onclick="window._TOPO&&window._TOPO.randomise()">&#8635; Rand</button>
+        </div>
+        <div id="topo-status" style="font-size:8px;color:#97c3d0;margin-top:5px;min-height:12px;font-style:italic;"></div>
+      </div>
+    </div>
+
+
     <!-- MORPHOGENESIS — Natural & Organic Forms -->
     <div id="morph-sec" style="border-top:1px solid #0a2a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
@@ -1034,6 +1075,6 @@
   </div>
 </div>
 
-<script src="js/main.js"></script>
+<script src="js/main.js?v=3"></script>
 </body>
 </html>
