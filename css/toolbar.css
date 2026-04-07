@@ -1,0 +1,20 @@
+#tb{width:44px;min-width:44px;flex-shrink:0;height:100%;background:var(--sur);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:flex;flex-direction:column;align-items:center;padding:5px 0;gap:1px;overflow-y:auto;overflow-x:hidden;position:relative;z-index:50;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;}
+.tbtn{width:28px;height:26px;flex-shrink:0;background:none;border:1px solid transparent;color:var(--dim);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .1s,border-color .1s,background .1s;border-radius:2px;position:relative;}
+.tbtn:hover{color:var(--txt);border-color:var(--brd);}
+.tbtn.on{color:var(--hot);border-color:var(--acc);background:rgba(232,192,96,.1);}
+.tbtn.fx{color:var(--fx);border-color:#5030a0;background:rgba(176,128,255,.08);}
+.tbtn.fx:hover{color:#d0a0ff;border-color:var(--fx);background:rgba(176,128,255,.16);}
+.tbtn.fx.on{color:#e0c0ff;border-color:var(--fx);background:rgba(176,128,255,.22);}
+.tsep{width:22px;height:1px;background:var(--brd);margin:1px 0;flex-shrink:0;}
+.tsep.fx{background:#5030a0;margin:4px 0;}
+
+/* tooltips are rendered via JS into #tip-el appended to body */
+#tip-el{display:none;position:fixed;background:#0d0d14;border:1px solid var(--brd);border-right:2px solid var(--acc);padding:9px 12px;width:220px;z-index:99999;pointer-events:none;white-space:normal;line-height:1.45;}
+#tip-el.fx-tip{border-right-color:var(--fx);}
+#tip-name{font-size:11px;color:var(--hot);letter-spacing:.1em;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;}
+#tip-el.fx-tip #tip-name{color:#d0a0ff;}
+#tip-key{font-size:9px;background:#1a1a2a;color:var(--acc);border:1px solid #444;padding:1px 5px;border-radius:2px;font-family:'Courier New',monospace;}
+#tip-el.fx-tip #tip-key{color:var(--fx);}
+#tip-desc{font-size:10px;color:var(--dim);line-height:1.55;}
+#tip-arr{position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid var(--acc);}
+#tip-el.fx-tip #tip-arr{border-left-color:var(--fx);}

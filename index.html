@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoLeo</title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/stage.css">
+<link rel="stylesheet" href="css/toolbar.css">
+<link rel="stylesheet" href="css/panel.css">
+<link rel="stylesheet" href="css/fx-panel.css">
+<link rel="stylesheet" href="css/upload.css">
+<link rel="stylesheet" href="css/prompt.css">
+<link rel="stylesheet" href="css/palette.css">
+<link rel="stylesheet" href="css/save-state.css">
+<link rel="stylesheet" href="css/resolution.css">
+<link rel="stylesheet" href="css/experimental.css">
+<link rel="stylesheet" href="css/history.css">
+<link rel="stylesheet" href="css/modals.css">
+<link rel="stylesheet" href="css/brush-picker.css">
+<link rel="stylesheet" href="css/layers.css">
+<link rel="stylesheet" href="css/sections.css">
+<link rel="stylesheet" href="css/composite.css">
+</head>
+<body>
+
+<div id="stage">
+    <div id="fs-bar" style="position:absolute;top:0;left:0;right:0;height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;z-index:20;pointer-events:none;">
+      <div style="display:flex;gap:6px;pointer-events:all;">
+        <button id="undo-persist" title="Undo (Ctrl+Z / Cmd+Z)" onclick="globalUndo()" style="background:#c0292a;border:1px solid #e04040;color:#ffffff;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 14px;height:28px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:1;opacity:0.4;transition:opacity .15s,background .15s;" disabled>UNDO</button>
+        <button id="redo-persist" title="Redo (Ctrl+Y / Cmd+Shift+Z)" onclick="globalRedo()" style="background:#1a8a2a;border:1px solid #30b040;color:#ffffff;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 14px;height:28px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:1;opacity:0.4;transition:opacity .15s,background .15s;" disabled>REDO</button>
+        <button id="rstcvbtn" title="Reset canvas to blank" style="background:#4262ff;border:1px solid #5a7aff;color:#ffffff;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 14px;height:28px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;">RESET</button>
+        <button id="savecvbtn" title="Save canvas as PNG" onclick="window._saveCanvas&&window._saveCanvas()" style="background:#1a8a2a;border:1px solid #30b040;color:#ffffff;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.1em;padding:4px 14px;height:28px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;">SAVE</button>
+      </div>
+      <button id="fs-btn" title="Toggle fullscreen canvas" onclick="window._toggleFS&&window._toggleFS()" style="pointer-events:all;background:rgba(10,12,20,0.7);border:1px solid rgba(255,255,255,0.3);color:#97c3b0;font-family:inherit;font-size:9px;padding:2px 8px;cursor:pointer;letter-spacing:.1em;border-radius:2px;transition:all .15s;">&#9974; FULLSCREEN</button>
+    </div>
+    <div id="cvwrap">
+    <canvas id="uv"></canvas><canvas id="cv"></canvas><canvas id="lv"></canvas><canvas id="dv"></canvas><canvas id="av"></canvas>
+    <div id="dv-opov" style="position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:5;transition:opacity .05s;"></div>
+    <div class="cv-rh" data-dir="nw" style="top:-6px;left:-6px;cursor:nw-resize;"></div>
+    <div class="cv-rh" data-dir="n" style="top:-6px;left:50%;transform:translateX(-50%);cursor:n-resize;"></div>
+    <div class="cv-rh" data-dir="ne" style="top:-6px;right:-6px;cursor:ne-resize;"></div>
+    <div class="cv-rh" data-dir="e" style="top:50%;right:-6px;transform:translateY(-50%);cursor:e-resize;"></div>
+    <div class="cv-rh" data-dir="se" style="bottom:-6px;right:-6px;cursor:se-resize;"></div>
+    <div class="cv-rh" data-dir="s" style="bottom:-6px;left:50%;transform:translateX(-50%);cursor:s-resize;"></div>
+    <div class="cv-rh" data-dir="sw" style="bottom:-6px;left:-6px;cursor:sw-resize;"></div>
+    <div class="cv-rh" data-dir="w" style="top:50%;left:-6px;transform:translateY(-50%);cursor:w-resize;"></div>
+    <!-- Crop confirm bar -->
+    <div id="crop-confirm"><button id="crop-ok">&#10003; Apply Crop</button><button id="crop-cancel">&#10005; Cancel</button></div>
+    <!-- Crop overlay -->
+    <div id="crop-overlay">
+      <div id="crop-shade-n" class="crop-shade"></div>
+      <div id="crop-shade-s" class="crop-shade"></div>
+      <div id="crop-shade-w" class="crop-shade"></div>
+      <div id="crop-shade-e" class="crop-shade"></div>
+      <div id="crop-box">
+        <div class="crop-handle" data-h="nw"></div>
+        <div class="crop-handle" data-h="n"></div>
+        <div class="crop-handle" data-h="ne"></div>
+        <div class="crop-handle" data-h="w"></div>
+        <div class="crop-handle" data-h="e"></div>
+        <div class="crop-handle" data-h="sw"></div>
+        <div class="crop-handle" data-h="s"></div>
+        <div class="crop-handle" data-h="se"></div>
+        <div id="crop-move"></div>
+      </div>
+    </div>
+    <div id="placement">
+      <img id="placement-img" src="" alt="">
+      <div class="ph nw" data-handle="nw"></div>
+      <div class="ph ne" data-handle="ne"></div>
+      <div class="ph sw" data-handle="sw"></div>
+      <div class="ph se" data-handle="se"></div>
+      <div class="ph n"  data-handle="n"></div>
+      <div class="ph s"  data-handle="s"></div>
+      <div class="ph e"  data-handle="e"></div>
+      <div class="ph w"  data-handle="w"></div>
+      <div id="placement-bar">
+        <div id="pb-info">0&#215;0</div>
+        <button id="pb-commit">&#10003; Place</button>
+        <button id="pb-cancel">&#10005; Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div id="bar">ENGINE: <span id="se">&#8212;</span> &nbsp;|&nbsp; SEED: <span id="ss">&#8212;</span> &nbsp;|&nbsp; <span id="si">ready</span></div>
+</div>
+
+<div id="tb">
+  <button class="tbtn up" id="utool" data-t="upload" data-tip-name="Upload Image" data-tip-key="&#8679;U" data-tip-desc="Upload a PNG or JPEG (max 5 MB) as a base layer. Combine with engines, drawing tools, lighting and atmosphere.">&#11014;</button>
+  <div class="tsep up"></div>
+  <button class="tbtn on" data-t="" data-tip-name="Select" data-tip-key="Esc" data-tip-desc="Deactivates all drawing tools. Click the canvas freely without marking it.">&#8598;</button>
+  <div class="tsep"></div>
+  <button class="tbtn" data-t="brush" data-tip-name="Brush" data-tip-key="B" data-tip-desc="Smooth soft-edged freehand painting. Adjust Hardness for feathered or crisp edges.">&#9673;</button>
+  <button class="tbtn" data-t="pencil" data-tip-name="Pencil" data-tip-key="P" data-tip-desc="Hard-edge freehand line with no blur. Ideal for crisp outlines and precise marks.">&#9872;</button>
+  <div class="tsep"></div>
+  <button class="tbtn" data-t="fill" data-tip-name="Flood Fill" data-tip-key="F" data-tip-desc="Fills a contiguous area. Reads the full composite canvas. Tolerance controls sensitivity.">&#9660;</button>
+  <button class="tbtn" data-t="creplace" data-tip-name="Color Replace" data-tip-key="C" data-tip-desc="Globally replaces every matching pixel across the entire canvas. Tolerance widens range.">&#8853;</button>
+  <div class="tsep"></div>
+  <button class="tbtn" data-t="line" data-tip-name="Line" data-tip-key="L" data-tip-desc="Click and drag to draw a straight line with live preview. Commits on mouse release.">&#9585;</button>
+  <button class="tbtn" data-t="rect" data-tip-name="Rectangle" data-tip-key="R" data-tip-desc="Click and drag to define a rectangle. Shape Mode controls fill/stroke behavior.">&#9645;</button>
+  <button class="tbtn" data-t="ellipse" data-tip-name="Ellipse" data-tip-key="E" data-tip-desc="Click and drag to draw an ellipse. Equal ratio = perfect circle.">&#9711;</button>
+  <div class="tsep"></div>
+  <button class="tbtn" data-t="triangle" data-tip-name="Triangle" data-tip-key="T" data-tip-desc="3 sequential clicks — auto-commits on the third click. Live edge preview.">&#9651;</button>
+  <button class="tbtn" data-t="polygon" data-tip-name="Polygon" data-tip-key="G" data-tip-desc="Click to place vertices. Snap-close near the first point or double-click to finish.">&#11041;</button>
+  <button class="tbtn" data-t="shape" data-tip-name="Free Shape" data-tip-key="S" data-tip-desc="Drag freely — auto-closes and commits on mouse release.">&#10022;</button>
+  <div class="tsep"></div>
+  <button class="tbtn" id="croptool" data-t="crop" data-tip-name="Crop Canvas" data-tip-key="C" data-tip-desc="Drag to define a crop region. Apply to resize canvas, preserving image content.">&#9986;</button>
+  <div class="tsep ai"></div>
+  <button class="tbtn ai" id="aitool" data-t="ai" data-tip-name="AI Prompt" data-tip-key="Shift+P" data-tip-desc="Describe changes in plain language. The AI adjusts engines, palettes, lighting and atmosphere to match your intent.">&#10022;</button>
+  <div class="tsep fx"></div>
+  <button class="tbtn fx" id="ltool" data-t="lighting" data-tip-name="Lighting" data-tip-key="&#8679;L" data-tip-desc="Add up to 2 light sources (Point, Spot, Rim) with color, intensity, radius, bloom, and ambient fill.">&#8857;</button>
+  <button class="tbtn fx" id="atool" data-t="atmo" data-tip-name="Atmosphere" data-tip-key="&#8679;A" data-tip-desc="Vignette, fog/haze, film grain, color grade (temp, sat, contrast, brightness), chromatic aberration.">&#8779;</button>
+  <div class="tsep fx"></div>
+  <button class="tbtn fx" id="laytool" data-t="layers" data-tip-name="Layers" data-tip-key="&#8679;Y" data-tip-desc="Add, rename, reorder, blend and toggle visibility of drawing layers.">&#8862;</button>
+</div>
+
+<div id="upload-panel">
+  <div class="fx-hdr" id="up-drag-hdr" style="cursor:move;user-select:none;" title="Drag to move panel"><span class="fx-htit">&#11014; Upload Image <span style="font-size:7px;color:rgba(151,195,176,0.5);letter-spacing:.06em;">&#10303; drag</span></span><div style="display:flex;gap:4px;align-items:center;margin-left:auto;"><button id="slref-btn" onclick="window._slRef&&window._slRef.open()" style="background:rgba(151,195,176,0.1);border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:8px;padding:2px 6px;cursor:pointer;letter-spacing:.08em;border-radius:2px;white-space:nowrap;">&#9636; Slider Ref</button><button class="fx-cls" id="up-cls">&#215;</button></div></div>
+  <div class="fx-sec">
+    <div id="u-dropzone" id="u-dz">
+      <div id="u-dropzone-lbl"><b>Click or drag &amp; drop</b>PNG or JPEG &#183; max 5 MB</div>
+    </div>
+    <div id="u-err"></div>
+    <input type="file" id="u-file" accept="image/png,image/jpeg" style="display:none">
+    <div id="u-preview">
+    <div id="u-thumb-wrap" draggable="true" title="Drag onto canvas to place">
+      <canvas id="u-thumb"></canvas>
+      <div id="u-drag-badge">DRAG TO CANVAS</div>
+      <button id="u-del-btn" title="Delete image" onclick="document.getElementById('u-clear').click()" style="position:absolute;top:4px;left:4px;background:rgba(0,0,0,.7);border:1px solid #5a2020;color:#ff6060;font-family:inherit;font-size:9px;padding:2px 6px;cursor:pointer;letter-spacing:.06em;z-index:2;">&#10005;</button>
+    </div>
+    <div id="u-preview-info"></div>
+    <div class="u-drag-hint">&#8598; drag thumbnail onto canvas to position</div>
+  </div>
+
+  <!-- ◈ IMAGE SIGNAL — directly below thumbnail -->
+  <div id="is-sec" style="display:none;padding:8px 10px;border-top:1px solid rgba(151,195,176,0.2);">
+    <div style="font-size:8px;color:#97c3b0;letter-spacing:.14em;font-weight:bold;margin-bottom:5px;">&#9672; IMAGE SIGNAL</div>
+    <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:7px;line-height:1.5;">Palette, density &amp; gradient fields broadcast to all engines and tools.</div>
+    <div style="display:flex;gap:4px;margin-bottom:7px;">
+      <button id="is-extract-btn" class="fx-bb" style="flex:2;border-color:#97c3b0;color:#97c3b0;" onclick="window._IS&&window._IS.extract()">&#9672; Extract &amp; Activate</button>
+      <button id="is-clear-btn" class="fx-bb" style="flex:1;border-color:#444;color:var(--dim);" onclick="window._IS&&window._IS.deactivate()">&#10005; Off</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:7px;align-items:flex-start;">
+      <div><canvas id="is-map-thumb" width="60" height="45" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);display:block;"></canvas><div style="font-size:8px;color:#97c3b0;text-align:center;margin-top:2px;">density</div></div>
+      <div><canvas id="is-grad-thumb" width="60" height="45" style="border-radius:2px;border:1px solid rgba(255,255,255,0.08);display:block;"></canvas><div style="font-size:8px;color:#97c3b0;text-align:center;margin-top:2px;">edges</div></div>
+      <div id="is-pal-row" style="display:flex;flex-direction:column;gap:3px;flex:1;"></div>
+    </div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Structural Influence</span><span class="fx-pv" id="is-inf-v">70%</span></div><input type="range" id="is-inf" min="0" max="100" value="70"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Palette Blend</span><span class="fx-pv" id="is-pal-v">100%</span></div><input type="range" id="is-pal" min="0" max="100" value="100"></div>
+    <div style="display:flex;gap:4px;margin-top:4px;">
+      <button id="is-inv-btn" class="fx-bb" style="flex:1;font-size:8px;border-color:#444;color:var(--dim);" onclick="window._IS&&window._IS.toggleInvert(this)">&#8857; Invert Map</button>
+    </div>
+    <div id="is-status" style="font-size:8px;color:#97c3b0;margin-top:5px;font-style:italic;min-height:10px;"></div>
+  </div>
+
+  </div>
+<div class="fx-sec" id="u-adj-sec">
+    <div class="fx-stit" style="color:#97c3b0;letter-spacing:.12em;">&#9632; Image Adjustments</div>
+    <div class="fx-note" style="margin-bottom:6px;">Applied in realtime to the composited display. Resets on Clear.</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Brightness</span><span class="fx-pv" id="u-briv">0</span></div><input type="range" id="u-bri" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Contrast</span><span class="fx-pv" id="u-conv">0</span></div><input type="range" id="u-con" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Saturation</span><span class="fx-pv" id="u-satv">0</span></div><input type="range" id="u-sat" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Exposure</span><span class="fx-pv" id="u-expv">0</span></div><input type="range" id="u-exp" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Highlights</span><span class="fx-pv" id="u-hilv">0</span></div><input type="range" id="u-hil" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Shadows</span><span class="fx-pv" id="u-shdv">0</span></div><input type="range" id="u-shd" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Temperature</span><span class="fx-pv" id="u-tmpv">0</span></div><input type="range" id="u-tmp" min="-100" max="100" value="0"></div>
+    <div class="fx-note" style="margin-top:1px;margin-bottom:4px;">&#8592; cool &nbsp;&nbsp; warm &#8594;</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Tint</span><span class="fx-pv" id="u-tntv">0</span></div><input type="range" id="u-tnt" min="-100" max="100" value="0"></div>
+    <div class="fx-note" style="margin-top:1px;margin-bottom:6px;">&#8592; green &nbsp;&nbsp; magenta &#8594;</div>
+    <button class="fx-bb" id="u-adj-reset" style="width:100%;border-color:#444;color:var(--dim);">&#8635; Reset All Adjustments</button>
+  </div>
+  <div class="fx-sec" id="u-controls">
+    <div class="fx-stit">Layer Mode</div>
+    <div class="fx-pm"><select id="u-mode">
+      <option value="under">Under engine art</option>
+      <option value="over">Over engine art</option>
+      <option value="replace">Replace (image only)</option>
+    </select></div>
+    <div class="fx-stit" style="margin-top:6px;">Opacity</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Image opacity</span><span class="fx-pv" id="u-opv">100%</span></div><input type="range" id="u-opr" min="0" max="100" value="100"></div>
+    <div class="fx-stit" style="margin-top:6px;">Fit</div>
+    <div class="fx-pm"><select id="u-fit">
+      <option value="contain">Contain (letterbox)</option>
+      <option value="cover">Cover (crop to fill)</option>
+      <option value="stretch">Stretch (fill exactly)</option>
+    </select></div>
+    <div class="fx-stit" style="margin-top:6px;">Blend Mode</div>
+    <div class="fx-pm"><select id="u-blend">
+      <option value="source-over">Normal</option>
+      <option value="multiply">Multiply</option>
+      <option value="screen">Screen</option>
+      <option value="overlay">Overlay</option>
+      <option value="soft-light">Soft Light</option>
+      <option value="hard-light">Hard Light</option>
+      <option value="color-dodge">Color Dodge</option>
+      <option value="color-burn">Color Burn</option>
+      <option value="difference">Difference</option>
+      <option value="exclusion">Exclusion</option>
+      <option value="luminosity">Luminosity</option>
+      <option value="hue">Hue</option>
+      <option value="saturation">Saturation</option>
+      <option value="color">Color</option>
+    </select></div>
+    <div class="fx-note" style="margin-top:4px;">Blend applies when layer mode is Under or Over.</div>
+  </div>
+  <div class="fx-sec" id="u-engine-sec">
+    <div class="fx-stit">Engine on Image</div>
+    <div class="fx-note" style="margin-bottom:6px;">Choose how the generative engine composites onto your photo when you hit Generate.</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Engine blend</span></div>
+    <select id="u-eng-blend">
+      <option value="source-over">Normal (over)</option>
+      <option value="multiply">Multiply</option>
+      <option value="screen">Screen</option>
+      <option value="overlay">Overlay</option>
+      <option value="soft-light">Soft Light</option>
+      <option value="hard-light">Hard Light</option>
+      <option value="color-dodge">Color Dodge</option>
+      <option value="color-burn">Color Burn</option>
+      <option value="difference">Difference</option>
+      <option value="exclusion">Exclusion</option>
+      <option value="luminosity">Luminosity</option>
+      <option value="hue">Hue</option>
+      <option value="saturation">Saturation</option>
+      <option value="color">Color</option>
+    </select></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Engine opacity</span><span class="fx-pv" id="u-engopv">80%</span></div>
+    <input type="range" id="u-engopr" min="0" max="100" value="80"></div>
+    <label class="fx-tg" style="margin-bottom:6px;"><input type="checkbox" id="u-eng-on" checked><span style="font-size:9px;color:var(--dim);">Apply engine when generating</span></label>
+  </div>
+  <!-- ◆ Draw On Image — composite tools, shown once image is loaded -->
+  <div class="fx-sec" id="img-composite-sec">
+    <div class="fx-stit" style="color:#a080ff;">&#9670; Draw On Image</div>
+    <div class="fx-pm">
+      <div class="fx-pr"><span class="fx-pn">Blend mode</span></div>
+      <select id="draw-blend-sel" style="width:100%;background:#111;border:1px solid var(--brd);color:var(--txt);font-family:inherit;font-size:9px;padding:3px 5px;cursor:pointer;">
+        <option value="source-over">Normal</option>
+        <option value="multiply">Multiply</option>
+        <option value="screen">Screen</option>
+        <option value="overlay">Overlay</option>
+        <option value="soft-light">Soft Light</option>
+        <option value="hard-light">Hard Light</option>
+        <option value="color-dodge">Color Dodge</option>
+        <option value="color-burn">Color Burn</option>
+        <option value="difference">Difference</option>
+        <option value="exclusion">Exclusion</option>
+        <option value="hue">Hue</option>
+        <option value="saturation">Saturation</option>
+        <option value="color">Color</option>
+        <option value="luminosity">Luminosity</option>
+      </select>
+    </div>
+    <div class="fx-pm">
+      <div class="fx-pr"><span class="fx-pn">Merge opacity</span><span class="fx-pv" id="draw-merge-opv">100%</span></div>
+      <input type="range" id="draw-merge-op" min="1" max="100" value="100">
+    </div>
+    <div style="display:flex;gap:4px;margin-top:6px;">
+      <button class="fx-bb" id="img-merge-draw" style="flex:1;">&#8680; Merge Drawing</button>
+      <button class="fx-bb" id="img-merge-engine" style="flex:1;">&#8680; Merge Engine</button>
+    </div>
+    <div style="display:flex;gap:4px;margin-top:4px;">
+      <button class="fx-bb" id="img-flatten-all" style="flex:1;border-color:#4a3080;color:#a080ff;">&#9608; Flatten All</button>
+      <button class="fx-bb" id="img-clear-draw" style="flex:1;border-color:#5a2020;color:#ff6060;">&#10005; Clear Drawing</button>
+    </div>
+    <div class="fx-note" style="margin-top:6px;">Merge your drawing/engine output onto the image using the selected blend mode. Flatten All merges every layer.</div>
+  </div>
+  <div class="fx-sec" id="u-bake-sec" style="display:none">
+    <div class="fx-stit">Bake to Canvas</div>
+    <div class="fx-note" style="margin-bottom:7px;">Flatten the image permanently onto the generative canvas. All engines, drawing tools, lighting and atmosphere will then work directly on it.</div>
+    <button class="fx-bb" id="u-bake" style="margin-bottom:4px;">&#11015; Bake image to canvas</button>
+    <div class="fx-note">After baking the image layer is cleared. Use Export to save a copy first.</div>
+  </div>
+
+  <div class="fx-br" id="u-clear-row" style="display:none"><button class="fx-bb" id="u-clear">&#10005; Clear image</button></div>
+  <div class="fx-br" id="u-crop-row" style="display:none"><button class="fx-bb" id="u-crop-btn" style="border-color:#28E0D1;color:#28E0D1;">&#9986; Crop Image</button></div>
+  </div>
+
+</div>
+<div id="prompt-panel">
+  <div class="fx-hdr"><span class="fx-htit">&#10022; AI Prompt</span><button class="fx-cls" id="ai-cls">&#215;</button></div>
+  <div class="fx-sec" style="padding:8px 10px;">
+    <div style="font-size:8px;color:var(--dim);line-height:1.6;margin-bottom:6px;">Describe changes in plain language. The AI reads the current canvas and all settings, then adjusts engines, palettes, lighting and atmosphere to match.</div>
+    <label id="ai-ctx-row"><input type="checkbox" id="ai-send-img" checked> Send canvas snapshot with prompt</label>
+  </div>
+  <div id="ai-key-row"><label>ANTHROPIC API KEY (required)</label><input type="password" id="ai-key-in" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"></div>
+  <div id="ai-history"><div class="ai-msg sys">Enter your Anthropic API key above, then describe what to change.</div></div>
+  <div id="ai-input-wrap">
+    <textarea id="ai-textarea" placeholder="e.g. make it more chaotic and warm, add a soft blue rim light, reduce contrast..." spellcheck="false"></textarea>
+    <div id="ai-send-row"><button id="ai-send">Send</button><button id="ai-stop" title="Stop">&#9632; Stop</button><button id="ai-clrh" title="Clear history">&#8635;</button></div>
+    <div id="ai-status"></div>
+  </div>
+</div>
+<div id="light-panel" class="fx-panel">
+  <div class="fx-hdr"><span class="fx-htit">&#8857; Lighting</span><button class="fx-cls" id="lp-cls">&#215;</button></div>
+  <div class="fx-sec"><label class="fx-tg"><input type="checkbox" id="l-on"><span class="fx-tg-lbl">Enable Lighting</span></label></div>
+  <div class="fx-sec">
+    <div class="fx-stit">Light 1</div>
+    <label class="fx-tg" style="margin-bottom:4px;"><input type="checkbox" id="l1-on" checked><span style="font-size:10px;color:var(--dim);">Active</span></label>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Type</span></div><select id="l1-type"><option value="point">Point</option><option value="spot">Spot</option><option value="rim">Rim</option></select></div>
+    <div class="fx-cr"><div class="fx-sw" id="l1csw"><input type="color" id="l1-col" value="#ffee88"></div><span class="fx-pn">Color &nbsp;<span class="fx-pv" id="l1-coltxt">#ffee88</span></span></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Intensity</span><span class="fx-pv" id="l1-intv">60</span></div><input type="range" id="l1-int" min="0" max="100" value="60"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Radius</span><span class="fx-pv" id="l1-radv">220</span></div><input type="range" id="l1-rad" min="20" max="600" value="220"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Position X</span><span class="fx-pv" id="l1-pxv">30%</span></div><input type="range" id="l1-px" min="0" max="100" value="30"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Position Y</span><span class="fx-pv" id="l1-pyv">25%</span></div><input type="range" id="l1-py" min="0" max="100" value="25"></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Light 2</div>
+    <label class="fx-tg" style="margin-bottom:4px;"><input type="checkbox" id="l2-on"><span style="font-size:10px;color:var(--dim);">Active</span></label>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Type</span></div><select id="l2-type"><option value="point">Point</option><option value="spot">Spot</option><option value="rim">Rim</option></select></div>
+    <div class="fx-cr"><div class="fx-sw" id="l2csw"><input type="color" id="l2-col" value="#88ccff"></div><span class="fx-pn">Color &nbsp;<span class="fx-pv" id="l2-coltxt">#88ccff</span></span></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Intensity</span><span class="fx-pv" id="l2-intv">40</span></div><input type="range" id="l2-int" min="0" max="100" value="40"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Radius</span><span class="fx-pv" id="l2-radv">160</span></div><input type="range" id="l2-rad" min="20" max="600" value="160"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Position X</span><span class="fx-pv" id="l2-pxv">70%</span></div><input type="range" id="l2-px" min="0" max="100" value="70"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Position Y</span><span class="fx-pv" id="l2-pyv">70%</span></div><input type="range" id="l2-py" min="0" max="100" value="70"></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Bloom</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Amount</span><span class="fx-pv" id="l-blmv">0</span></div><input type="range" id="l-blm" min="0" max="40" value="0"></div>
+    <div class="fx-note">Blurs the light layer to create soft halo glow around sources.</div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Ambient Fill</div>
+    <div class="fx-cr"><div class="fx-sw" id="lambcsw"><input type="color" id="l-ambc" value="#001122"></div><span class="fx-pn">Color &nbsp;<span class="fx-pv" id="l-ambctxt">#001122</span></span></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Level</span><span class="fx-pv" id="l-ambv">0</span></div><input type="range" id="l-amb" min="0" max="100" value="0"></div>
+  </div>
+  <div class="fx-br"><button class="fx-bb" id="l-rst">&#8634; Reset all</button></div>
+  <div class="fx-br"><button class="fx-bb" id="l-apply" style="background:rgba(40,200,160,0.12);border-color:#28c8a0;color:#28c8a0;font-weight:700;">&#10003; Apply Lighting to Canvas</button></div>
+</div>
+
+<div id="atmo-panel" class="fx-panel">
+  <div class="fx-hdr"><span class="fx-htit">&#8779; Atmosphere</span><button class="fx-cls" id="ap-cls">&#215;</button></div>
+  <div class="fx-sec"><label class="fx-tg"><input type="checkbox" id="a-on"><span class="fx-tg-lbl">Enable Atmosphere</span></label></div>
+  <div class="fx-sec">
+    <div class="fx-stit">Vignette</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Strength</span><span class="fx-pv" id="a-vstrv">0</span></div><input type="range" id="a-vstr" min="0" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Softness</span><span class="fx-pv" id="a-vsftv">50</span></div><input type="range" id="a-vsft" min="0" max="100" value="50"></div>
+    <div class="fx-cr"><div class="fx-sw" id="avgcsw"><input type="color" id="a-vcol" value="#000000"></div><span class="fx-pn">Color</span></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Fog / Haze</div>
+    <div class="fx-pm"><select id="a-ftype"><option value="none">None</option><option value="flat">Flat Overlay</option><option value="radial">Radial (center)</option><option value="bottom">Ground Fog</option><option value="top">Top Haze</option></select></div>
+    <div class="fx-cr"><div class="fx-sw" id="afgsw"><input type="color" id="a-fcol" value="#b0c8d8"></div><span class="fx-pn">Color</span></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Density</span><span class="fx-pv" id="a-fdenv">0</span></div><input type="range" id="a-fden" min="0" max="100" value="0"></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Film Grain</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Amount</span><span class="fx-pv" id="a-grainv">0</span></div><input type="range" id="a-grain" min="0" max="100" value="0"></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Color Grade</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Temperature</span><span class="fx-pv" id="a-tempv">0</span></div><input type="range" id="a-temp" min="-100" max="100" value="0"></div>
+    <div class="fx-note" style="margin-bottom:5px;">&#8592; cool &nbsp;&nbsp;&nbsp;&nbsp; warm &#8594;</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Saturation</span><span class="fx-pv" id="a-satv">0</span></div><input type="range" id="a-sat" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Contrast</span><span class="fx-pv" id="a-conv">0</span></div><input type="range" id="a-con" min="-100" max="100" value="0"></div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Brightness</span><span class="fx-pv" id="a-briv">0</span></div><input type="range" id="a-bri" min="-100" max="100" value="0"></div>
+  </div>
+  <div class="fx-sec">
+    <div class="fx-stit">Chromatic Aberration</div>
+    <div class="fx-pm"><div class="fx-pr"><span class="fx-pn">Amount</span><span class="fx-pv" id="a-aberv">0</span></div><input type="range" id="a-aber" min="0" max="50" value="0"></div>
+    <div class="fx-note">Red/cyan color fringing at canvas edges.</div>
+  </div>
+  <div class="fx-br"><button class="fx-bb" id="a-rst">&#8634; Reset all</button></div>
+  <div class="fx-br"><button class="fx-bb" id="a-apply" style="background:rgba(40,200,160,0.12);border-color:#28c8a0;color:#28c8a0;font-weight:700;">&#10003; Apply Atmosphere to Canvas</button></div>
+</div>
+<div id="layers-panel" class="fx-panel">
+  <div class="fx-hdr"><span class="fx-htit">&#8862; Layers</span><button class="fx-cls" id="lyr-cls">&#215;</button></div>
+  <div class="fx-sec" style="padding:6px 8px;">
+    <div id="lyr-list"></div>
+    <div class="lyr-op-wrap">
+      <label>Opacity</label>
+      <input type="range" id="lyr-op-sl" min="1" max="100" value="100" style="flex:1;height:3px;">
+      <span id="lyr-op-val">100%</span>
+    </div>
+    <div id="lyr-actions">
+      <button class="lyr-btn primary" id="lyr-add">+ Draw Layer</button>
+      <button class="lyr-btn" id="lyr-dup">&#10695; Dup</button>
+      <button class="lyr-btn" id="lyr-merge">&#8853; Merge Down</button>
+      <button class="lyr-btn" id="lyr-flat">&#8863; Flatten</button>
+    </div>
+    <!-- Engine Layers -->
+    <div id="elyr-section">
+      <div id="elyr-hdr">
+        <span id="elyr-title">&#9670; Engine Layers</span>
+        <button id="elyr-add-btn" title="Capture current engine output as a new engine layer">+ Capture</button>
+      </div>
+      <div id="elyr-list"></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="panel">
+
+  <!-- GENERATE -->
+  <div id="gen-sec">
+    <div style="padding:4px 2px 10px;border-bottom:1px solid var(--brd);margin-bottom:10px;">
+      <div style="font-size:15px;font-weight:bold;letter-spacing:.22em;color:#E8F50A;text-transform:uppercase;line-height:1;">NeoLeo</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px;">
+        <div style="font-size:11px;letter-spacing:.12em;color:#28E0D1;font-style:italic;">New Art Forms for a New Age</div>
+        <button onclick="window.open('neoleo_help.html','_blank')" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:9px;padding:2px 8px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? Help</button>
+      </div>
+    </div>
+    <div>
+      <button id="gbtn">CREATE</button>
+    </div>
+    <div id="seed-compact">
+      <input type="text" id="si2" placeholder="AUTO">
+      <button class="slk-s" id="lbtn" title="Lock current seed">LOCK</button>
+    </div>
+    <div id="seed-slider-wrap">
+      <input type="range" id="seed-sl" min="1" max="999999" value="1" step="1">
+      <div id="seed-sl-display">&#8212;</div>
+    </div>
+    <div id="eng-status"><span id="se">&#8212;</span>&nbsp; seed: <span id="ss">&#8212;</span></div>
+    <div id="pg2"><div id="pg2-bar"></div></div>
+    <div id="hist-wrap">
+      <div id="hist-hdr">
+        <span id="hist-hdr-lbl">History</span>
+        <div id="hist-nav">
+          <button id="hist-prev" disabled>&#8592;</button>
+          <span id="hist-pos">&#8212;</span>
+          <button id="hist-next" disabled>&#8594;</button>
+        </div>
+      </div>
+      <div id="hist-thumbs"></div>
+      <div id="hist-actions">
+        <button id="hist-restore-btn">&#8617; Restore</button>
+        <button id="hist-export-btn">&#8595; Export</button>
+        <button id="hist-delete-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #5a2020;color:#ff6060;">&#10005; Del</button>
+        <button id="hist-save-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #206050;color:#40c8a0;">&#9632; Save</button>
+      </div>
+    </div>
+    <div id="qa-row">
+      <button class="qa-btn" id="ranbtn">&#8635; Rand</button>
+      <button class="qa-btn s" id="xbtn">&#8595; PNG</button>
+      <button class="qa-btn s" id="save-btn">&#9632; Save</button>
+    </div>
+    <div id="slots-wrap">
+      <div id="slots-hdr"><span>Saved states (max 8)</span><button id="slots-close-btn">&#215; close</button></div>
+      <div id="slots-list"></div>
+    </div>
+  </div>
+
+  <!-- CANVAS toggle -->
+  <button class="sec-hdr-btn" id="canvas-toggle2">Canvas <span class="chev">&#9650;</span></button>
+  <div class="sec-body" id="canvas-body2">
+    <select id="res-sel" style="display:none;">
+      <option value="square" selected>Square 750&#215;750</option>
+      <option value="9:16">9:16 &#8212; Portrait</option>
+      <option value="16:9">16:9 &#8212; Landscape</option>
+      <option value="circle">Circle Anamorphic</option>
+      <option value="golden">Golden Mean (1:1.618)</option>
+      <option value="custom">Custom</option>
+    </select>
+    <div id="ratio-thumbs" style="display:flex;flex-wrap:wrap;gap:6px;padding:2px 0 6px;"></div>
+    <div id="res-preview-wrap">
+      <div id="res-preview-row-main" style="display:flex;align-items:center;gap:10px;margin:6px 0 4px;">
+        <div id="res-preview-box">
+          <div id="res-preview-inner"></div>
+        </div>
+        <div>
+          <div id="res-preview-label" style="font-size:9px;color:var(--dim);letter-spacing:.06em;font-family:'Courier New',monospace;">1:1</div>
+          <div id="res-px-label" style="font-size:9px;color:#40c8a0;font-family:'Courier New',monospace;letter-spacing:.04em;margin-top:2px;">750 &#215; 750</div>
+        </div>
+      </div>
+    </div>
+    <div id="res-custom-row">
+      <input type="number" id="res-cw" value="750" min="100" max="4096" step="1" placeholder="W">
+      <span>&#215;</span>
+      <input type="number" id="res-ch" value="750" min="100" max="4096" step="1" placeholder="H">
+      <span>px</span>
+    </div>
+    <div id="res-info" style="font-size:9px;color:var(--dim);margin-top:4px;">Canvas: <span id="res-disp">&#8212;</span></div>
+  </div>
+
+  <!-- Background colour — always visible, outside collapsible section -->
+  <div style="display:flex;align-items:center;gap:8px;padding:5px 10px 6px;border-bottom:1px solid var(--brd);">
+    <span class="pn" style="flex:1;">Background</span>
+    <div id="bg-col-swatch" style="width:22px;height:22px;background:#000000;border:1px solid var(--brd);cursor:pointer;position:relative;flex-shrink:0;border-radius:2px;" title="Open color picker">
+    </div>
+    <input type="color" id="bg-col-picker" value="#000000" style="display:none;">
+    <span id="bg-col-hex" style="font-size:9px;color:var(--dim);font-family:'Courier New',monospace;min-width:52px;cursor:pointer;" title="Click swatch to open picker">#000000</span>
+    <button id="bg-col-transparent" title="Transparent" style="background:none;border:1px solid var(--brd);color:var(--dim);font-size:8px;cursor:pointer;padding:2px 6px;letter-spacing:.06em;border-radius:2px;">&#9636; Trans</button>
+  </div>
+
+  <!-- Background Color Picker Panel -->
+  <div id="bg-picker-panel" style="display:none;padding:10px;border-bottom:1px solid var(--brd);background:rgba(0,0,0,0.2);">
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <canvas id="bg-sv-canvas" width="160" height="160" style="cursor:crosshair;border:1px solid rgba(255,255,255,0.15);border-radius:3px;flex-shrink:0;"></canvas>
+      <canvas id="bg-hue-strip" width="20" height="160" style="cursor:crosshair;border:1px solid rgba(255,255,255,0.15);border-radius:3px;flex-shrink:0;"></canvas>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <span style="font-size:8px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">OPACITY</span>
+      <input type="range" id="bg-opacity-sl" min="0" max="100" value="100" style="flex:1;-webkit-appearance:none;height:3px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;border-radius:2px;">
+      <span id="bg-opacity-val" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">100%</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+      <span style="font-size:8px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">HEX</span>
+      <input type="text" id="bg-hex-input" value="#000000" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);color:#fff;font-family:'Courier New',monospace;font-size:10px;padding:3px 6px;outline:none;border-radius:2px;">
+      <div id="bg-preview-swatch" style="width:24px;height:24px;background:#000000;border:1px solid rgba(255,255,255,0.2);border-radius:2px;flex-shrink:0;"></div>
+    </div>
+    <div id="bg-preset-row" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;"></div>
+    <div style="display:flex;gap:6px;">
+      <button id="bg-default-btn" style="flex:1;padding:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">&#9632; Default (Black)</button>
+      <button id="bg-picker-close" style="padding:5px 10px;background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">Close</button>
+    </div>
+  </div>
+
+  <!-- ENGINES toggle -->
+  <!-- Cycle Random Engine — always visible above Engines section -->
+  <div style="display:flex;align-items:stretch;gap:0;margin-bottom:0;">
+    <button class="sec-hdr-btn" id="eng-toggle" style="flex:1;">Engines <span class="chev">&#9650;</span></button>
+    <button id="eng-cycle-btn" title="Cycle through engines in sequence — all sliders at max" class="cycle-btn">&#10024; Cycle</button>
+  </div>
+  <div id="eng-cycle-label" style="font-size:8px;color:var(--acc);padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="eng-cycle-name">&#8212;</span></div>
+  <div class="sec-body" id="eng-body">
+    <div class="pm" style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--brd);">
+      <div class="pr"><span class="pn">Opacity</span><span class="pv" id="eng-op-v">100%</span></div>
+      <input type="range" id="eng-op" min="0" max="100" value="100" oninput="document.getElementById('eng-op-v').textContent=this.value+'%';document.getElementById('cv').style.opacity=this.value/100;">
+    </div>
+    <div class="stit" style="margin-bottom:4px;">Core Engines</div>
+    <button class="eng" data-e="flowfield">01 &#8212; Flow Field</button>
+    <button class="eng" data-e="attractor">02 &#8212; Strange Attractor</button>
+    <button class="eng" data-e="subdivision">03 &#8212; Recursive Subdivision</button>
+    <button class="eng" data-e="interference">04 &#8212; Wave Interference</button>
+    <button class="eng" data-e="growth">05 &#8212; Differential Growth</button>
+    <button class="eng" data-e="lissajous">06 &#8212; Lissajous Mesh</button>
+    <button id="more-engines-btn">&#9660; More Engines (42)</button>
+    <div id="eng-current-label" style="font-size:8px;color:var(--acc);letter-spacing:.1em;padding:3px 0 2px;opacity:0.8;display:none;">&#9654; <span id="eng-current-name">Flow Field</span></div>
+    <div id="more-engines-list">
+      <div class="eng-cat organic">&#9672; Organic &amp; Biological</div>
+      <button class="eng" data-e="physarum">07 &#8212; Physarum / Slime Mold</button>
+      <button class="eng" data-e="space_colonization">08 &#8212; Space Colonization</button>
+      <button class="eng" data-e="reaction_diffusion_b">09 &#8212; Reaction-Diffusion (organic)</button>
+      <button class="eng" data-e="hydraulic_erosion">10 &#8212; Hydraulic Erosion</button>
+      <button class="eng" data-e="cell_growth">11 &#8212; Cell / Tissue Growth</button>
+      <button class="eng" data-e="watercolor">12 &#8212; Watercolor / Wet Media</button>
+      <button class="eng" data-e="diatom">13 &#8212; Diatom / Biomorph</button>
+      <button class="eng" data-e="fungal_network">14 &#8212; Fungal Network</button>
+      <div class="eng-cat">Particle &amp; Force</div>
+      <button class="eng" data-e="gravity_wells">15 &#8212; Gravity Wells</button>
+      <button class="eng" data-e="boid_flocking">16 &#8212; Boid Flocking</button>
+      <button class="eng" data-e="magnetic_field">17 &#8212; Magnetic Field Lines</button>
+      <button class="eng" data-e="reaction_diffusion">18 &#8212; Reaction-Diffusion</button>
+      <button class="eng" data-e="sand_drift">19 &#8212; Sand Drift</button>
+      <div class="eng-cat">Mathematical &amp; Geometric</div>
+      <button class="eng" data-e="voronoi">20 &#8212; Voronoi Diagram</button>
+      <button class="eng" data-e="truchet">21 &#8212; Truchet Tiles</button>
+      <button class="eng" data-e="penrose">22 &#8212; Penrose Tiling</button>
+      <button class="eng" data-e="spirograph">23 &#8212; Spirograph</button>
+      <button class="eng" data-e="apollonian">24 &#8212; Apollonian Gasket</button>
+      <button class="eng" data-e="space_filling">25 &#8212; Space-Filling Curve</button>
+      <button class="eng" data-e="lsystem">26 &#8212; L-System Plants</button>
+      <div class="eng-cat">Noise &amp; Field-Based</div>
+      <button class="eng" data-e="domain_warp">27 &#8212; Domain-Warped Noise</button>
+      <button class="eng" data-e="curl_noise">28 &#8212; Curl Noise Sheets</button>
+      <button class="eng" data-e="ridged_fractal">29 &#8212; Ridged Multifractal</button>
+      <button class="eng" data-e="marble_wood">30 &#8212; Marble / Wood</button>
+      <div class="eng-cat">Cellular &amp; Emergent</div>
+      <button class="eng" data-e="game_of_life">31 &#8212; Conway Game of Life</button>
+      <button class="eng" data-e="langtons_ant">32 &#8212; Langton's Ant</button>
+      <button class="eng" data-e="cave_map">33 &#8212; Cave / Dungeon Map</button>
+      <button class="eng" data-e="crystal_growth">34 &#8212; Crystal Growth (DLA)</button>
+      <div class="eng-cat">Graph &amp; Network</div>
+      <button class="eng" data-e="force_graph">35 &#8212; Force-Directed Graph</button>
+      <button class="eng" data-e="mst">36 &#8212; Minimum Spanning Tree</button>
+      <button class="eng" data-e="delaunay">37 &#8212; Delaunay Triangulation</button>
+      <div class="eng-cat">Iterative &amp; Fractal</div>
+      <button class="eng" data-e="julia_set">38 &#8212; Julia / Mandelbrot</button>
+      <button class="eng" data-e="newton_fractal">39 &#8212; Newton's Fractal</button>
+      <button class="eng" data-e="ifs">40 &#8212; Iterated Function Systems</button>
+      <button class="eng" data-e="flame_fractal">41 &#8212; Flame Fractal</button>
+      <div class="eng-cat">Topological &amp; Surface</div>
+      <button class="eng" data-e="contour_map">42 &#8212; Contour / Isoline Map</button>
+      <button class="eng" data-e="chladni">43 &#8212; Chladni Figures</button>
+      <button class="eng" data-e="weave_knot">44 &#8212; Weave / Knot Diagram</button>
+      <button class="eng" data-e="mobius_torus">45 &#8212; M&#246;bius / Torus</button>
+      <div class="eng-cat">Typographic / Signal</div>
+      <button class="eng" data-e="oscilloscope">46 &#8212; Oscilloscope</button>
+      <button class="eng" data-e="ascii_density">47 &#8212; ASCII Density Map</button>
+      <button class="eng" data-e="wfc">48 &#8212; Waveform Collapse</button>
+    </div>
+    <div id="psec" style="padding:4px 2px;border-top:1px solid var(--brd);margin-top:6px;"></div>
+  </div>
+
+  <!-- PALETTE toggle -->
+  <button class="sec-hdr-btn" id="pal-toggle">Palette <span class="chev">&#9650;</span></button>
+  <div class="sec-body" id="pal-body">
+  <div id="swrow"></div>
+  <select id="pal"><option value="ember" selected>Ember</option><option value="ink">Ink &amp; Paper</option><option value="ocean">Deep Ocean</option><option value="neon">Neon Circuit</option><option value="earth">Earth Strata</option><option value="ghost">Ghost</option><option value="aurora">Aurora</option><option value="void">Void</option><option value="rust">Rust &amp; Salt</option><option value="botanic">Botanic</option><option value="custom">&#10022; Custom</option></select>
+  <!-- Custom Palette Editor — inline wheel -->
+  <div id="cpe-wrap">
+    <button id="custom-pal-btn">&#9664; Custom Palette</button>
+    <div id="custom-pal-editor">
+      <!-- 7 color slots + bg slot -->
+      <div id="cpe-slots-label">Click a slot then pick from wheel &nbsp;&#8593;</div>
+      <div id="cpe-slots"></div>
+      <!-- Inline color wheel -->
+      <div id="cpe-wheel-wrap">
+        <canvas id="cpe-wheel" width="200" height="200"></canvas>
+        <div id="cpe-cursor"></div>
+      </div>
+      <div id="cpe-controls">
+        <input type="range" id="cpe-lightness" min="0" max="100" value="50" title="Lightness">
+        <div id="cpe-preview"></div>
+        <input type="text" id="cpe-hex" maxlength="7" placeholder="#ffffff">
+      </div>
+      <div id="cpe-actions">
+        <button id="cpe-add-slot">+ Color</button>
+        <button id="cpe-rem-slot">&#8722; Remove</button>
+        <button id="cpe-apply">&#10003; Apply</button>
+      </div>
+      <div id="cpe-save-row">
+        <input type="text" id="cpe-name" placeholder="Palette name&hellip;" maxlength="40">
+        <button id="cpe-save">Save</button>
+      </div>
+      <div id="cpe-saved-list"></div>
+    </div>
+  </div>
+  <!-- legacy hidden IDs needed by old IIFE -->
+  <div style="display:none">
+    <div id="cp-swatches"></div><div id="cp-bg-swatch"></div>
+    <input id="cp-bg"><div id="cvbg-swatch"></div>
+    <span id="cvbg-hex"></span><div id="cvbg-presets"></div>
+    <button id="cp-add"></button><button id="cp-apply-btn"></button>
+    <button id="cp-save-named"></button><input id="cp-name-in">
+    <div id="cp-no-saved"></div><div id="cp-saved-list"></div>
+  </div>
+</div>
+  <!-- DRAWING TOOLS toggle -->
+  <button class="sec-hdr-btn" id="dt-toggle">Drawing Tools <span class="chev">&#9650;</span></button>
+  <button id="hh-btn" style="width:100%;margin:3px 0;padding:8px 10px;background:rgba(232,245,10,0.12);border:1px solid rgba(232,245,10,0.4);color:#E8F50A;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;" title="Generate a composite artwork: random engine + palette + drawing tool overlay (brush, pencil, shapes, lines)">&#10024; Happy Hallucinations</button>
+  <button id="hh-multi-btn" style="width:100%;margin:0 0 3px;padding:6px 10px;background:rgba(232,245,10,0.05);border:1px solid rgba(232,245,10,0.2);color:#E8F50A;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-weight:600;" title="Multi-pass HH with blend controls">&#10024;&#10024; Multi-Pass Blend</button>
+  <div id="hh-hist-wrap" style="display:none;padding:4px 6px;background:rgba(0,0,0,0.2);border-bottom:1px solid var(--brd);">
+    <div id="hh-mood-label" style="font-size:8px;color:#E8F50A;letter-spacing:.06em;margin-bottom:4px;"></div>
+    <div id="hh-hist-strip" style="display:flex;gap:3px;overflow-x:auto;padding-bottom:2px;"></div>
+  </div>
+
+  <div class="sec-body open" id="dt-body">
+    <div class="crow"><div class="csw" id="csw"><input type="color" id="dcol" value="#ff4040"></div><div class="ctxt">Color &nbsp;<span id="dcoltxt">#ff4040</span></div></div>
+    <div class="pm"><div class="pr"><span class="pn">Size</span><span class="pv" id="szv">10</span></div><input type="range" id="szr" min="1" max="80" value="10"></div>
+    <div class="pm"><div class="pr"><span class="pn">Opacity</span><span class="pv" id="opv">90%</span></div><input type="range" id="opr" min="5" max="100" value="90"></div>
+    <div class="pm"><div class="pr"><span class="pn">Hardness</span><span class="pv" id="hdv">70%</span></div><input type="range" id="hdr" min="0" max="100" value="70"></div>
+    <div class="pm"><div class="pr"><span class="pn">Tolerance</span><span class="pv" id="tlv">30</span></div><input type="range" id="tlr" min="0" max="100" value="30"></div>
+    <div class="pm"><div class="pr"><span class="pn">Shape Mode</span></div><select id="fmod"><option value="stroke">Stroke only</option><option value="fill">Fill only</option><option value="both">Fill + Stroke</option></select></div>
+    <div class="br"><button class="bb" id="ubtn">&#8617; Undo</button><button class="bb" id="redobtn">&#8618; Redo</button><button class="bb" id="clrbtn">&#10005; Clear</button></div>
+  </div>
+
+  <div class="sp"></div>
+
+  <!-- NATURALIZE — Grain, Jitter, Multi-pass -->
+  <button class="sec-hdr-btn" id="nat-toggle" style="border-top:1px solid #1a3a2a;color:#70d0a0;">&#9752; Naturalize <span class="chev" style="color:#408060;">&#9650;</span></button>
+
+  <!-- EXPERIMENTAL TOOLS -->
+  <div style="display:flex;align-items:stretch;gap:0;border-top:1px solid #3a0a5a;">
+    <button class="sec-hdr-btn" id="exp-toggle" style="flex:1;border-top:none;color:#c060ff;">&#9670; Experimental Tools <span id="is-badge" style="display:none;font-size:8px;background:rgba(151,195,176,0.15);border:1px solid #97c3b0;color:#97c3b0;padding:1px 5px;border-radius:2px;letter-spacing:.08em;margin-left:4px;">&#9672; SIGNAL</span><span class="chev" style="color:#8040b0;transform:rotate(180deg);">&#9650;</span></button>
+    <button id="eng-connect-btn" title="Connect: tool renders blend ON TOP of engine. Disconnect: tool renders independently." onclick="window._ENG_CONNECT=!window._ENG_CONNECT;this.textContent=window._ENG_CONNECT?'&#9939; Connected':'&#128279; Connect';this.style.background=window._ENG_CONNECT?'rgba(151,195,176,0.15)':'none';this.style.borderColor=window._ENG_CONNECT?'#97c3b0':'var(--brd)';this.style.color=window._ENG_CONNECT?'#97c3b0':'var(--dim)';document.getElementById('si').textContent=window._ENG_CONNECT?'Tools CONNECTED \u2014 experimental renders blend on top of engine output':'Tools disconnected \u2014 experimental renders replace canvas';" style="padding:0 10px;background:none;border:1px solid var(--brd);border-left:none;color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;white-space:nowrap;flex-shrink:0;">&#128279; Connect</button>
+  </div>
+  <div class="sec-body" id="exp-body">
+    <div class="pm" style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1a0a2a;">
+      <div class="pr"><span class="pn">Layer Opacity</span><span class="pv" id="exp-op-v">100%</span></div>
+      <input type="range" id="exp-op" min="0" max="100" value="100" oninput="(function(v){document.getElementById('exp-op-v').textContent=v+'%';var ov=document.getElementById('dv-opov');if(ov){ov.style.opacity=1-(v/100);}})(parseInt(this.value));" >
+    </div>
+    <div id="intent-sculpt-sec">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="intent-sculpt-toggle" onclick="(function(){var b=document.getElementById('intent-sculpt-body');var t=document.getElementById('intent-sculpt-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,96,255,0.12)':'none';t.style.borderColor=open?'#7030b0':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9670; Intent Sculpting</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="intent-cycle-btn" title="Cycle through Intent Sculpting modalities — all forces at modality max" class="cycle-btn">Cycle</button>
+      </div>
+      <div id="intent-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(192,96,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="intent-cycle-name">&#8212;</span></div>
+      <div id="intent-sculpt-body" style="display:none;padding-top:6px;">
+      <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a0a2a;padding-bottom:6px;">Force Field Aesthetics &#8212; sculpt a field where forms want to happen</div>
+      <div id="force-sliders"></div>
+      <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
+        <button class="fx-bb" id="intent-sculpt-btn" style="flex:1;border-color:#7030b0;color:#97c3b0;min-width:80px;">&#9672; Activate</button>
+        <button class="fx-bb" id="intent-emit-btn" style="flex:1;border-color:#5a2090;color:#97c3b0;min-width:80px;">&#9733; Emit Field</button>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px;">
+        <button class="fx-bb" id="intent-clear-btn" style="flex:1;border-color:#3a1a3a;color:#884488;">&#10005; Clear Marks</button>
+        <button class="fx-bb" id="intent-reset-btn" style="flex:1;border-color:#2a0a3a;color:#664466;">&#8635; Reset Forces</button>
+      </div>
+      <div style="display:flex;gap:4px;margin-top:4px;">
+        <button class="fx-bb" id="intent-rand-btn" style="flex:1;border-color:#6030a0;color:#e080ff;">&#10024; Random</button>
+      </div>
+      <div class="fx-pm" style="margin-top:8px;">
+        <div class="fx-pr"><span class="fx-pn">Mark density</span><span class="fx-pv" id="intent-density-v">60</span></div>
+        <input type="range" id="intent-density" min="10" max="200" value="60">
+      </div>
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Mark length</span><span class="fx-pv" id="intent-length-v">80</span></div>
+        <input type="range" id="intent-length" min="10" max="300" value="80">
+      </div>
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Mark opacity</span><span class="fx-pv" id="intent-op-v">70%</span></div>
+        <input type="range" id="intent-op" min="5" max="100" value="70">
+      </div>
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Mark color</span></div>
+        <input type="color" id="intent-color" value="#c060ff" style="width:100%;height:22px;background:none;border:1px solid var(--brd);cursor:pointer;">
+      </div>
+    </div>
+
+      </div><!-- /intent-sculpt-body -->
+    <!-- Separator between tools -->
+    <div style="border-top:1px solid #1a0a2a;margin:10px 0 8px;"></div>
+
+    <!-- TEMPORAL CANVASES -->
+    <div id="temporal-sec">
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
+      <button id="temporal-toggle" onclick="(function(){var b=document.getElementById('temporal-body');var t=document.getElementById('temporal-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(40,224,209,0.08)':'none';t.style.borderColor=open?'#28E0D1':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';if(open){if(typeof initTemporal==='function'){initTemporal();if(typeof renderFrame==='function')renderFrame(0);}}})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <span>&#9670; Temporal Canvases</span>
+        <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+      </button>
+      <button id="tc-rand-hdr-btn" title="Cycle through Temporal modes — all sliders max" class="cycle-btn">Cycle</button>
+      </div>
+      <div id="tc-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(40,224,209,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="tc-cycle-name">&#8212;</span></div>
+      <div id="temporal-body" style="display:none;padding-top:6px;">
+      <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Time-first composition &#8212; scrub through becoming</div>
+
+      <!-- Mode selector -->
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn" style="color:#97c3b0;">Temporal Mode</span></div>
+        <select id="tc-mode" style="width:100%;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:3px;">
+          <option value="emergence">Emergence &#8212; calm &#8594; structure</option>
+          <option value="dissolution">Dissolution &#8212; order &#8594; chaos</option>
+          <option value="oscillation">Oscillation &#8212; wave memory</option>
+          <option value="remembrance">Remembrance &#8212; image recalls itself</option>
+          <option value="entropy">Entropy &#8212; all things forget</option>
+        </select>
+      </div>
+
+      <!-- Timeline scrubber -->
+      <div class="fx-pm" style="margin-top:6px;">
+        <div class="fx-pr">
+          <span class="fx-pn" style="color:#97c3b0;">Time</span>
+          <span class="fx-pv" id="tc-time-v">0%</span>
+        </div>
+        <input type="range" id="tc-time" min="0" max="1000" value="0" style="accent-color:#28E0D1;">
+      </div>
+
+      <!-- Controls row -->
+      <div style="display:flex;gap:4px;margin-top:6px;">
+        <button class="fx-bb" id="tc-play-btn" style="flex:1;border-color:#28E0D1;color:#97c3b0;">&#9654; Play</button>
+        <button class="fx-bb" id="tc-loop-btn" style="flex:1;border-color:#0a3a2a;color:#20b090;">&#8635; Loop</button>
+        <button class="fx-bb" id="tc-reset-btn" style="flex:0.5;border-color:#0a3a3a;color:#186060;">&#9646;&#9646; Stop</button>
+      </div>
+      <!-- Frames config -->
+      <div class="fx-pm" style="margin-top:4px;">
+        <div class="fx-pr">
+          <span class="fx-pn">Frames</span>
+          <input type="number" id="tc-frames" min="10" max="9999" value="1000" style="width:52px;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-size:9px;padding:2px 4px;font-family:inherit;text-align:right;">
+        </div>
+      </div>
+
+      <!-- Speed -->
+      <div class="fx-pm" style="margin-top:5px;">
+        <div class="fx-pr"><span class="fx-pn">Speed</span><span class="fx-pv" id="tc-speed-v">1&#215;</span></div>
+        <input type="range" id="tc-speed" min="1" max="10" value="2">
+      </div>
+
+      <!-- Memory / imprint depth -->
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Memory depth</span><span class="fx-pv" id="tc-mem-v">60%</span></div>
+        <input type="range" id="tc-mem" min="0" max="100" value="60">
+      </div>
+
+      <!-- Chaos threshold -->
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Chaos onset</span><span class="fx-pv" id="tc-chaos-v">50%</span></div>
+        <input type="range" id="tc-chaos" min="0" max="100" value="50">
+      </div>
+
+      <!-- Colour palette for time canvas -->
+      <div class="fx-pm">
+        <div class="fx-pr"><span class="fx-pn">Temporal colour</span></div>
+        <input type="color" id="tc-color" value="#28E0D1" style="width:100%;height:22px;background:none;border:1px solid var(--brd);cursor:pointer;">
+      </div>
+
+      <!-- Capture frame button -->
+      <div style="display:flex;gap:4px;margin-top:5px;">
+        <button class="fx-bb" id="tc-capture-btn" style="flex:1;border-color:#0a3040;color:#97c3b0;">&#9632; Capture Frame</button>
+        <button id="tc-rand-btn" style="flex:0.8;padding:3px 10px;background:#cc1a1a;border:1px solid #ff3030;color:#ffffff;font-family:inherit;font-size:9px;font-weight:600;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Cycle</button>
+      </div>
+      <!-- Undo / Redo / Clear -->
+      <div style="display:flex;gap:4px;margin-top:4px;">
+        <button class="fx-bb" id="tc-undo-btn" style="flex:1;border-color:#1a1a3a;color:#6070c0;">&#8617; Undo</button>
+        <button class="fx-bb" id="tc-redo-btn" style="flex:1;border-color:#1a1a3a;color:#6070c0;">&#8618; Redo</button>
+        <button class="fx-bb" id="tc-clear-btn" style="flex:1;border-color:#2a0a0a;color:#ff6060;">&#10005; Clear</button>
+      </div>
+    </div>
+    <!-- PROBABILITY PAINTING -->
+    <div id="pp-sec" style="border-top:1px solid #1a0a2a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="pp-toggle" onclick="(function(){var b=document.getElementById('pp-body');var t=document.getElementById('pp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(232,245,10,0.06)':'none';t.style.borderColor=open?'#E8F50A':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9688; Probability Painting</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="pp-cycle-btn" class="cycle-btn" onclick="window._PP&&window._PP.cycle()">Cycle</button>
+      </div>
+      <div id="pp-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="pp-cycle-name">--</span></div>
+      <div id="pp-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a00;padding-bottom:6px;">Certainty is the enemy of emergence. Each mark is a probability cloud.</div>
+        <div style="display:flex;gap:4px;margin-bottom:10px;">
+          <button id="pp-activate-btn" class="fx-bb" style="flex:1;border-color:#E8F50A;color:#97c3b0;" onclick="window._PP&&window._PP.toggle()">&#9688; Activate</button>
+          <button id="pp-reseed-btn" class="fx-bb" style="flex:1;border-color:#aaaa00;color:#97c3b0;" onclick="window._PP&&window._PP.reseed()">&#8635; Reseed</button>
+        </div>
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:6px;">EXPRESSIONS</div>
+        <div id="pp-expr-list" style="margin-bottom:10px;"></div>
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">PROBABILITY WEIGHTS</div>
+        <div class="pm"><div class="pr"><span class="pn">Curve</span><span class="pv" id="pp-curve-v">70%</span></div><input type="range" id="pp-curve" min="0" max="100" value="70"></div>
+        <div class="pm"><div class="pr"><span class="pn">Fracture</span><span class="pv" id="pp-frac-v">20%</span></div><input type="range" id="pp-frac" min="0" max="100" value="20"></div>
+        <div class="pm"><div class="pr"><span class="pn">Dissolve</span><span class="pv" id="pp-dis-v">10%</span></div><input type="range" id="pp-dis" min="0" max="100" value="10"></div>
+        <div id="pp-weight-warn" style="font-size:8px;color:#ff4040;display:none;margin-bottom:4px;">Weights exceed 100% -- normalised</div>
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-top:8px;margin-bottom:4px;">EXPRESSION</div>
+        <div class="pm"><div class="pr"><span class="pn">Multiplicity</span><span class="pv" id="pp-mult-v">3</span></div><input type="range" id="pp-mult" min="1" max="8" value="3"></div>
+        <div class="pm"><div class="pr"><span class="pn">Volatility</span><span class="pv" id="pp-vol-v">40%</span></div><input type="range" id="pp-vol" min="0" max="100" value="40"></div>
+        <div class="pm"><div class="pr"><span class="pn">Ghost Opacity</span><span class="pv" id="pp-ghost-v">22%</span></div><input type="range" id="pp-ghost" min="0" max="60" value="22"></div>
+        <div class="pm"><div class="pr"><span class="pn">Scatter</span><span class="pv" id="pp-scatter-v">24</span></div><input type="range" id="pp-scatter" min="0" max="80" value="24"></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:4px 6px;background:rgba(232,245,10,0.04);border:1px solid rgba(232,245,10,0.15);border-radius:2px;">
+          <span style="font-size:8px;color:#97c3b0;letter-spacing:.08em;">SEED</span>
+          <span id="pp-seed-display" style="font-size:9px;font-family:monospace;color:#97c3b0;flex:1;">--</span>
+          <button class="fx-bb" style="padding:1px 6px;font-size:8px;border-color:#444;color:#97c3b0;" onclick="window._PP&&window._PP.lockSeed()">&#128274; Lock</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMORY-BASED DRAWING — Latent Emotional Architecture -->
+    <div id="mbd-sec" style="border-top:1px solid #1a0a2a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="mbd-toggle" onclick="(function(){var b=document.getElementById('mbd-body');var t=document.getElementById('mbd-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(180,140,255,0.07)':'none';t.style.borderColor=open?'#b48cff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9762; Memory Architecture</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="mbd-cycle-btn" class="cycle-btn" onclick="window._MBD&&window._MBD.cycle()">Cycle</button>
+      </div>
+      <div id="mbd-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(180,140,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="mbd-cycle-name">--</span></div>
+      <div id="mbd-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #120a1e;padding-bottom:6px;">Visuals constructed from latent emotional structures &#8212; zero derivation from existing artworks.</div>
+
+        <!-- Memory input -->
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">MEMORY INSCRIPTION</div>
+        <textarea id="mbd-input" placeholder="A place that felt like waiting but hopeful&#10;The texture of a childhood afternoon&#10;The colour of a sound you almost remember&#10;..." style="width:100%;height:64px;background:rgba(180,140,255,0.04);border:1px solid rgba(180,140,255,0.2);color:#d0b8ff;font-family:inherit;font-size:8px;padding:6px;resize:none;box-sizing:border-box;line-height:1.6;outline:none;margin-bottom:6px;"></textarea>
+
+        <!-- Preset memory architectures -->
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:5px;">LATENT ARCHITECTURES</div>
+        <div id="mbd-arch-list" style="margin-bottom:8px;"></div>
+
+        <!-- Emotional dimension sliders -->
+        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;margin-top:4px;">EMOTIONAL DIMENSIONS</div>
+        <div class="pm"><div class="pr"><span class="pn">Warmth</span><span class="pv" id="mbd-warm-v">60%</span></div><input type="range" id="mbd-warm" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn">Weight</span><span class="pv" id="mbd-weight-v">40%</span></div><input type="range" id="mbd-weight" min="0" max="100" value="40"></div>
+        <div class="pm"><div class="pr"><span class="pn">Temporal Blur</span><span class="pv" id="mbd-time-v">70%</span></div><input type="range" id="mbd-time" min="0" max="100" value="70"></div>
+        <div class="pm"><div class="pr"><span class="pn">Dissolution</span><span class="pv" id="mbd-dis-v">45%</span></div><input type="range" id="mbd-dis" min="0" max="100" value="45"></div>
+        <div class="pm"><div class="pr"><span class="pn">Texture Depth</span><span class="pv" id="mbd-tex-v">55%</span></div><input type="range" id="mbd-tex" min="0" max="100" value="55"></div>
+        <div class="pm"><div class="pr"><span class="pn">Spatial Expansion</span><span class="pv" id="mbd-space-v">50%</span></div><input type="range" id="mbd-space" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Resonance</span><span class="pv" id="mbd-res-v">65%</span></div><input type="range" id="mbd-res" min="0" max="100" value="65"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="mbd-render-btn" class="fx-bb" style="flex:2;border-color:#b48cff;color:#97c3b0;" onclick="window._MBD&&window._MBD.render()">&#9762; Inscribe Memory</button>
+          <button class="fx-bb" style="flex:1;border-color:#6a4a8a;color:#97c3b0;" onclick="window._MBD&&window._MBD.clear()">&#10005; Clear</button>
+        </div>
+        <div id="mbd-status" style="font-size:8px;color:#97c3b0;margin-top:5px;line-height:1.5;min-height:14px;font-style:italic;"></div>
+      </div>
+    </div>
+
+
+    <!-- MORPHOGENESIS — Natural & Organic Forms -->
+    <div id="morph-sec" style="border-top:1px solid #0a2a0a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="morph-toggle" onclick="(function(){var b=document.getElementById('morph-body');var t=document.getElementById('morph-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,192,96,0.07)':'none';t.style.borderColor=open?'#40c060':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40c060;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9784; Morphogenesis</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="morph-cycle-btn" class="cycle-btn" onclick="window._MORPH&&window._MORPH.cycle()">Cycle</button>
+      </div>
+      <div id="morph-cycle-label" style="font-size:8px;color:#40c060;padding:2px 10px 3px;background:rgba(64,192,96,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="morph-cycle-name">--</span></div>
+      <div id="morph-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a2a0a;padding-bottom:6px;">Physics, geometry and mathematics of living form. No images. No corpus. Pure first principles.</div>
+
+        <!-- System list — all 5 displayed, click to select -->
+        <div style="font-size:8px;color:#40c060;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div id="morph-sys-list" style="margin-bottom:8px;"></div>
+
+        <!-- Description line -->
+        <div id="morph-desc" style="display:none;"></div>
+
+        <!-- Parameter sliders -->
+        <div style="font-size:8px;color:#40c060;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn" id="morph-l1">Param 1</span><span class="pv" id="morph-v1">--</span></div><input type="range" id="morph-p1" min="0" max="100" value="37"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="morph-l2">Param 2</span><span class="pv" id="morph-v2">--</span></div><input type="range" id="morph-p2" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="morph-l3">Param 3</span><span class="pv" id="morph-v3">--</span></div><input type="range" id="morph-p3" min="0" max="100" value="20"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="morph-l4">Param 4</span><span class="pv" id="morph-v4">--</span></div><input type="range" id="morph-p4" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="morph-l5">Param 5</span><span class="pv" id="morph-v5">--</span></div><input type="range" id="morph-p5" min="10" max="100" value="60"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="morph-render-btn" class="fx-bb" style="flex:2;border-color:#40c060;color:#40c060;" onclick="window._MORPH&&window._MORPH.render()">&#9784; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#1a4020;color:#97c3b0;" onclick="window._MORPH&&window._MORPH.randomise()">&#8635; Rand</button>
+        </div>
+        <div id="morph-status" style="font-size:8px;color:#97c3b0;margin-top:5px;min-height:12px;font-style:italic;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sp"></div>
+</div>
+<div id="save-name-modal">
+  <div id="save-name-box">
+    <div id="save-name-title">Name this save</div>
+    <input type="text" id="save-name-in" placeholder="Enter a name&#8230;" maxlength="48" autocomplete="off" spellcheck="false">
+    <div id="save-name-hint">Leave blank to use the engine name and timestamp.</div>
+    <div class="save-name-btns">
+      <button id="save-name-ok">Save</button>
+      <button id="save-name-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="bp-modal">
+  <div id="bp-box">
+    <div id="bp-box-head">
+      <div>
+        <div id="bp-box-head-title">&#9673; Brush Picker</div>
+        <div id="bp-box-head-sub">Select brush, adjust settings</div>
+      </div>
+      <div id="bp-hdr-icons">
+        <button id="bp-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;line-height:1.4;">Close</button>
+      </div>
+    </div>
+    <div id="bp-top">
+      <div id="bp-preview-wrap"><canvas id="bp-preview" width="80" height="80"></canvas></div>
+      <div id="bp-controls">
+        <div class="bp-ctrl-row">
+          <div class="bp-ctrl-col" title="Brush color"><canvas id="bp-col-preview" width="22" height="22"></canvas><input type="color" id="bp-col-in" value="#ff4040"></div>
+          <span class="bp-ctrl-lbl">Color</span>
+        </div>
+        <!-- Palette color picker -->
+        <div id="bp-pal-sec" style="margin:4px 0 2px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <span style="font-size:8px;color:#40c8a0;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;">Palette</span>
+            <select id="bp-pal-sel" style="flex:1;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);color:#ffffff;font-size:8px;font-family:inherit;padding:2px 4px;cursor:pointer;border-radius:2px;"></select>
+          </div>
+          <div id="bp-pal-swatches" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+        </div>
+        <div>
+          <div class="bp-ctrl-row"><span class="bp-ctrl-lbl">Size</span><span class="bp-ctrl-val" id="bp-sz-val">10 px</span></div>
+          <input type="range" class="bp-slider" id="bp-sz" min="1" max="80" value="10">
+        </div>
+        <div>
+          <div class="bp-ctrl-row"><span class="bp-ctrl-lbl">Hardness</span><span class="bp-ctrl-val" id="bp-hd-val">70%</span></div>
+          <input type="range" class="bp-slider" id="bp-hd" min="0" max="100" value="70">
+        </div>
+        <div>
+          <div class="bp-ctrl-row"><span class="bp-ctrl-lbl">Opacity</span><span class="bp-ctrl-val" id="bp-op-val">90%</span></div>
+          <input type="range" class="bp-slider" id="bp-op" min="5" max="100" value="90">
+        </div>
+      </div>
+    </div>
+    <div id="bp-search-wrap">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="bp-search" type="text" placeholder="Search brushes..." autocomplete="off">
+    </div>
+    <div id="bp-tips"></div>
+    <div id="bp-list-wrap">
+      <div class="bp-cat">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        General Brushes
+      </div>
+      <div id="bp-list"></div>
+    </div>
+    <div id="bp-footer">
+      <button id="bp-save-settings" style="padding:5px 8px;background:rgba(64,200,160,0.12);border:1px solid rgba(64,200,160,0.4);color:#40c8a0;font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-radius:3px;">&#9632; Save</button>
+      <button id="bp-reset-settings" style="padding:5px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border-radius:3px;">&#8634; Reset</button>
+      <div style="flex:1;"></div>
+    </div>
+    <div id="bp-settings-status" style="font-size:7px;color:rgba(255,255,255,0.3);text-align:center;min-height:10px;line-height:1.5;padding:0 10px 6px;"></div>
+  </div>
+</div>
+
+<div id="cw-modal">
+  <div id="cw-box">
+    <div style="font-size:9px;letter-spacing:.1em;color:var(--dim);margin-bottom:8px;text-transform:uppercase;">Color Picker</div>
+    <canvas id="cw-canvas" width="180" height="180" style="display:block;width:180px;height:180px;cursor:crosshair;margin-bottom:8px;"></canvas>
+    <div id="cw-cursor" style="position:absolute;width:12px;height:12px;border-radius:50%;border:2px solid #fff;pointer-events:none;transform:translate(-50%,-50%);"></div>
+    <input type="range" id="cw-lightness" min="0" max="100" value="50" style="width:100%;margin-bottom:6px;">
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;">
+      <div id="cw-preview" style="width:28px;height:28px;border:1px solid var(--brd);border-radius:2px;flex-shrink:0;"></div>
+      <input type="text" id="cw-hex-in" placeholder="#ffffff" style="flex:1;background:#000;border:1px solid var(--brd);color:var(--txt);font-family:'Courier New',monospace;font-size:10px;padding:4px 6px;outline:none;">
+    </div>
+    <div style="display:flex;gap:5px;">
+      <button id="cw-ok" style="flex:1;padding:5px;background:none;border:1px solid var(--acc);color:var(--acc);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Select</button>
+      <button id="cw-cancel" style="flex:1;padding:5px;background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="save-name-modal">
+  <div id="save-name-box" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:280px;background:#111;border:1px solid var(--brd);border-top:2px solid var(--acc);padding:16px;">
+    <div id="save-name-title" style="font-size:10px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-bottom:10px;">Name this save</div>
+    <input type="text" id="save-name-in" placeholder="Enter a name&#8230;" maxlength="48" autocomplete="off" style="width:100%;background:#000;border:1px solid var(--brd);color:var(--txt);font-family:'Courier New',monospace;font-size:11px;padding:6px 8px;outline:none;box-sizing:border-box;margin-bottom:10px;">
+    <div style="display:flex;gap:6px;justify-content:flex-end;">
+      <button id="save-name-ok" style="padding:5px 16px;background:none;border:1px solid var(--acc);color:var(--acc);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Save</button>
+      <button id="save-name-cancel" style="padding:5px 16px;background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="export-modal">
+  <div id="export-box">
+    <h3>Export PNG</h3>
+    <div id="export-hint">Right-click the image below &rarr; Save image as&hellip;</div>
+    <div id="export-img-wrap"><img id="export-img" src="" alt="Export preview"></div>
+    <button id="export-close">Close</button>
+  </div>
+</div>
+
+<!-- ◈ Slider Reference Popup -->
+<div id="slref-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0);z-index:9000;pointer-events:none;">
+  <div id="slref-panel" style="position:absolute;top:10px;right:350px;width:520px;max-height:calc(100vh - 20px);background:rgba(4,8,12,0.97);border:1px solid #97c3b0;border-radius:6px;padding:0;overflow-y:auto;pointer-events:all;box-shadow:0 8px 32px rgba(0,0,0,0.8);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(151,195,176,0.2);background:rgba(151,195,176,0.05);">
+      <div>
+        <div style="font-size:11px;font-weight:bold;letter-spacing:.16em;color:#97c3b0;text-transform:uppercase;">&#9636; Slider Reference</div>
+        <div style="font-size:8px;color:rgba(151,195,176,0.6);margin-top:2px;">Click any thumbnail to set that slider to that value</div>
+      </div>
+      <button onclick="window._slRef&&window._slRef.close()" style="background:none;border:1px solid rgba(255,255,255,0.4);color:#ffffff;font-family:inherit;font-size:11px;width:24px;height:24px;cursor:pointer;border-radius:2px;">&#10005;</button>
+    </div>
+    <div id="slref-content" style="padding:12px 14px;"></div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>

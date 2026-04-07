@@ -1,0 +1,28 @@
+/* ── GENERATION HISTORY ── */
+#hist-wrap{margin-top:10px;border-top:1px solid var(--brd);padding-top:8px;display:none;}
+#hist-wrap.has-items{display:block;}
+#hist-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+#hist-hdr-lbl{font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;}
+#hist-nav{display:flex;gap:5px;align-items:center;}
+#hist-prev,#hist-next{background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:12px;padding:1px 8px;cursor:pointer;transition:all .1s;line-height:1.4;}
+#hist-prev:hover,#hist-next:hover{color:var(--txt);border-color:var(--dim);}
+#hist-prev:disabled,#hist-next:disabled{opacity:.3;cursor:default;}
+#hist-pos{font-size:9px;color:var(--dim);min-width:28px;text-align:center;}
+#hist-thumbs{display:flex;gap:4px;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;}
+.hist-thumb{flex-shrink:0;width:52px;height:52px;border:2px solid transparent;cursor:pointer;position:relative;border-radius:2px;overflow:hidden;}
+.hist-thumb canvas{display:block;width:52px;height:52px;}
+.hist-thumb.active{border-color:var(--acc);}
+.hist-thumb:hover{border-color:var(--dim);}
+.hist-thumb .hist-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:7px;text-align:center;padding:1px 2px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hist-thumb .hist-btns{position:absolute;top:0;left:0;right:0;display:none;gap:2px;padding:2px;background:rgba(0,0,0,.65);}
+.hist-thumb:hover .hist-btns{display:flex;}
+.hist-btn{flex:1;padding:2px 1px;border:none;font-family:'Courier New',monospace;font-size:7px;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;border-radius:1px;line-height:1.4;}
+.hist-btn.del{background:#5a1a1a;color:#ff8080;}
+.hist-btn.del:hover{background:#8a2020;}
+.hist-btn.sav{background:#0a2818;color:#40c8a0;}
+.hist-btn.sav:hover{background:#144028;}
+#hist-actions{display:flex;gap:4px;margin-top:6px;}
+#hist-restore-btn,#hist-export-btn{flex:1;padding:4px;background:none;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;transition:all .1s;border:1px solid var(--brd);color:var(--dim);}
+#hist-restore-btn:hover{color:var(--txt);border-color:var(--dim);}
+#hist-export-btn{border-color:#206050;color:#40c8a0;}
+#hist-export-btn:hover{border-color:#40c8a0;color:#80e8c0;}

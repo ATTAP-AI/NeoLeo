@@ -1,4 +1,13 @@
-*
-!*.html
-!README.md
-!.gitignore
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Dev server / build
+serve.rb
+.claude/
+/tmp/
+node_modules/
+
+# Keep everything else (HTML, CSS, JS, README)
