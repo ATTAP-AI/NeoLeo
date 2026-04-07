@@ -141,7 +141,7 @@ function exportEntry(entry){
   img.src=url;
   img.alt='neoleo-hist-'+(entry.eng||'art')+'-'+Date.now()+'.png';
   modal.classList.add('open');
-  setI('Right-click image to save PNG');
+  setI('Click Save As to download PNG');
 }
 
 /* ── Build thumbnail strip ── */

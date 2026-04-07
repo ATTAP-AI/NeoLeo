@@ -80,10 +80,13 @@
 
 #export-modal{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;}
 #export-modal.open{display:flex;}
-#export-box{background:#111;border:1px solid var(--brd);border-top:2px solid var(--acc);padding:16px;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;gap:10px;}
-#export-box h3{margin:0;font-size:10px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;}
-#export-img-wrap{overflow:auto;max-height:60vh;border:1px solid var(--brd);}
-#export-img-wrap img{display:block;max-width:100%;}
-#export-hint{font-size:9px;color:var(--acc);letter-spacing:.08em;}
-#export-close{padding:5px 14px;background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;align-self:flex-end;}
+#export-box{background:#111;border:1px solid var(--brd);border-top:2px solid var(--acc);padding:16px;width:fit-content;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+#export-box h3{margin:0;font-size:10px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;flex-shrink:0;}
+#export-img-wrap{flex:1 1 auto;overflow:hidden;border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;min-height:0;}
+#export-img-wrap img{display:block;max-width:100%;max-height:calc(90vh - 130px);object-fit:contain;}
+#export-hint{font-size:9px;color:var(--acc);letter-spacing:.08em;flex-shrink:0;}
+#export-btns{display:flex;gap:8px;justify-content:flex-end;align-self:stretch;flex-shrink:0;}
+#export-save-as{padding:6px 18px;background:var(--acc);border:1px solid var(--acc);color:#000;font-family:inherit;font-size:10px;font-weight:bold;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
+#export-save-as:hover{background:#fff;border-color:#fff;}
+#export-close{padding:5px 14px;background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
 #export-close:hover{color:var(--txt);border-color:var(--dim);}

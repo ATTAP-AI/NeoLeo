@@ -128,6 +128,16 @@ window._applyFilterToCanvas=applyFilterToCanvas;
 
 })();
 
+/* ── Programmatic download helper ── */
+window._downloadPNG=function(dataUrl, filename){
+  var a=document.createElement('a');
+  a.href=dataUrl;
+  a.download=filename||'NeoLeo-'+Date.now()+'.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
 /* ── Save / Download canvas as PNG (top-bar button) ── */
 window._saveCanvas=function(){
   var tmp=window._buildExportCanvas();
@@ -137,8 +147,16 @@ window._saveCanvas=function(){
   img.src=url;
   img.alt='NeoLeo-'+Date.now()+'.png';
   modal.classList.add('open');
-  setI('Right-click image to save PNG');
+  setI('Click Save As to download PNG');
 };
+
+/* ── Export modal: Save As button ── */
+document.getElementById('export-save-as').addEventListener('click',function(){
+  var img=document.getElementById('export-img');
+  if(!img.src)return;
+  var filename=img.alt||'NeoLeo-'+Date.now()+'.png';
+  window._downloadPNG(img.src, filename);
+});
 
 /* ── Export modal close (always wire — these elements are stable) ── */
 document.getElementById('export-close').addEventListener('click',function(){

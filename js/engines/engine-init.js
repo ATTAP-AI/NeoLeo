@@ -162,7 +162,7 @@ document.getElementById('pal').onchange=function(){
     img.src=url;
     img.alt='neoleo-'+eng+'-'+Date.now()+'.png';
     modal.classList.add('open');
-    setI('Right-click image to save PNG');
+    setI('Click Save As to download PNG');
   });
 })();
 
