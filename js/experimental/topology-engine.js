@@ -3,6 +3,7 @@
    Renders Sphere, Torus, Möbius Band, Klein Bottle, and
    more using parametric 3D surface equations projected
    to 2D with lighting, wireframe, and palette integration.
+   Includes built-in Object Mode for move/rotate/resize.
    ══════════════════════════════════════════════════════════ */
 (function(){
 
@@ -26,6 +27,28 @@ var T = {
   rotY: 0.6,
   rotZ: 0.0
 };
+
+/* ══════════════════════════════════════════════════════════
+   OBJECT MODE STATE
+   ══════════════════════════════════════════════════════════ */
+var OBJ = {
+  active: false,      /* object mode toggle */
+  img: null,          /* offscreen canvas with rendered shape */
+  x: 0, y: 0,        /* position (top-left of bbox) */
+  w: 0, h: 0,        /* dimensions */
+  angle: 0,           /* rotation in radians */
+  scaleF: 1,          /* cumulative scale */
+  dragging: null,     /* null | 'move' | 'nw'|'ne'|'sw'|'se'|'n'|'s'|'e'|'w' | 'rot' */
+  startX: 0, startY: 0,
+  startOX: 0, startOY: 0,
+  startW: 0, startH: 0,
+  startAngle: 0,
+  overlay: null,      /* overlay canvas element */
+  octx: null          /* overlay 2d context */
+};
+
+var HSIZE = 6;  /* handle square half-size */
+var ROT_DIST = 30; /* rotation handle distance above top */
 
 /* ── Simple seeded PRNG ── */
 function makePRNG(s){
@@ -58,107 +81,62 @@ function rotateY(p,a){var c=Math.cos(a),s=Math.sin(a);return[p[0]*c+p[2]*s,p[1],
 function rotateZ(p,a){var c=Math.cos(a),s=Math.sin(a);return[p[0]*c-p[1]*s,p[0]*s+p[1]*c,p[2]];}
 function normalize(v){var l=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);return l>0?[v[0]/l,v[1]/l,v[2]/l]:[0,0,1];}
 function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
-function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
+function dot3(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
 function sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
 
 /* ══════════════════════════════════════════════════════════
    PARAMETRIC SURFACE GENERATORS
-   Each returns a point [x,y,z] for parameters u,v
    ══════════════════════════════════════════════════════════ */
 
 function spherePoint(u,v,params){
   var r=params.scale||1;
-  // Add organic deformation
   var def=params.deform||0;
   var rd=r+def*0.3*Math.sin(5*u)*Math.sin(3*v)+def*0.15*Math.sin(8*u+2*v);
-  return[
-    rd*Math.sin(u)*Math.cos(v),
-    rd*Math.sin(u)*Math.sin(v),
-    rd*Math.cos(u)
-  ];
+  return[rd*Math.sin(u)*Math.cos(v),rd*Math.sin(u)*Math.sin(v),rd*Math.cos(u)];
 }
 
 function torusPoint(u,v,params){
-  var R=params.scale||1;
-  var r=params.tube||0.4;
-  var twist=params.twist||0;
-  var vt=v+twist*u;
-  return[
-    (R+r*Math.cos(vt))*Math.cos(u),
-    (R+r*Math.cos(vt))*Math.sin(u),
-    r*Math.sin(vt)
-  ];
+  var R=params.scale||1,r=params.tube||0.4,twist=params.twist||0,vt=v+twist*u;
+  return[(R+r*Math.cos(vt))*Math.cos(u),(R+r*Math.cos(vt))*Math.sin(u),r*Math.sin(vt)];
 }
 
 function mobiusPoint(u,v,params){
-  var w=params.width||0.5;
-  var scale=params.scale||1;
-  var twist=1+Math.floor((params.twist||0)*3); // 1 to 4 half-twists
-  var t=v*w-w/2; // -w/2 to w/2
-  return[
-    scale*(1+t*Math.cos(twist*u/2))*Math.cos(u),
-    scale*(1+t*Math.cos(twist*u/2))*Math.sin(u),
-    scale*t*Math.sin(twist*u/2)
-  ];
+  var w=params.width||0.5,scale=params.scale||1;
+  var twist=1+Math.floor((params.twist||0)*3);
+  var t=v*w-w/2;
+  return[scale*(1+t*Math.cos(twist*u/2))*Math.cos(u),scale*(1+t*Math.cos(twist*u/2))*Math.sin(u),scale*t*Math.sin(twist*u/2)];
 }
 
 function kleinPoint(u,v,params){
-  var sc=params.scale||1;
-  var a=sc*2;
-  var x,y,z;
-  // Figure-8 Klein bottle immersion
+  var sc=params.scale||1,x,y,z;
   var cu=Math.cos(u),su=Math.sin(u),cv=Math.cos(v),sv=Math.sin(v);
-  var r=params.tube||0.5;
-  x=(a+r*cv*cu-r*sv*Math.sin(u/2))*Math.cos(u/2);
-  /* Use the classic immersion */
   if(u<Math.PI){
-    var R=4*(1-Math.cos(u)/2);
-    x=6*Math.cos(u)*(1+Math.sin(u))+R*Math.cos(u)*cv;
-    y=16*Math.sin(u)+R*Math.sin(u)*cv;
-    z=R*sv;
+    var R=4*(1-cu/2);
+    x=6*cu*(1+su)+R*cu*cv;y=16*su+R*su*cv;z=R*sv;
   }else{
-    var R=4*(1-Math.cos(u)/2);
-    x=6*Math.cos(u)*(1+Math.sin(u))+R*Math.cos(v+Math.PI);
-    y=16*Math.sin(u);
-    z=R*sv;
+    var R=4*(1-cu/2);
+    x=6*cu*(1+su)+R*Math.cos(v+Math.PI);y=16*su;z=R*sv;
   }
   var s=sc*0.06;
   return[x*s,y*s,z*s];
 }
 
 function trefoilPoint(u,v,params){
-  var sc=params.scale||1;
-  var r=params.tube||0.3;
-  // Trefoil knot parametric curve
+  var sc=params.scale||1,r=params.tube||0.3;
   var cu=Math.cos(u),su=Math.sin(u);
-  // Knot centerline
-  var kx=su+2*Math.sin(2*u);
-  var ky=cu-2*Math.cos(2*u);
-  var kz=-Math.sin(3*u);
-  // Tangent (derivative)
-  var tx=Math.cos(u)+4*Math.cos(2*u);
-  var ty=-Math.sin(u)+4*Math.sin(2*u);
-  var tz=-3*Math.cos(3*u);
+  var kx=su+2*Math.sin(2*u),ky=cu-2*Math.cos(2*u),kz=-Math.sin(3*u);
+  var tx=Math.cos(u)+4*Math.cos(2*u),ty=-Math.sin(u)+4*Math.sin(2*u),tz=-3*Math.cos(3*u);
   var T2=normalize([tx,ty,tz]);
-  // Normal & binormal via Frenet frame
   var up=[0,0,1];
   var N=normalize(cross(T2,up));
-  if(Math.abs(dot(T2,up))>0.99) N=normalize(cross(T2,[1,0,0]));
+  if(Math.abs(dot3(T2,up))>0.99) N=normalize(cross(T2,[1,0,0]));
   var B=cross(T2,N);
-  // Tube surface
-  return[
-    sc*(kx+r*(N[0]*Math.cos(v)+B[0]*Math.sin(v))),
-    sc*(ky+r*(N[1]*Math.cos(v)+B[1]*Math.sin(v))),
-    sc*(kz+r*(N[2]*Math.cos(v)+B[2]*Math.sin(v)))
-  ];
+  return[sc*(kx+r*(N[0]*Math.cos(v)+B[0]*Math.sin(v))),sc*(ky+r*(N[1]*Math.cos(v)+B[1]*Math.sin(v))),sc*(kz+r*(N[2]*Math.cos(v)+B[2]*Math.sin(v)))];
 }
 
 function boyPoint(u,v,params){
   var sc=params.scale||1;
-  // Boy's surface parametric (Bryant-Kusner)
-  var cu=Math.cos(u),su=Math.sin(u);
-  var cv=Math.cos(v),sv=Math.sin(v);
-  var s2u=Math.sin(2*u),c2u=Math.cos(2*u);
+  var cu=Math.cos(u),su=Math.sin(u),cv=Math.cos(v),sv=Math.sin(v);
   var denom=2-Math.SQRT2*Math.sin(3*v)*Math.sin(2*u);
   var x=(Math.SQRT2*cu*cu*Math.cos(2*v)+cu*Math.sin(2*v))/(denom+0.001);
   var y=(Math.SQRT2*cu*cu*Math.sin(2*v)-cu*Math.cos(2*v))/(denom+0.001);
@@ -167,26 +145,18 @@ function boyPoint(u,v,params){
 }
 
 function diniPoint(u,v,params){
-  var sc=params.scale||1;
-  var a=1, b=params.twist||0.2;
-  b=0.05+b*0.4; // map 0-1 to 0.05-0.45
-  var x=a*Math.cos(u)*Math.sin(v);
-  var y=a*Math.sin(u)*Math.sin(v);
+  var sc=params.scale||1,a=1,b=0.05+(params.twist||0.2)*0.4;
+  var x=a*Math.cos(u)*Math.sin(v),y=a*Math.sin(u)*Math.sin(v);
   var z=a*(Math.cos(v)+Math.log(Math.tan(v/2+0.001)))+b*u;
   return[sc*x*0.5,sc*y*0.5,sc*z*0.08];
 }
 
 function crosscapPoint(u,v,params){
   var sc=params.scale||1;
-  var cu=Math.cos(u),su=Math.sin(u),cv=Math.cos(v),sv=Math.sin(v);
-  var s2v=Math.sin(2*v);
-  var x=sc*0.7*(su*sv);
-  var y=sc*0.7*(su*s2v/2);
-  var z=sc*0.7*(cu*cu-cu*su*sv*sv);
-  return[x,y,z];
+  var cu=Math.cos(u),su=Math.sin(u),cv=Math.cos(v),sv=Math.sin(v),s2v=Math.sin(2*v);
+  return[sc*0.7*(su*sv),sc*0.7*(su*s2v/2),sc*0.7*(cu*cu-cu*su*sv*sv)];
 }
 
-/* ── Surface point dispatcher ── */
 function getSurfacePoint(shape,u,v,params){
   switch(shape){
     case 'sphere':   return spherePoint(u,v,params);
@@ -201,7 +171,6 @@ function getSurfacePoint(shape,u,v,params){
   }
 }
 
-/* ── U,V range for each shape ── */
 function getUVRange(shape){
   var PI=Math.PI,TAU=PI*2;
   switch(shape){
@@ -218,79 +187,244 @@ function getUVRange(shape){
 }
 
 /* ══════════════════════════════════════════════════════════
-   MAIN RENDERER
+   CORE 3D RENDERER — renders to a target canvas context
    ══════════════════════════════════════════════════════════ */
-function doRender(){
-  var lctx=window._getActiveLayerCtx?window._getActiveLayerCtx():(window._dctx||null);
-  if(!lctx)return;
-  if(typeof genUndoPush==='function')genUndoPush();
-
-  var W=lctx.canvas.width, H=lctx.canvas.height;
+function renderShape(tctx, W, H, clearBg){
   var cols=palCols();
   var shape=SHAPES[T.shapeIdx].id;
-  var rng=makePRNG(Date.now());
 
-  /* Read slider values */
-  var resolution = Math.round(sv('topo-resolution'));   // 20-120
-  var zoom       = sv('topo-zoom')/50;                  // 0.2 - 4.0
-  var rotSpeed   = sv('topo-rotation')/100;             // rotation influence
-  var wireWeight = sv('topo-wireframe')/100;             // 0=solid, 1=wireframe
-  var deform     = sv('topo-deform')/100;                // surface deformation
-  var lighting   = sv('topo-lighting')/100;              // lighting intensity
-  var twist      = sv('topo-twist')/100;                 // shape-specific twist
-  var tube       = 0.15+sv('topo-tube')/200;             // tube radius for torus/trefoil
+  var resolution = Math.round(sv('topo-resolution'));
+  var zoom       = sv('topo-zoom')/50;
+  var rotSpeed   = sv('topo-rotation')/100;
+  var wireWeight = sv('topo-wireframe')/100;
+  var deform     = sv('topo-deform')/100;
+  var lighting   = sv('topo-lighting')/100;
+  var twist      = sv('topo-twist')/100;
+  var tube       = 0.15+sv('topo-tube')/200;
 
-  /* Auto-rotate based on slider */
   T.rotX = 0.3+rotSpeed*1.2;
   T.rotY = 0.5+rotSpeed*0.8;
   T.rotZ = rotSpeed*0.3;
 
-  var params = {
-    scale: zoom,
-    deform: deform,
-    twist: twist,
-    tube: tube,
-    width: 0.5+deform*0.3
-  };
-
-  /* Get UV range */
+  var params = {scale:zoom, deform:deform, twist:twist, tube:tube, width:0.5+deform*0.3};
   var range = getUVRange(shape);
   var nu = resolution, nv = resolution;
-
-  /* Generate all surface points */
-  var points = [];
-  var normals = [];
-  var uvs = [];
-  var eps = 0.001;
+  var points=[], normals=[], eps=0.001;
 
   for(var i=0;i<=nu;i++){
-    points[i]=[];normals[i]=[];uvs[i]=[];
+    points[i]=[];normals[i]=[];
     for(var j=0;j<=nv;j++){
       var u=range.u0+(range.u1-range.u0)*i/nu;
       var v=range.v0+(range.v1-range.v0)*j/nv;
       var pt=getSurfacePoint(shape,u,v,params);
-
-      /* Compute normal via finite differences */
       var pu=getSurfacePoint(shape,u+eps,v,params);
       var pv2=getSurfacePoint(shape,u,v+eps,params);
-      var du=sub(pu,pt), dv=sub(pv2,pt);
-      var n=normalize(cross(du,dv));
-
-      /* Apply rotation */
+      var n=normalize(cross(sub(pu,pt),sub(pv2,pt)));
       pt=rotateX(pt,T.rotX);pt=rotateY(pt,T.rotY);pt=rotateZ(pt,T.rotZ);
       n=rotateX(n,T.rotX);n=rotateY(n,T.rotY);n=rotateZ(n,T.rotZ);
-
-      points[i][j]=pt;
-      normals[i][j]=n;
-      uvs[i][j]=[i/nu,j/nv];
+      points[i][j]=pt;normals[i][j]=n;
     }
   }
 
-  /* ── Clear and set background ── */
-  lctx.save();
+  tctx.save();
+  if(clearBg){
+    tctx.clearRect(0,0,W,H);
+    var bgGrad=tctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
+    var bgCol=hRGB(cols[cols.length-1]);
+    bgGrad.addColorStop(0,'rgba('+Math.round(bgCol[0]*0.15)+','+Math.round(bgCol[1]*0.15)+','+Math.round(bgCol[2]*0.15)+',1)');
+    bgGrad.addColorStop(1,'rgba(0,0,0,1)');
+    tctx.fillStyle=bgGrad;
+    tctx.fillRect(0,0,W,H);
+  }else{
+    tctx.clearRect(0,0,W,H);
+  }
+
+  var scale=Math.min(W,H)*0.3*zoom;
+  var cx=W/2, cy=H/2, fov=3.5;
+  function project(p){var z=p[2]+fov;var ps=scale*(fov/(z>0.1?z:0.1));return[cx+p[0]*ps,cy-p[1]*ps,z];}
+
+  var lightDir=normalize([0.5,0.8,1.0]);
+  var lightDir2=normalize([-0.7,-0.3,0.5]);
+  var halfVec=normalize([lightDir[0],lightDir[1],lightDir[2]+1]);
+
+  var quads=[];
+  for(var i=0;i<nu;i++){
+    for(var j=0;j<nv;j++){
+      var p00=points[i][j],p10=points[i+1][j],p11=points[i+1][j+1],p01=points[i][j+1];
+      var n00=normals[i][j];
+      var avgZ=(p00[2]+p10[2]+p11[2]+p01[2])/4;
+      var s00=project(p00),s10=project(p10),s11=project(p11),s01=project(p01);
+      var diff1=Math.max(0,dot3(n00,lightDir));
+      var diff2=Math.max(0,dot3(n00,lightDir2))*0.4;
+      var spec=Math.pow(Math.max(0,dot3(n00,halfVec)),32);
+      var lum=0.08+(diff1*0.6+diff2*0.25+spec*0.3)*lighting+(1-lighting)*0.5;
+      quads.push({s:[s00,s10,s11,s01],z:avgZ,lum:lum,spec:spec*lighting,ui:i/nu,vi:j/nv});
+    }
+  }
+  quads.sort(function(a,b){return a.z-b.z;});
+
+  for(var qi=0;qi<quads.length;qi++){
+    var q=quads[qi],s=q.s;
+    var colIdx=Math.floor((q.ui*3+q.vi*2)*cols.length)%cols.length;
+    var col2Idx=(colIdx+1)%cols.length;
+    var mix=((q.ui*3+q.vi*2)*cols.length)%1;
+    var c1=hRGB(cols[colIdx]),c2=hRGB(cols[col2Idx]);
+    var r=Math.round((c1[0]*(1-mix)+c2[0]*mix)*q.lum);
+    var g=Math.round((c1[1]*(1-mix)+c2[1]*mix)*q.lum);
+    var b=Math.round((c1[2]*(1-mix)+c2[2]*mix)*q.lum);
+    if(q.spec>0.1){var sp=q.spec*200;r=Math.min(255,r+Math.round(sp));g=Math.min(255,g+Math.round(sp));b=Math.min(255,b+Math.round(sp));}
+    var alpha=1-wireWeight*0.7;
+    tctx.fillStyle='rgba('+r+','+g+','+b+','+alpha+')';
+    tctx.beginPath();tctx.moveTo(s[0][0],s[0][1]);tctx.lineTo(s[1][0],s[1][1]);tctx.lineTo(s[2][0],s[2][1]);tctx.lineTo(s[3][0],s[3][1]);tctx.closePath();tctx.fill();
+    if(wireWeight>0.02){
+      var wr=Math.min(255,Math.round(r*0.5+128*wireWeight)),wg=Math.min(255,Math.round(g*0.5+128*wireWeight)),wb=Math.min(255,Math.round(b*0.5+128*wireWeight));
+      tctx.strokeStyle='rgba('+wr+','+wg+','+wb+','+Math.min(1,wireWeight*1.5)+')';
+      tctx.lineWidth=0.3+wireWeight*0.7;tctx.stroke();
+    }
+  }
+
+  /* Ambient glow */
+  var glowCol=hRGB(cols[0]);
+  var glow=tctx.createRadialGradient(cx,cy,scale*0.3,cx,cy,scale*1.5);
+  glow.addColorStop(0,'rgba('+glowCol[0]+','+glowCol[1]+','+glowCol[2]+',0.04)');
+  glow.addColorStop(1,'rgba('+glowCol[0]+','+glowCol[1]+','+glowCol[2]+',0)');
+  tctx.fillStyle=glow;tctx.fillRect(0,0,W,H);
+
+  /* Scan lines */
+  tctx.globalAlpha=0.03;
+  for(var y=0;y<H;y+=2){tctx.fillStyle='#000';tctx.fillRect(0,y,W,1);}
+  tctx.globalAlpha=1;
+  tctx.restore();
+
+  return {resolution:resolution, faces:quads.length};
+}
+
+/* ══════════════════════════════════════════════════════════
+   OBJECT MODE — Overlay & Transform Controls
+   ══════════════════════════════════════════════════════════ */
+
+function ensureOverlay(){
+  if(OBJ.overlay) return;
+  var wrap=document.getElementById('cvwrap');
+  if(!wrap) return;
+  var ov=document.createElement('canvas');
+  ov.id='topo-obj-ov';
+  ov.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;pointer-events:none;';
+  wrap.appendChild(ov);
+  OBJ.overlay=ov;
+  OBJ.octx=ov.getContext('2d');
+}
+
+function syncOverlay(){
+  if(!OBJ.overlay)return;
+  var ref=dv||cv;
+  if(OBJ.overlay.width!==ref.width) OBJ.overlay.width=ref.width;
+  if(OBJ.overlay.height!==ref.height) OBJ.overlay.height=ref.height;
+  OBJ.overlay.style.width=ref.style.width||'';
+  OBJ.overlay.style.height=ref.style.height||'';
+}
+
+function removeOverlay(){
+  if(OBJ.overlay&&OBJ.overlay.parentNode){OBJ.overlay.parentNode.removeChild(OBJ.overlay);}
+  OBJ.overlay=null;OBJ.octx=null;
+}
+
+/* ── Get center of object ── */
+function objCenter(){return[OBJ.x+OBJ.w/2, OBJ.y+OBJ.h/2];}
+
+/* ── Rotate a 2D point around another ── */
+function rot2d(px,py,cx,cy,a){
+  var c=Math.cos(a),s=Math.sin(a),dx=px-cx,dy=py-cy;
+  return[cx+dx*c-dy*s, cy+dx*s+dy*c];
+}
+
+/* ── Get handle positions (in canvas space) ── */
+function getHandles(){
+  var cc=objCenter(), cx=cc[0], cy=cc[1], a=OBJ.angle;
+  var hw=OBJ.w/2, hh=OBJ.h/2;
+  function rp(lx,ly){return rot2d(cx+lx,cy+ly,cx,cy,a);}
+  return {
+    nw:rp(-hw,-hh), n:rp(0,-hh), ne:rp(hw,-hh),
+    w:rp(-hw,0),                  e:rp(hw,0),
+    sw:rp(-hw,hh),  s:rp(0,hh),  se:rp(hw,hh),
+    rot:rp(0,-hh-ROT_DIST)
+  };
+}
+
+/* ── Hit test: which handle or body? ── */
+function hitTest(mx,my){
+  var h=getHandles(), tol=HSIZE+5;
+  /* Rotation handle first */
+  if(Math.abs(mx-h.rot[0])<tol&&Math.abs(my-h.rot[1])<tol) return 'rot';
+  /* Corner & edge handles */
+  var names=['nw','n','ne','w','e','sw','s','se'];
+  for(var k=0;k<names.length;k++){
+    var hp=h[names[k]];
+    if(Math.abs(mx-hp[0])<tol&&Math.abs(my-hp[1])<tol) return names[k];
+  }
+  /* Body hit — inverse rotate mouse to object-local space */
+  var cc=objCenter();
+  var local=rot2d(mx,my,cc[0],cc[1],-OBJ.angle);
+  if(local[0]>=OBJ.x&&local[0]<=OBJ.x+OBJ.w&&local[1]>=OBJ.y&&local[1]<=OBJ.y+OBJ.h) return 'move';
+  return null;
+}
+
+/* ── Draw overlay (bounding box + handles) ── */
+function drawOverlay(){
+  if(!OBJ.octx||!OBJ.img)return;
+  syncOverlay();
+  var g=OBJ.octx;
+  var W=OBJ.overlay.width, H=OBJ.overlay.height;
+  g.clearRect(0,0,W,H);
+  if(!OBJ.active)return;
+
+  var cc=objCenter(), cx=cc[0], cy=cc[1];
+  g.save();
+  g.translate(cx,cy);
+  g.rotate(OBJ.angle);
+
+  /* Bounding box */
+  g.strokeStyle='#40e8ff';
+  g.lineWidth=1.5;
+  g.setLineDash([5,4]);
+  g.strokeRect(-OBJ.w/2,-OBJ.h/2,OBJ.w,OBJ.h);
+  g.setLineDash([]);
+
+  /* Resize handles */
+  var hw=OBJ.w/2, hh=OBJ.h/2;
+  var pts=[[-hw,-hh],[0,-hh],[hw,-hh],[-hw,0],[hw,0],[-hw,hh],[0,hh],[hw,hh]];
+  g.fillStyle='#40e8ff';
+  g.strokeStyle='#000';g.lineWidth=1;
+  for(var i=0;i<pts.length;i++){
+    g.fillRect(pts[i][0]-HSIZE,pts[i][1]-HSIZE,HSIZE*2,HSIZE*2);
+    g.strokeRect(pts[i][0]-HSIZE,pts[i][1]-HSIZE,HSIZE*2,HSIZE*2);
+  }
+
+  /* Rotation handle — circle with line */
+  g.beginPath();g.moveTo(0,-hh);g.lineTo(0,-hh-ROT_DIST);g.strokeStyle='#40e8ff';g.lineWidth=1;g.stroke();
+  g.beginPath();g.arc(0,-hh-ROT_DIST,7,0,Math.PI*2);g.fillStyle='rgba(64,232,255,0.3)';g.fill();g.strokeStyle='#40e8ff';g.lineWidth=1.5;g.stroke();
+  /* Arrow on rotation circle */
+  g.beginPath();g.arc(0,-hh-ROT_DIST,5,-0.5,1.2);g.strokeStyle='#fff';g.lineWidth=1.5;g.stroke();
+  var ax=5*Math.cos(1.2),ay=5*Math.sin(1.2);
+  g.beginPath();g.moveTo(ax,-hh-ROT_DIST+ay);g.lineTo(ax+3,-hh-ROT_DIST+ay-3);g.lineTo(ax-1,-hh-ROT_DIST+ay-4);g.closePath();g.fillStyle='#fff';g.fill();
+
+  /* Label */
+  g.font='9px monospace';g.fillStyle='#40e8ff';g.textAlign='left';
+  g.fillText(SHAPES[T.shapeIdx].name+' · '+Math.round(OBJ.angle*180/Math.PI)+'°', -hw, hh+14);
+
+  g.restore();
+}
+
+/* ── Composite: draw offscreen image onto main layer with transform ── */
+function compositeObject(){
+  var lctx=window._getActiveLayerCtx?window._getActiveLayerCtx():(window._dctx||null);
+  if(!lctx||!OBJ.img)return;
+
+  var W=lctx.canvas.width, H=lctx.canvas.height;
   lctx.clearRect(0,0,W,H);
 
-  /* Background gradient */
+  /* Draw background */
+  var cols=palCols();
   var bgGrad=lctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
   var bgCol=hRGB(cols[cols.length-1]);
   bgGrad.addColorStop(0,'rgba('+Math.round(bgCol[0]*0.15)+','+Math.round(bgCol[1]*0.15)+','+Math.round(bgCol[2]*0.15)+',1)');
@@ -298,128 +432,186 @@ function doRender(){
   lctx.fillStyle=bgGrad;
   lctx.fillRect(0,0,W,H);
 
-  /* ── Projection settings ── */
-  var scale=Math.min(W,H)*0.3*zoom;
-  var cx=W/2, cy=H/2;
-  var fov=3.5; // perspective factor
-
-  function project(p){
-    var z=p[2]+fov;
-    var pscale=scale*(fov/(z>0.1?z:0.1));
-    return[cx+p[0]*pscale, cy-p[1]*pscale, z];
-  }
-
-  /* ── Light direction ── */
-  var lightDir=normalize([0.5,0.8,1.0]);
-  var lightDir2=normalize([-0.7,-0.3,0.5]);
-
-  /* ── Collect quads with depth for sorting ── */
-  var quads=[];
-  for(var i=0;i<nu;i++){
-    for(var j=0;j<nv;j++){
-      var p00=points[i][j],p10=points[i+1][j],p11=points[i+1][j+1],p01=points[i][j+1];
-      var n00=normals[i][j];
-
-      /* Average depth for painter's sort */
-      var avgZ=(p00[2]+p10[2]+p11[2]+p01[2])/4;
-
-      /* Project all 4 corners */
-      var s00=project(p00),s10=project(p10),s11=project(p11),s01=project(p01);
-
-      /* Lighting */
-      var diff1=Math.max(0,dot(n00,lightDir));
-      var diff2=Math.max(0,dot(n00,lightDir2))*0.4;
-      var spec=Math.pow(Math.max(0,dot(n00,normalize([lightDir[0]+0,lightDir[1]+0,lightDir[2]+1]))),32);
-      var lum=0.08+(diff1*0.6+diff2*0.25+spec*0.3)*lighting+(1-lighting)*0.5;
-
-      quads.push({
-        s:[s00,s10,s11,s01],
-        z:avgZ,
-        lum:lum,
-        spec:spec*lighting,
-        ui:i/nu,
-        vi:j/nv,
-        i:i,j:j
-      });
-    }
-  }
-
-  /* Painter's algorithm — sort back to front */
-  quads.sort(function(a,b){return a.z-b.z;});
-
-  /* ── Render quads ── */
-  for(var qi=0;qi<quads.length;qi++){
-    var q=quads[qi];
-    var s=q.s;
-
-    /* Color from palette based on UV position */
-    var colIdx=Math.floor((q.ui*3+q.vi*2)*cols.length)%cols.length;
-    var col2Idx=(colIdx+1)%cols.length;
-    var mix=((q.ui*3+q.vi*2)*cols.length)%1;
-
-    var c1=hRGB(cols[colIdx]);
-    var c2=hRGB(cols[col2Idx]);
-    var r=Math.round((c1[0]*(1-mix)+c2[0]*mix)*q.lum);
-    var g=Math.round((c1[1]*(1-mix)+c2[1]*mix)*q.lum);
-    var b=Math.round((c1[2]*(1-mix)+c2[2]*mix)*q.lum);
-
-    /* Add specular highlight */
-    if(q.spec>0.1){
-      var sp=q.spec*200;
-      r=Math.min(255,r+Math.round(sp));
-      g=Math.min(255,g+Math.round(sp));
-      b=Math.min(255,b+Math.round(sp));
-    }
-
-    /* Solid fill */
-    var alpha=1-wireWeight*0.7;
-    lctx.fillStyle='rgba('+r+','+g+','+b+','+alpha+')';
-    lctx.beginPath();
-    lctx.moveTo(s[0][0],s[0][1]);
-    lctx.lineTo(s[1][0],s[1][1]);
-    lctx.lineTo(s[2][0],s[2][1]);
-    lctx.lineTo(s[3][0],s[3][1]);
-    lctx.closePath();
-    lctx.fill();
-
-    /* Wireframe overlay */
-    if(wireWeight>0.02){
-      var wr=Math.round(r*0.5+128*wireWeight);
-      var wg=Math.round(g*0.5+128*wireWeight);
-      var wb=Math.round(b*0.5+128*wireWeight);
-      lctx.strokeStyle='rgba('+Math.min(255,wr)+','+Math.min(255,wg)+','+Math.min(255,wb)+','+Math.min(1,wireWeight*1.5)+')';
-      lctx.lineWidth=0.3+wireWeight*0.7;
-      lctx.stroke();
-    }
-  }
-
-  /* ── Ambient glow around shape ── */
-  var glowCol=hRGB(cols[0]);
-  var glow=lctx.createRadialGradient(cx,cy,scale*0.3,cx,cy,scale*1.5);
-  glow.addColorStop(0,'rgba('+glowCol[0]+','+glowCol[1]+','+glowCol[2]+',0.04)');
-  glow.addColorStop(1,'rgba('+glowCol[0]+','+glowCol[1]+','+glowCol[2]+',0)');
-  lctx.fillStyle=glow;
-  lctx.fillRect(0,0,W,H);
-
-  /* ── Subtle scan lines for depth ── */
-  lctx.globalAlpha=0.03;
-  for(var y=0;y<H;y+=2){
-    lctx.fillStyle='#000';
-    lctx.fillRect(0,y,W,1);
-  }
-  lctx.globalAlpha=1;
-
+  /* Draw the object with transforms */
+  var cc=objCenter();
+  lctx.save();
+  lctx.translate(cc[0],cc[1]);
+  lctx.rotate(OBJ.angle);
+  lctx.drawImage(OBJ.img,-OBJ.w/2,-OBJ.h/2,OBJ.w,OBJ.h);
   lctx.restore();
 
-  /* Composite layers */
   if(window._layersCompositeFn)window._layersCompositeFn();
   if(window._layersUpdateThumbs)window._layersUpdateThumbs();
+}
 
-  /* Update status */
-  var statusEl=document.getElementById('topo-status');
-  if(statusEl) statusEl.textContent=SHAPES[T.shapeIdx].name+' · '+resolution+'×'+resolution+' mesh · '+quads.length+' faces';
+/* ── Get mouse position on canvas ── */
+function getCanvasPos(e){
+  var ref=dv||cv;
+  var r=ref.getBoundingClientRect();
+  if(!r.width||!r.height)return[0,0];
+  var sx=ref.width/r.width, sy=ref.height/r.height;
+  var src=e.touches?e.touches[0]:e.changedTouches?e.changedTouches[0]:e;
+  return[(src.clientX-r.left)*sx,(src.clientY-r.top)*sy];
+}
 
-  if(typeof setI==='function') setI('Topology: '+SHAPES[T.shapeIdx].name+' rendered');
+/* ── Mouse/touch handlers for object mode ── */
+function onPointerDown(e){
+  if(!OBJ.active||!OBJ.img)return;
+  var pos=getCanvasPos(e);
+  var hit=hitTest(pos[0],pos[1]);
+  if(!hit)return;
+  e.preventDefault();e.stopPropagation();
+  OBJ.dragging=hit;
+  OBJ.startX=pos[0];OBJ.startY=pos[1];
+  OBJ.startOX=OBJ.x;OBJ.startOY=OBJ.y;
+  OBJ.startW=OBJ.w;OBJ.startH=OBJ.h;
+  OBJ.startAngle=OBJ.angle;
+}
+
+function onPointerMove(e){
+  if(!OBJ.active||!OBJ.dragging)return;
+  var pos=getCanvasPos(e);
+  var dx=pos[0]-OBJ.startX, dy=pos[1]-OBJ.startY;
+  var cc=objCenter();
+
+  if(OBJ.dragging==='move'){
+    OBJ.x=OBJ.startOX+dx;
+    OBJ.y=OBJ.startOY+dy;
+  }else if(OBJ.dragging==='rot'){
+    var a1=Math.atan2(OBJ.startY-cc[1],OBJ.startX-cc[0]);
+    var a2=Math.atan2(pos[1]-cc[1],pos[0]-cc[0]);
+    OBJ.angle=OBJ.startAngle+(a2-a1);
+  }else{
+    /* Resize — convert delta to object-local space */
+    var ca=Math.cos(-OBJ.angle),sa=Math.sin(-OBJ.angle);
+    var ldx=dx*ca-dy*sa, ldy=dx*sa+dy*ca;
+    var nw=OBJ.startW, nh=OBJ.startH, nx=OBJ.startOX, ny=OBJ.startOY;
+    var d=OBJ.dragging;
+    if(d.indexOf('e')>=0){nw=Math.max(30,OBJ.startW+ldx);}
+    if(d.indexOf('w')>=0){nw=Math.max(30,OBJ.startW-ldx);nx=OBJ.startOX+ldx*Math.cos(OBJ.angle);ny=OBJ.startOY+ldx*Math.sin(OBJ.angle);}
+    if(d.indexOf('s')>=0){nh=Math.max(30,OBJ.startH+ldy);}
+    if(d.indexOf('n')>=0){nh=Math.max(30,OBJ.startH-ldy);nx=OBJ.startOX-ldy*Math.sin(OBJ.angle);ny=OBJ.startOY+ldy*Math.cos(OBJ.angle);}
+    /* For corner handles, maintain aspect ratio */
+    if(d.length===2){
+      var aspect=OBJ.startW/OBJ.startH;
+      if(nw/nh>aspect) nh=nw/aspect;
+      else nw=nh*aspect;
+    }
+    OBJ.w=nw;OBJ.h=nh;
+    if(d.indexOf('w')>=0||d.indexOf('n')>=0){OBJ.x=nx;OBJ.y=ny;}
+  }
+
+  compositeObject();
+  drawOverlay();
+}
+
+function onPointerUp(e){
+  if(!OBJ.active)return;
+  OBJ.dragging=null;
+}
+
+/* ── Wire event listeners ── */
+var _eventsWired=false;
+function wireObjEvents(){
+  if(_eventsWired)return;
+  _eventsWired=true;
+  var target=document.getElementById('cvwrap');
+  if(!target) target=document;
+  /* Use capture phase to intercept before drawing tools */
+  target.addEventListener('mousedown',function(e){
+    if(!OBJ.active||!OBJ.img)return;
+    var pos=getCanvasPos(e);
+    var hit=hitTest(pos[0],pos[1]);
+    if(hit){onPointerDown(e);}
+  },true);
+  target.addEventListener('mousemove',function(e){onPointerMove(e);},true);
+  target.addEventListener('mouseup',function(e){onPointerUp(e);},true);
+  /* Touch */
+  target.addEventListener('touchstart',function(e){
+    if(!OBJ.active||!OBJ.img)return;
+    var pos=getCanvasPos(e);
+    var hit=hitTest(pos[0],pos[1]);
+    if(hit){onPointerDown(e);}
+  },{capture:true,passive:false});
+  target.addEventListener('touchmove',function(e){if(OBJ.dragging){e.preventDefault();onPointerMove(e);}},{capture:true,passive:false});
+  target.addEventListener('touchend',function(e){onPointerUp(e);},true);
+
+  /* Update cursor on hover */
+  target.addEventListener('mousemove',function(e){
+    if(!OBJ.active||!OBJ.img||OBJ.dragging)return;
+    var pos=getCanvasPos(e);
+    var hit=hitTest(pos[0],pos[1]);
+    var ref=dv||cv;
+    if(!hit){ref.style.cursor='';return;}
+    var cursors={move:'move',rot:'grab',nw:'nw-resize',ne:'ne-resize',sw:'sw-resize',se:'se-resize',n:'n-resize',s:'s-resize',e:'e-resize',w:'w-resize'};
+    ref.style.cursor=cursors[hit]||'default';
+  });
+}
+
+/* ── Toggle object mode ── */
+function toggleObjMode(){
+  OBJ.active=!OBJ.active;
+  var btn=document.getElementById('topo-obj-btn');
+  if(btn){
+    btn.textContent=OBJ.active?'Object: ON':'Object: OFF';
+    btn.style.borderColor=OBJ.active?'#40e8ff':'rgba(255,255,255,0.2)';
+    btn.style.color=OBJ.active?'#40e8ff':'rgba(255,255,255,0.5)';
+    btn.style.background=OBJ.active?'rgba(64,232,255,0.08)':'none';
+  }
+  if(OBJ.active){
+    ensureOverlay();
+    syncOverlay();
+    wireObjEvents();
+    if(OBJ.img) drawOverlay();
+    if(typeof setI==='function')setI('Object mode ON — drag to move, corners to resize, circle to rotate');
+  }else{
+    /* Flatten: composite final position to layer, remove overlay */
+    if(OBJ.img) compositeObject();
+    if(OBJ.octx){OBJ.octx.clearRect(0,0,OBJ.overlay.width,OBJ.overlay.height);}
+    OBJ.img=null;OBJ.w=0;OBJ.h=0;OBJ.angle=0;
+    var ref=dv||cv;
+    ref.style.cursor='';
+    if(typeof setI==='function')setI('Object mode OFF — shape baked to canvas');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAIN RENDER ENTRY POINT
+   ══════════════════════════════════════════════════════════ */
+function doRender(){
+  var lctx=window._getActiveLayerCtx?window._getActiveLayerCtx():(window._dctx||null);
+  if(!lctx)return;
+  if(typeof genUndoPush==='function')genUndoPush();
+
+  var W=lctx.canvas.width, H=lctx.canvas.height;
+
+  if(OBJ.active){
+    /* Render to offscreen canvas, then composite with transforms */
+    var offscreen=document.createElement('canvas');
+    offscreen.width=W;offscreen.height=H;
+    var oCtx=offscreen.getContext('2d');
+    var info=renderShape(oCtx, W, H, false);
+    OBJ.img=offscreen;
+    /* Reset position to center at 70% size if first render in object mode */
+    if(OBJ.w===0){var s=0.7;OBJ.w=Math.round(W*s);OBJ.h=Math.round(H*s);OBJ.x=Math.round((W-OBJ.w)/2);OBJ.y=Math.round((H-OBJ.h)/2);OBJ.angle=0;}
+    compositeObject();
+    ensureOverlay();syncOverlay();
+    drawOverlay();
+
+    var statusEl=document.getElementById('topo-status');
+    if(statusEl) statusEl.textContent=SHAPES[T.shapeIdx].name+' · '+info.resolution+'×'+info.resolution+' · '+info.faces+' faces · OBJECT MODE';
+    if(typeof setI==='function') setI('Topology: '+SHAPES[T.shapeIdx].name+' (object mode)');
+  }else{
+    /* Direct render to layer canvas */
+    var info=renderShape(lctx, W, H, true);
+
+    if(window._layersCompositeFn)window._layersCompositeFn();
+    if(window._layersUpdateThumbs)window._layersUpdateThumbs();
+
+    var statusEl=document.getElementById('topo-status');
+    if(statusEl) statusEl.textContent=SHAPES[T.shapeIdx].name+' · '+info.resolution+'×'+info.resolution+' mesh · '+info.faces+' faces';
+    if(typeof setI==='function') setI('Topology: '+SHAPES[T.shapeIdx].name+' rendered');
+  }
 }
 
 /* ── Build shape list ── */
@@ -431,16 +623,8 @@ function buildShapeList(){
     var row=document.createElement('div');
     row.style.cssText='padding:4px 8px;cursor:pointer;font-size:9px;letter-spacing:.06em;border:1px solid transparent;border-radius:3px;margin-bottom:2px;transition:all .15s;display:flex;justify-content:space-between;align-items:center;';
     row.innerHTML='<span style="color:'+(i===T.shapeIdx?'#40e8ff':'rgba(255,255,255,0.6)')+';">'+s.name+'</span><span style="font-size:7px;color:rgba(255,255,255,0.3);max-width:55%;text-align:right;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">'+s.desc+'</span>';
-    if(i===T.shapeIdx){
-      row.style.borderColor='rgba(64,232,255,0.3)';
-      row.style.background='rgba(64,232,255,0.06)';
-    }
-    row.addEventListener('click',function(){
-      T.shapeIdx=i;
-      buildShapeList();
-      updateDesc();
-      doRender();
-    });
+    if(i===T.shapeIdx){row.style.borderColor='rgba(64,232,255,0.3)';row.style.background='rgba(64,232,255,0.06)';}
+    row.addEventListener('click',function(){T.shapeIdx=i;buildShapeList();updateDesc();doRender();});
     row.addEventListener('mouseenter',function(){if(i!==T.shapeIdx)row.style.background='rgba(255,255,255,0.04)';});
     row.addEventListener('mouseleave',function(){if(i!==T.shapeIdx)row.style.background='none';});
     list.appendChild(row);
@@ -460,7 +644,7 @@ function wireSliders(){
   var valIds=['topo-resolution-v','topo-zoom-v','topo-rotation-v','topo-wireframe-v','topo-deform-v','topo-lighting-v','topo-twist-v','topo-tube-v'];
   var fmts=[
     function(v){return Math.round(v);},
-    function(v){return (v/50).toFixed(1)+'×';},
+    function(v){return (v/50).toFixed(1)+'x';},
     function(v){return Math.round(v)+'%';},
     function(v){return Math.round(v)+'%';},
     function(v){return Math.round(v)+'%';},
@@ -484,11 +668,9 @@ function wireSliders(){
 /* ── Randomise ── */
 function randomise(){
   T.shapeIdx=Math.floor(Math.random()*SHAPES.length);
-  buildShapeList();
-  updateDesc();
-  /* Randomise sliders */
-  function rset(id,min,max){var el=document.getElementById(id);if(el){var v=min+Math.random()*(max-min);el.value=v;var ev=document.getElementById(id+'-v');if(ev)ev.textContent=v.toFixed?Math.round(v)+'':'';return v;}}
-  rset('topo-resolution',30,90);
+  buildShapeList();updateDesc();
+  function rset(id,min,max){var el=document.getElementById(id);if(el){var v=min+Math.random()*(max-min);el.value=v;}}
+  rset('topo-resolution',40,200);
   rset('topo-zoom',30,80);
   rset('topo-rotation',10,90);
   rset('topo-wireframe',0,60);
@@ -496,10 +678,8 @@ function randomise(){
   rset('topo-lighting',40,100);
   rset('topo-twist',0,80);
   rset('topo-tube',20,80);
-  /* Update displayed values */
   ['topo-resolution','topo-zoom','topo-rotation','topo-wireframe','topo-deform','topo-lighting','topo-twist','topo-tube'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el)el.dispatchEvent(new Event('input'));
+    var el=document.getElementById(id);if(el)el.dispatchEvent(new Event('input'));
   });
   doRender();
 }
@@ -508,9 +688,7 @@ function randomise(){
 function cycle(){
   T.cycleIdx=(T.cycleIdx+1)%SHAPES.length;
   T.shapeIdx=T.cycleIdx;
-  buildShapeList();
-  updateDesc();
-  /* Update cycle label */
+  buildShapeList();updateDesc();
   var lbl=document.getElementById('topo-cycle-label');
   var nm=document.getElementById('topo-cycle-name');
   if(lbl)lbl.style.display='block';
@@ -521,9 +699,7 @@ function cycle(){
 /* ── Palette change ── */
 function onPaletteChange(){
   var body=document.getElementById('topo-body');
-  if(body&&body.style.display!=='none'){
-    setTimeout(doRender,80);
-  }
+  if(body&&body.style.display!=='none') setTimeout(doRender,80);
 }
 
 /* ── Init ── */
@@ -531,12 +707,17 @@ buildShapeList();
 updateDesc();
 wireSliders();
 
+/* ── Object mode button wire ── */
+var objBtn=document.getElementById('topo-obj-btn');
+if(objBtn) objBtn.addEventListener('click',toggleObjMode);
+
 /* ── Public API ── */
 window._TOPO={
   render:doRender,
   randomise:randomise,
   cycle:cycle,
-  onPaletteChange:onPaletteChange
+  onPaletteChange:onPaletteChange,
+  toggleObj:toggleObjMode
 };
 
 })();
