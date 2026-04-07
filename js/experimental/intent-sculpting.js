@@ -282,7 +282,7 @@ function _regenIntent(){
   var hdr=document.createElement('div');
   hdr.id='exp-drag-hdr';
   hdr.innerHTML='<div><div style="font-size:10px;letter-spacing:.2em;color:#ffffff;text-transform:uppercase;font-weight:700;">◆ Experimental Tools</div>'
-    +'<div style="font-size:8px;color:#40c8a0;margin-top:2px;line-height:1.5;letter-spacing:.06em;">Intent · Temporal · Probability · Memory · Morpho</div></div>'
+    +'<div style="font-size:8px;color:#40c8a0;margin-top:2px;line-height:1.5;letter-spacing:.06em;">Intent · Temporal · Probability · Memory · Topology · Morpho</div></div>'
     +'<button id="exp-panel-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;line-height:1.4;flex-shrink:0;">Close</button>';
   body.insertBefore(hdr,body.firstChild);
 
