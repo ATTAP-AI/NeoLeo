@@ -9,6 +9,8 @@ button.eng.on{color:var(--hot);border-color:var(--acc);background:rgba(232,192,9
 input[type=range]{width:100%;-webkit-appearance:none;height:2px;background:var(--brd);outline:none;cursor:pointer;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--acc);cursor:pointer;}
 input[type=range]:hover::-webkit-slider-thumb{background:var(--hot);}
+#panel input[type=range]{height:5px;border-radius:3px;margin:4px 0;}
+#panel input[type=range]::-webkit-slider-thumb{width:16px;height:16px;box-shadow:0 1px 3px rgba(0,0,0,0.4);}
 select{width:100%;background:#000;color:var(--txt);border:1px solid var(--brd);font-family:inherit;font-size:12px;padding:5px 7px;outline:none;cursor:pointer;-webkit-appearance:none;}
 .srow{display:flex;gap:5px;margin-top:4px;}
 .srow input{flex:1;background:#000;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:11px;padding:4px 7px;outline:none;}

@@ -13,9 +13,9 @@
 .bp-ctrl-row{display:flex;align-items:center;gap:6px;}
 .bp-ctrl-lbl{font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:.04em;min-width:56px;}
 .bp-ctrl-val{font-size:10px;color:#fff;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);padding:2px 5px;min-width:46px;text-align:center;border-radius:2px;}
-.bp-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(255,255,255,0.15);outline:none;border-radius:2px;cursor:pointer;}
-.bp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:#ffffff;border-radius:50%;cursor:pointer;border:none;}
-.bp-slider::-moz-range-thumb{width:12px;height:12px;background:#ffffff;border-radius:50%;border:none;cursor:pointer;}
+.bp-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:rgba(255,255,255,0.15);outline:none;border-radius:3px;cursor:pointer;margin:10px 0 4px;}
+.bp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:#ffffff;border-radius:50%;cursor:pointer;border:none;box-shadow:0 1px 4px rgba(0,0,0,0.6);}
+.bp-slider::-moz-range-thumb{width:18px;height:18px;background:#ffffff;border-radius:50%;border:none;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.6);}
 .bp-ctrl-col{width:22px;height:22px;border:1px solid rgba(255,255,255,0.2);border-radius:2px;cursor:pointer;flex-shrink:0;position:relative;overflow:hidden;}
 .bp-ctrl-col input[type=color]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:none;padding:0;}
 /* ─ header icons ─ */

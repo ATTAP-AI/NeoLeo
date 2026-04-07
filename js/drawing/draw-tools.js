@@ -29,6 +29,8 @@ function onCanvas(e){
 }
 
 document.addEventListener('mousedown',e=>{
+  /* Skip if click is inside a UI overlay (brush picker, modals, panel) */
+  if(e.target.closest&&(e.target.closest('#bp-modal')||e.target.closest('#panel')||e.target.closest('.modal')))return;
   if(!curTool||!onCanvas(e))return;
   if(window._OM&&window._OM.isOn()){
     if(window._OM_cooldown)return;
@@ -253,9 +255,9 @@ function replayLastStroke(){
 }
 const dcol=document.getElementById('dcol');dcol.oninput=()=>{drawCol=dcol.value;document.getElementById('csw').style.background=drawCol;document.getElementById('dcoltxt').textContent=drawCol;if(_lastStroke){window.drawCol=drawCol;replayLastStroke();}};
 document.getElementById('csw').style.background=drawCol;document.getElementById('dcoltxt').textContent=drawCol;
-document.getElementById('szr').oninput=function(){document.getElementById('szv').textContent=this.value;brushSz=+this.value;if(_lastStroke){window.brushSz=brushSz;replayLastStroke();}};
-document.getElementById('opr').oninput=function(){document.getElementById('opv').textContent=this.value+'%';brushOp=+this.value/100;if(_lastStroke){window.brushOp=brushOp;replayLastStroke();}};
-document.getElementById('hdr').oninput=function(){document.getElementById('hdv').textContent=this.value+'%';brushHd=+this.value/100;if(_lastStroke){window.brushHd=brushHd;replayLastStroke();}};
+document.getElementById('szr').oninput=function(){document.getElementById('szv').textContent=this.value;brushSz=+this.value;var bp=document.getElementById('bp-sz');if(bp){bp.value=this.value;}var bpv=document.getElementById('bp-sz-val');if(bpv)bpv.textContent=this.value+' px';if(_lastStroke){window.brushSz=brushSz;replayLastStroke();}};
+document.getElementById('opr').oninput=function(){document.getElementById('opv').textContent=this.value+'%';brushOp=+this.value/100;var bp=document.getElementById('bp-op');if(bp){bp.value=this.value;}var bpv=document.getElementById('bp-op-val');if(bpv)bpv.textContent=this.value+'%';if(_lastStroke){window.brushOp=brushOp;replayLastStroke();}};
+document.getElementById('hdr').oninput=function(){document.getElementById('hdv').textContent=this.value+'%';brushHd=+this.value/100;var bp=document.getElementById('bp-hd');if(bp){bp.value=this.value;}var bpv=document.getElementById('bp-hd-val');if(bpv)bpv.textContent=this.value+'%';if(_lastStroke){window.brushHd=brushHd;replayLastStroke();}};
 document.getElementById('tlr').oninput=function(){document.getElementById('tlv').textContent=this.value;tol=+this.value;};
 document.getElementById('fmod').onchange=e=>fillMd=e.target.value;
 document.getElementById('ubtn').onclick=doUndo;

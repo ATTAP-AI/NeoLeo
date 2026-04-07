@@ -523,6 +523,8 @@ function drawTip(canvas,hd,sz){
 
 function syncToApp(sz,hd,op,tp){
   window.brushSz=sz;window.brushHd=hd;window.brushOp=op;if(tp)window.brushType=tp;
+  /* Ensure brush tool is active when selecting from picker */
+  if(typeof setTool==='function'&&!window.curTool) setTool('brush');
   var szr=document.getElementById('szr');if(szr){szr.value=sz;document.getElementById('szv').textContent=sz;}
   var hdr=document.getElementById('hdr');if(hdr){hdr.value=Math.round(hd*100);document.getElementById('hdv').textContent=Math.round(hd*100)+'%';}
   var opr=document.getElementById('opr');if(opr){opr.value=Math.round(op*100);document.getElementById('opv').textContent=Math.round(op*100)+'%';}
@@ -592,7 +594,11 @@ function openBrushPicker(){
   modal.classList.add('open');
 }
 
-function closeBrushPicker(){modal.classList.remove('open');}
+function closeBrushPicker(){
+  modal.classList.remove('open');
+  /* Ensure brush tool is active after closing picker */
+  if(typeof setTool==='function'&&!window.curTool) setTool('brush');
+}
 
 /* Drag header */
 (function(){
