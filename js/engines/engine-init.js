@@ -149,5 +149,22 @@ document.getElementById('pal').onchange=function(){
   if(_engineSelected&&typeof generate==='function')generate();
 };
 
+/* ── PNG Export button (↓ PNG) — uses delegation to survive DOM replacements ── */
+(function(){
+  var qaRow=document.getElementById('qa-row');
+  if(qaRow) qaRow.addEventListener('click',function(e){
+    var btn=e.target.closest('#xbtn');
+    if(!btn)return;
+    var tmp=window._buildExportCanvas();
+    var url=tmp.toDataURL('image/png');
+    var modal=document.getElementById('export-modal');
+    var img=document.getElementById('export-img');
+    img.src=url;
+    img.alt='neoleo-'+eng+'-'+Date.now()+'.png';
+    modal.classList.add('open');
+    setI('Right-click image to save PNG');
+  });
+})();
+
 /* ── Initial startup ── */
 buildP('flowfield');drawSw();resetToBlank();

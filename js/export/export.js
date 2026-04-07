@@ -139,3 +139,12 @@ window._saveCanvas=function(){
   modal.classList.add('open');
   setI('Right-click image to save PNG');
 };
+
+/* ── Export modal close (always wire — these elements are stable) ── */
+document.getElementById('export-close').addEventListener('click',function(){
+  document.getElementById('export-modal').classList.remove('open');
+  document.getElementById('export-img').src='';
+});
+document.getElementById('export-modal').addEventListener('click',function(e){
+  if(e.target===this){this.classList.remove('open');document.getElementById('export-img').src='';}
+});
