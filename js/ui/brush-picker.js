@@ -735,15 +735,133 @@ function bpRenderSwatches(){
   });
 }
 
+/* ── Recolor canvas pixels: remap old palette → new palette ── */
+var _bpCurrentPalKey=null; /* tracks which palette is "current" for recolor */
+
+function _bpHex2rgb(hex){
+  hex=hex.replace('#','');
+  if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  return[parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)];
+}
+
+function _bpColorDist(r1,g1,b1,r2,g2,b2){
+  var dr=r1-r2,dg=g1-g2,db=b1-b2;
+  return dr*dr+dg*dg+db*db;
+}
+
+function _bpRecolorCanvas(oldPalKey,newPalKey){
+  var pals=window.PALS||{};
+  var oldPal=pals[oldPalKey], newPal=pals[newPalKey];
+  if(!oldPal||!newPal||!oldPal.c||!newPal.c) return;
+
+  /* Build old→new color map (bg + all palette colors) */
+  var oldCols=[oldPal.bg].concat(oldPal.c);
+  var newCols=[newPal.bg].concat(newPal.c);
+  var mapLen=Math.min(oldCols.length,newCols.length);
+
+  /* Pre-compute RGB arrays for old palette */
+  var oldRGB=[];
+  for(var i=0;i<mapLen;i++) oldRGB.push(_bpHex2rgb(oldCols[i]));
+  var newRGB=[];
+  for(var i=0;i<mapLen;i++) newRGB.push(_bpHex2rgb(newCols[i]));
+
+  function recolorImageData(imgData){
+    var d=imgData.data, len=d.length, changed=false;
+    for(var px=0;px<len;px+=4){
+      if(d[px+3]===0) continue; /* skip fully transparent */
+      var r=d[px],g=d[px+1],b=d[px+2];
+
+      /* Find TWO nearest old palette colors for weighted blending */
+      var best1=-1, dist1=Infinity, best2=-1, dist2=Infinity;
+      for(var ci=0;ci<mapLen;ci++){
+        var dist=_bpColorDist(r,g,b,oldRGB[ci][0],oldRGB[ci][1],oldRGB[ci][2]);
+        if(dist<dist1){best2=best1;dist2=dist1;best1=ci;dist1=dist;}
+        else if(dist<dist2){best2=ci;dist2=dist;}
+      }
+      if(best1<0) continue;
+
+      if(best2<0||dist1===0){
+        /* Exact match or only one ref — direct map */
+        d[px]=newRGB[best1][0];d[px+1]=newRGB[best1][1];d[px+2]=newRGB[best1][2];
+      } else {
+        /* Weighted blend between two nearest palette colors.
+           This preserves gradients, anti-aliasing and intermediate tones. */
+        var s1=Math.sqrt(dist1), s2=Math.sqrt(dist2);
+        var total=s1+s2;
+        var w1=1-(s1/total), w2=1-w1; /* closer = higher weight */
+        var nr=Math.round(w1*newRGB[best1][0]+w2*newRGB[best2][0]);
+        var ng=Math.round(w1*newRGB[best1][1]+w2*newRGB[best2][1]);
+        var nb=Math.round(w1*newRGB[best1][2]+w2*newRGB[best2][2]);
+
+        /* Preserve luminance ratio: if pixel was darker/brighter than old ref, keep that */
+        var oldLum=0.299*r+0.587*g+0.114*b;
+        var refLum=0.299*(w1*oldRGB[best1][0]+w2*oldRGB[best2][0])
+                  +0.587*(w1*oldRGB[best1][1]+w2*oldRGB[best2][1])
+                  +0.114*(w1*oldRGB[best1][2]+w2*oldRGB[best2][2]);
+        var lumScale=refLum>0?(oldLum/refLum):1;
+        nr=Math.round(nr*lumScale);
+        ng=Math.round(ng*lumScale);
+        nb=Math.round(nb*lumScale);
+
+        d[px]=Math.max(0,Math.min(255,nr));
+        d[px+1]=Math.max(0,Math.min(255,ng));
+        d[px+2]=Math.max(0,Math.min(255,nb));
+      }
+      changed=true;
+    }
+    return changed;
+  }
+
+  /* Recolor all layers if layer system is active */
+  if(window.layers&&window.layers.length>0){
+    for(var li=0;li<window.layers.length;li++){
+      var layer=window.layers[li];
+      if(!layer.ctx||!layer.canvas) continue;
+      var w=layer.canvas.width,h=layer.canvas.height;
+      var img=layer.ctx.getImageData(0,0,w,h);
+      if(recolorImageData(img)) layer.ctx.putImageData(img,0,0);
+    }
+    if(window._layersCompositeFn) window._layersCompositeFn();
+    if(window._layersUpdateThumbs) window._layersUpdateThumbs();
+  } else {
+    /* No layers — recolor dv directly */
+    var w2=window.dv.width,h2=window.dv.height;
+    var img2=window.dctx.getImageData(0,0,w2,h2);
+    if(recolorImageData(img2)) window.dctx.putImageData(img2,0,0);
+  }
+
+  /* Also recolor the engine canvas (cv) if it has content */
+  if(window.cv&&window.ctx){
+    var wc=window.cv.width,hc=window.cv.height;
+    var imgC=window.ctx.getImageData(0,0,wc,hc);
+    if(recolorImageData(imgC)) window.ctx.putImageData(imgC,0,0);
+  }
+}
+
 if(bpPalSel){
   bpPalSel.addEventListener('change',function(){
-    /* Auto-select first palette color */
+    var newKey=bpPalSel.value;
     var pals=window.PALS||{};
-    var pal=pals[bpPalSel.value];
+    var pal=pals[newKey];
+
+    /* Recolor existing canvas content from old palette to new */
+    if(_bpCurrentPalKey&&_bpCurrentPalKey!==newKey){
+      _bpRecolorCanvas(_bpCurrentPalKey,newKey);
+    }
+    _bpCurrentPalKey=newKey;
+
+    /* Auto-select first palette color */
     if(pal&&pal.c&&pal.c.length){
       bpSetBrushColor(pal.c[0]);
     }
     bpRenderSwatches();
+
+    /* Sync main panel palette selector */
+    var mainPal=document.getElementById('pal');
+    if(mainPal&&mainPal.value!==newKey){
+      mainPal.value=newKey;
+      if(typeof drawSw==='function') drawSw();
+    }
   });
 }
 
@@ -753,7 +871,9 @@ if(_mainPal){
   var _origPalOnChange=_mainPal.onchange;
   _mainPal.onchange=function(){
     if(_origPalOnChange)_origPalOnChange.apply(this,arguments);
-    if(bpPalSel)bpPalSel.value=_mainPal.value;
+    var newKey=_mainPal.value;
+    if(bpPalSel)bpPalSel.value=newKey;
+    _bpCurrentPalKey=newKey;
     bpRenderSwatches();
   };
 }
@@ -764,6 +884,9 @@ openBrushPicker=function(){
   _origOpenBP();
   bpPopulatePalOptions();
   bpRenderSwatches();
+  /* Track current palette so recolor knows the "from" palette */
+  var mainPal=document.getElementById('pal');
+  if(mainPal) _bpCurrentPalKey=mainPal.value;
 };
 window._openBrushPicker=openBrushPicker;
 
