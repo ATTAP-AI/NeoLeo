@@ -88,5 +88,5 @@
 #export-btns{display:flex;gap:8px;justify-content:flex-end;align-self:stretch;flex-shrink:0;}
 #export-save-as{padding:6px 18px;background:var(--acc);border:1px solid var(--acc);color:#000;font-family:inherit;font-size:10px;font-weight:bold;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
 #export-save-as:hover{background:#fff;border-color:#fff;}
-#export-close{padding:5px 14px;background:none;border:1px solid var(--brd);color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
+#export-close{padding:5px 14px;background:none;border:1px solid var(--brd);color:#ff9742;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;}
 #export-close:hover{color:var(--txt);border-color:var(--dim);}

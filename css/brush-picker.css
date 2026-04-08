@@ -46,5 +46,5 @@
 .bp-brush.active .bp-brush-name{color:#40c8a0;}
 /* ─ footer ─ */
 #bp-footer{padding:7px 10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:flex-end;gap:6px;flex-shrink:0;}
-#bp-close{background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-family:inherit;font-size:9px;padding:4px 10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;}
+#bp-close{background:none;border:1px solid rgba(255,255,255,0.2);color:#ff9742;font-family:inherit;font-size:9px;padding:4px 10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;}
 #bp-close:hover{color:#fff;border-color:rgba(255,255,255,0.5);}

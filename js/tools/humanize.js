@@ -183,7 +183,7 @@ function buildHumPanel(){
     '    <div style="font-size:10px;letter-spacing:.2em;color:#ffffff;text-transform:uppercase;font-weight:700;line-height:1.6;">✋ Humanize</div>',
     '    <div style="font-size:8px;color:rgba(255,255,255,0.45);margin-top:2px;line-height:1.5;letter-spacing:.06em;">Drag sliders for real-time preview</div>',
     '  </div>',
-    '  <button id="hp-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;line-height:1.4;flex-shrink:0;">Close</button>',
+    '  <button id="hp-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:#ff9742;font-size:9px;letter-spacing:.08em;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;line-height:1.4;flex-shrink:0;">Close</button>',
     '</div>',
 
     '<div style="padding:14px 14px 10px;overflow-y:auto;flex:1;">',

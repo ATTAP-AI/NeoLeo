@@ -19,7 +19,7 @@ panel.innerHTML =
   '<div class="nat-hdr" id="nat-hdr">' +
     '<div><div style="font-size:10px;letter-spacing:.2em;color:#ffffff;text-transform:uppercase;font-weight:700;">\u2618 Naturalize</div>' +
     '<div style="font-size:8px;color:#40c8a0;margin-top:2px;letter-spacing:.06em;">Grain \u00B7 Jitter \u00B7 Multi-Pass</div></div>' +
-    '<button id="nat-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>' +
+    '<button id="nat-close" style="background:none;border:1px solid rgba(255,255,255,0.2);color:#ff9742;font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>' +
   '</div>' +
 
   /* ── GRAIN ── */

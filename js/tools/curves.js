@@ -193,7 +193,7 @@ function buildCurvesPanel(){
   _cvPanel.innerHTML=[
     '<div id="cv-head">',
     '  <div style="font-size:10px;letter-spacing:.18em;color:#ffffff;text-transform:uppercase;font-weight:700;">Curves</div>',
-    '  <button id="cv-close" style="background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-size:9px;padding:3px 8px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>',
+    '  <button id="cv-close" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#ff9742;font-size:9px;padding:3px 8px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>',
     '</div>',
     '<div style="padding:10px 12px;">',
 

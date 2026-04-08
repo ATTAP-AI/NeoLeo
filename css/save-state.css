@@ -4,7 +4,7 @@
 #slots-wrap{display:none;margin-top:8px;}
 #slots-wrap.open{display:block;}
 #slots-hdr{font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
-#slots-hdr button{background:none;border:none;color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;padding:0;}
+#slots-hdr button{background:none;border:none;color:#ff9742;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;padding:0;}
 #slots-hdr button:hover{color:var(--txt);}
 .slot{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--brd);}
 .slot:last-child{border-bottom:none;}

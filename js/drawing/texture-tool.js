@@ -255,7 +255,7 @@ function buildTexPicker(){
     '#tp-head-sub{font-size:8px;color:#40c8a0;',
     '  margin-top:2px;line-height:1.5;letter-spacing:.06em;}',
     '#tp-close{background:none;border:1px solid rgba(255,255,255,0.2);',
-    '  color:rgba(255,255,255,0.5);font-size:9px;letter-spacing:.08em;',
+    '  color:#ff9742;font-size:9px;letter-spacing:.08em;',
     '  padding:4px 10px;cursor:pointer;border-radius:3px;',
     '  font-family:inherit;line-height:1.4;position:relative;z-index:2;flex-shrink:0;}',
     '#tp-close:hover{color:#fff;border-color:#E8F50A;background:rgba(232,245,10,0.08);}',

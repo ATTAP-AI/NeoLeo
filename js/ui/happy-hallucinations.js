@@ -703,7 +703,7 @@ setTimeout(function(){
       '    <div style="font-size:10px;letter-spacing:.2em;color:#ffffff;text-transform:uppercase;font-weight:700;line-height:1.6;">\u2728\u2728 Multi-Pass Blend</div>',
       '    <div style="font-size:8px;color:#40c8a0;margin-top:2px;line-height:1.5;">Composite multiple HH passes with blending</div>',
       '  </div>',
-      '  <button id="mp-close" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#888;font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>',
+      '  <button id="mp-close" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#ff9742;font-size:9px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;">Close</button>',
       '</div>',
       '<div style="padding:14px;overflow-y:auto;flex:1;">',
 

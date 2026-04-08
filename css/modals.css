@@ -9,5 +9,5 @@
 .save-name-btns{display:flex;gap:8px;}
 #save-name-ok{flex:1;padding:8px;background:#40c8a0;color:#000;border:none;font-family:inherit;font-size:11px;font-weight:bold;cursor:pointer;text-transform:uppercase;letter-spacing:.12em;}
 #save-name-ok:hover{background:#60e8c0;}
-#save-name-cancel{flex:1;padding:8px;background:none;color:var(--dim);border:1px solid var(--brd);font-family:inherit;font-size:11px;cursor:pointer;text-transform:uppercase;}
+#save-name-cancel{flex:1;padding:8px;background:none;color:#ff9742;border:1px solid var(--brd);font-family:inherit;font-size:11px;cursor:pointer;text-transform:uppercase;}
 #save-name-cancel:hover{color:var(--txt);}
