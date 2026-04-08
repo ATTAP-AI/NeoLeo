@@ -5,9 +5,15 @@
 
 /* ── Link helper: creates a clickable help-link span ──
    sel  = CSS selector to highlight
-   act  = optional action: 'open-section:id', 'open-panel:id', 'open-exp:id' */
+   act  = optional action:
+     'open-section:id'  — expand a right-panel accordion section
+     'open-panel:id'    — open a floating panel via openPanel()
+     'open-exp:id'      — open experimental sub-section
+     'click:selector'   — simulate a click on the element (triggers its native open logic) */
 function L(text, sel, act){
-  return '<a class="help-link" data-sel="'+(sel||'')+'" data-act="'+(act||'')+'">'+text+'</a>';
+  var eSel = (sel||'').replace(/"/g,'&quot;');
+  var eAct = (act||'').replace(/"/g,'&quot;');
+  return '<a class="help-link" data-sel="'+eSel+'" data-act="'+eAct+'">'+text+'</a>';
 }
 
 var INTRO = '<strong>"NeoLeo"</strong> takes its name from "New" and Leonardo DaVinci. ' +
@@ -56,21 +62,21 @@ var SECTIONS = [
     title: 'Drawing and Painting Tools',
     body: '<p>The toolbar on the left side of the image creation window gives you traditional drawing tools to paint directly onto the image creation window or on top of your generated art:</p>' +
       '<ul>' +
-      '<li>'+L('Brush','.tbtn[data-t="brush"]')+' (B) \u2014 A soft, pressure-sensitive painting tool.</li>' +
-      '<li>'+L('Pencil','.tbtn[data-t="pencil"]')+' (P) \u2014 A hard-edged drawing tool for precise lines.</li>' +
-      '<li>'+L('Line','.tbtn[data-t="line"]')+' (L) \u2014 Draw straight lines between two points.</li>' +
-      '<li>'+L('Rectangle','.tbtn[data-t="rect"]')+' (R), '+L('Ellipse','.tbtn[data-t="ellipse"]')+' (E), '+L('Triangle','.tbtn[data-t="triangle"]')+' (T) \u2014 Draw geometric shapes. Choose stroke only, fill only, or both.</li>' +
-      '<li>'+L('Polygon','.tbtn[data-t="polygon"]')+' (G) \u2014 Click to place corners, then close the shape.</li>' +
-      '<li>'+L('Free Shape','.tbtn[data-t="shape"]')+' (S) \u2014 Draw freely and the shape closes automatically when you release.</li>' +
-      '<li>'+L('Fill','.tbtn[data-t="fill"]')+' (F) \u2014 Flood-fill an area with the current color.</li>' +
-      '<li>'+L('Color Replace','.tbtn[data-t="creplace"]')+' (C) \u2014 Replace one color with another by painting over it.</li>' +
-      '<li>'+L('Crop','.tbtn[data-t="crop"]')+' \u2014 Trim the image creation window to a selected area.</li>' +
+      '<li>'+L('Brush','.tbtn[data-t="brush"]','open-section:dt-body')+' (B) \u2014 A soft, pressure-sensitive painting tool.</li>' +
+      '<li>'+L('Pencil','.tbtn[data-t="pencil"]','open-section:dt-body')+' (P) \u2014 A hard-edged drawing tool for precise lines.</li>' +
+      '<li>'+L('Line','.tbtn[data-t="line"]','open-section:dt-body')+' (L) \u2014 Draw straight lines between two points.</li>' +
+      '<li>'+L('Rectangle','.tbtn[data-t="rect"]','open-section:dt-body')+' (R), '+L('Ellipse','.tbtn[data-t="ellipse"]','open-section:dt-body')+' (E), '+L('Triangle','.tbtn[data-t="triangle"]','open-section:dt-body')+' (T) \u2014 Draw geometric shapes. Choose stroke only, fill only, or both.</li>' +
+      '<li>'+L('Polygon','.tbtn[data-t="polygon"]','open-section:dt-body')+' (G) \u2014 Click to place corners, then close the shape.</li>' +
+      '<li>'+L('Free Shape','.tbtn[data-t="shape"]','open-section:dt-body')+' (S) \u2014 Draw freely and the shape closes automatically when you release.</li>' +
+      '<li>'+L('Fill','.tbtn[data-t="fill"]','open-section:dt-body')+' (F) \u2014 Flood-fill an area with the current color.</li>' +
+      '<li>'+L('Color Replace','.tbtn[data-t="creplace"]','open-section:dt-body')+' (C) \u2014 Replace one color with another by painting over it.</li>' +
+      '<li>'+L('Crop','.tbtn[data-t="crop"]','open-section:dt-body')+' \u2014 Trim the image creation window to a selected area.</li>' +
       '</ul>' +
       '<p>Use the controls in the '+L('Drawing Tools','#dt-toggle','open-section:dt-body')+' section to adjust <strong>size</strong>, <strong>opacity</strong>, <strong>hardness</strong>, and <strong>color</strong>.</p>'
   },
   {
     title: 'Brushes (26 Types)',
-    body: '<p>NeoLeo includes 26 unique brush types organized in three families. Click the brush icon in the '+L('Drawing Tools','#dt-toggle','open-section:dt-body')+' section to open the Brush Picker.</p>' +
+    body: '<p>NeoLeo includes 26 unique brush types organized in three families. Click the '+L('brush icon','.tbtn[data-t="brush"]','click:.tbtn[data-t="brush"]')+' in the '+L('Drawing Tools','#dt-toggle','open-section:dt-body')+' section to open the Brush Picker.</p>' +
       '<p><strong>Western Brushes</strong> \u2014 Soft Round, Hard Round, Airbrush, Pencil, Chalk, Dry Brush, Soft Flat, Hard Flat, Spatter, and Ink Pen. These cover the full range of traditional Western painting tools.</p>' +
       '<p><strong>Chinese Calligraphy Brushes</strong> \u2014 Seven brushes inspired by centuries of Chinese brush painting tradition, including M\u00E1o B\u01D0 (standard brush), Xi\u011B Y\u00EC (freehand), G\u014Dng B\u01D0 (fine detail), Zh\u00FA B\u01D0 (bamboo pen), P\u014D M\u00F2 (splash ink), K\u016B B\u01D0 (dry brush), and Sh\u00F2u J\u012Bn (Emperor Huizong\u2019s slender gold style).</p>' +
       '<p><strong>Winsor and Newton Sable</strong> \u2014 Six brushes modeled after the legendary W&N Series 7 sable brushes, including miniature, round, flat wash, rigger, and Cotman varieties.</p>'
@@ -79,16 +85,16 @@ var SECTIONS = [
     title: 'Advanced Image Tools',
     body: '<p>These tools let you refine and transform your artwork in powerful ways:</p>' +
       '<ul>' +
-      '<li>'+L('Humanize','.tbtn[data-t="humanize"]')+' \u2014 Adds organic imperfections to make algorithmic art feel more hand-made. Controls for wobble, pressure variation, edge roughening, ink pooling, and color drift.</li>' +
-      '<li>'+L('Naturalize','#nat-toggle')+' \u2014 Applies film grain, color jitter, and multi-pass blending to give your art a natural, photographic quality.</li>' +
-      '<li>'+L('Curves','.tbtn[data-t="curves"]')+' \u2014 Fine-tune the brightness and contrast of your image using a curves editor, just like in professional photo software.</li>' +
-      '<li>'+L('Gradient','.tbtn[data-t="gradient"]')+' \u2014 Apply smooth color gradients across the image creation window with a full gradient editor and preset library.</li>' +
-      '<li>'+L('Texture','.tbtn[data-t="texturemap"]')+' \u2014 Overlay texture patterns onto your artwork.</li>' +
-      '<li>'+L('Eraser','.tbtn[data-t="eraser"]')+' \u2014 Remove parts of your drawing.</li>' +
-      '<li>'+L('Eyedropper','.tbtn[data-t="eyedropper"]')+' \u2014 Pick a color from the image creation window to use for drawing.</li>' +
-      '<li>'+L('Clone','.tbtn[data-t="clone"]')+' and '+L('Heal','.tbtn[data-t="heal"]')+' \u2014 Copy areas of the image or blend them seamlessly.</li>' +
-      '<li>'+L('Dodge','.tbtn[data-t="dodge"]')+' and '+L('Burn','.tbtn[data-t="burn"]')+' \u2014 Lighten or darken specific areas.</li>' +
-      '<li>'+L('Blur','.tbtn[data-t="blur"]')+', '+L('Sharpen','.tbtn[data-t="sharpen"]')+', and '+L('Smudge','.tbtn[data-t="smudge"]')+' \u2014 Soften, crisp, or blend parts of your artwork.</li>' +
+      '<li>'+L('Humanize','.tbtn[data-t="humanize"]','click:.tbtn[data-t="humanize"]')+' \u2014 Adds organic imperfections to make algorithmic art feel more hand-made. Controls for wobble, pressure variation, edge roughening, ink pooling, and color drift.</li>' +
+      '<li>'+L('Naturalize','#nat-toggle','click:#nat-toggle')+' \u2014 Applies film grain, color jitter, and multi-pass blending to give your art a natural, photographic quality.</li>' +
+      '<li>'+L('Curves','.tbtn[data-t="curves"]','click:.tbtn[data-t="curves"]')+' \u2014 Fine-tune the brightness and contrast of your image using a curves editor, just like in professional photo software.</li>' +
+      '<li>'+L('Gradient','.tbtn[data-t="gradient"]','click:.tbtn[data-t="gradient"]')+' \u2014 Apply smooth color gradients across the image creation window with a full gradient editor and preset library.</li>' +
+      '<li>'+L('Texture','.tbtn[data-t="texturemap"]','click:.tbtn[data-t="texturemap"]')+' \u2014 Overlay texture patterns onto your artwork.</li>' +
+      '<li>'+L('Eraser','.tbtn[data-t="eraser"]','open-section:dt-body')+' \u2014 Remove parts of your drawing.</li>' +
+      '<li>'+L('Eyedropper','.tbtn[data-t="eyedropper"]','open-section:dt-body')+' \u2014 Pick a color from the image creation window to use for drawing.</li>' +
+      '<li>'+L('Clone','.tbtn[data-t="clone"]','open-section:dt-body')+' and '+L('Heal','.tbtn[data-t="heal"]','open-section:dt-body')+' \u2014 Copy areas of the image or blend them seamlessly.</li>' +
+      '<li>'+L('Dodge','.tbtn[data-t="dodge"]','open-section:dt-body')+' and '+L('Burn','.tbtn[data-t="burn"]','open-section:dt-body')+' \u2014 Lighten or darken specific areas.</li>' +
+      '<li>'+L('Blur','.tbtn[data-t="blur"]','open-section:dt-body')+', '+L('Sharpen','.tbtn[data-t="sharpen"]','open-section:dt-body')+', and '+L('Smudge','.tbtn[data-t="smudge"]','open-section:dt-body')+' \u2014 Soften, crisp, or blend parts of your artwork.</li>' +
       '</ul>'
   },
   {
@@ -107,8 +113,8 @@ var SECTIONS = [
   },
   {
     title: 'Happy Hallucinations',
-    body: '<p>'+L('Happy Hallucinations (HH)','#hh-btn')+' is NeoLeo\u2019s signature creative feature. It automatically composes a complete artwork by randomly combining an engine, palette, and drawing tools into a single layered composition. Each press of the HH button creates a completely unique piece with a descriptive mood name.</p>' +
-      '<p>'+L('Multi-Pass Blend','#hh-multi-btn')+' takes this further \u2014 it runs multiple HH passes and layers them together with adjustable opacity and decay. The result is rich, complex artwork that no single generation could produce. Use the sliders to control how the passes blend together.</p>'
+    body: '<p>'+L('Happy Hallucinations (HH)','#hh-btn','open-section:dt-body')+' is NeoLeo\u2019s signature creative feature. It automatically composes a complete artwork by randomly combining an engine, palette, and drawing tools into a single layered composition. Each press of the HH button creates a completely unique piece with a descriptive mood name.</p>' +
+      '<p>'+L('Multi-Pass Blend','#hh-multi-btn','click:#hh-multi-btn')+' takes this further \u2014 it runs multiple HH passes and layers them together with adjustable opacity and decay. The result is rich, complex artwork that no single generation could produce. Use the sliders to control how the passes blend together.</p>'
   },
   {
     title: 'Lighting and Atmosphere',
@@ -125,7 +131,7 @@ var SECTIONS = [
   },
   {
     title: 'Layers',
-    body: '<p>'+L('Layers','#laytool','open-panel:layers-panel')+' let you stack multiple images on top of each other, just like transparent sheets of paper:</p>' +
+    body: '<p>'+L('Layers','#laytool','click:#laytool')+' let you stack multiple images on top of each other, just like transparent sheets of paper:</p>' +
       '<p><strong>Drawing Layers</strong> \u2014 Add multiple drawing layers so you can paint on separate surfaces. Each layer can have its own blend mode (how it mixes with layers below) and opacity (how see-through it is). Reorder, duplicate, merge, or flatten layers as needed.</p>' +
       '<p><strong>Engine Layers</strong> \u2014 Capture different engine generations as separate layers and composite them together. Each engine layer has its own blend mode and opacity slider.</p>' +
       '<p><strong>Auto-Layer</strong> \u2014 Toggle the Auto button in the Engine Layers section. When on, every new generation automatically becomes its own layer instead of replacing the previous one. This lets you rapidly build up complex compositions from multiple engines.</p>' +
@@ -297,11 +303,16 @@ panel.addEventListener('click', function(e){
 
   /* Execute action first */
   if(act){
-    var parts = act.split(':');
-    var cmd = parts[0], arg = parts[1];
+    var colonIdx = act.indexOf(':');
+    var cmd = colonIdx > -1 ? act.substring(0, colonIdx) : act;
+    var arg = colonIdx > -1 ? act.substring(colonIdx + 1) : '';
     if(cmd === 'open-section') openSection(arg);
     else if(cmd === 'open-panel' && typeof openPanel === 'function') openPanel(arg);
     else if(cmd === 'open-exp') openExpSub(arg);
+    else if(cmd === 'click'){
+      var clickTarget = document.querySelector(arg);
+      if(clickTarget) clickTarget.click();
+    }
   }
 
   /* Highlight the target element */
