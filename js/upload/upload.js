@@ -22,6 +22,7 @@ function drawImageToCtx(c,alpha,blendMode){
 /* Bake the uploaded image permanently onto the generative canvas */
 function bakeUploadToCanvas(){
   if(!uploadedImg)return;
+  if(window.genUndoPush)window.genUndoPush();
   // Draw upload under or over existing cv content
   var tmpCtx=cv.getContext('2d');
   if(uploadedMode==='under'||uploadedMode==='replace'){
@@ -112,7 +113,9 @@ function loadUploadFile(file){
       document.getElementById('u-clear-row').style.display='block';
       // Resize canvases if not yet sized, then render
       if(uv.width===0){sz();}
+      if(window.genUndoPush)window.genUndoPush();
       renderUpload();
+      if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
     };
     img.onerror=function(){err.textContent='Could not load image.';err.style.display='block';};
     img.src=ev.target.result;
@@ -140,6 +143,7 @@ document.getElementById('u-eng-on').onchange=function(e){uploadedEngOn=e.target.
 document.getElementById('u-bake').onclick=bakeUploadToCanvas;
 
 document.getElementById('u-clear').onclick=function(){
+  if(window.genUndoPush)window.genUndoPush();
   uploadedImg=null;window.uploadedImg=null;uctx.clearRect(0,0,uv.width,uv.height);
   if(window._showImgComposite) window._showImgComposite(false);
   if(window._cropShowBtn) window._cropShowBtn(false);

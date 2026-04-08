@@ -87,6 +87,7 @@
     'js/ui/image-adjustments.js',
     'js/ui/happy-hallucinations.js',
     'js/ui/naturalize.js',
+    'js/ui/help-panel.js',
 
     // ── Engine init (depends on drawing, layers, experimental — wires engine buttons + palette + resetToBlank) ──
     'js/engines/engine-init.js',
