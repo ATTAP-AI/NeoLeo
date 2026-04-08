@@ -138,6 +138,51 @@ window._downloadPNG=function(dataUrl, filename){
   document.body.removeChild(a);
 };
 
+/* ── Save confirmation with upload-to-canvas link ── */
+window._lastSavedDataUrl=null;
+window._showSaveStatus=function(filename, dataUrl){
+  window._lastSavedDataUrl=dataUrl||null;
+  var si=document.getElementById('si');
+  if(!si)return;
+  si.innerHTML='';
+  var txt=document.createTextNode('\u2713 Image saved: '+filename);
+  si.appendChild(txt);
+  if(dataUrl){
+    var link=document.createElement('span');
+    link.textContent=' \u00B7 Upload to canvas';
+    link.style.cssText='color:#40c8a0;cursor:pointer;text-decoration:underline;margin-left:2px;';
+    link.addEventListener('click',function(){
+      var img=new Image();
+      img.onload=function(){
+        window.uploadedImg=img;uploadedImg=img;
+        if(window._showImgComposite)window._showImgComposite(true);
+        if(window._cropShowBtn)window._cropShowBtn(true);
+        var thumb=document.getElementById('u-thumb');
+        var maxW=196,maxH=110;
+        var sc=Math.min(maxW/img.naturalWidth,maxH/img.naturalHeight);
+        thumb.width=Math.round(img.naturalWidth*sc);
+        thumb.height=Math.round(img.naturalHeight*sc);
+        thumb.getContext('2d').drawImage(img,0,0,thumb.width,thumb.height);
+        document.getElementById('u-preview').style.display='block';
+        var _isSec=document.getElementById('is-sec');if(_isSec)_isSec.style.display='block';
+        document.getElementById('u-preview-info').innerHTML=
+          '<span>'+img.naturalWidth+' \u00D7 '+img.naturalHeight+'px</span> &nbsp;\u00B7&nbsp; <span>'+filename+'</span>';
+        document.getElementById('u-controls').style.display='block';
+        document.getElementById('u-engine-sec').style.display='block';
+        document.getElementById('u-bake-sec').style.display='block';
+        document.getElementById('u-clear-row').style.display='block';
+        if(uv.width===0&&typeof sz==='function')sz();
+        renderUpload();
+        openPanel('upload-panel');
+        document.querySelectorAll('.tbtn').forEach(function(b){b.classList.toggle('on',b.dataset.t==='upload');});
+        setI('\u2713 Image loaded to canvas: '+filename);
+      };
+      img.src=dataUrl;
+    });
+    si.appendChild(link);
+  }
+};
+
 /* ── Save / Download canvas as PNG (top-bar button) ── */
 window._saveCanvas=function(){
   var tmp=window._buildExportCanvas();
@@ -155,7 +200,11 @@ document.getElementById('export-save-as').addEventListener('click',function(){
   var img=document.getElementById('export-img');
   if(!img.src)return;
   var filename=img.alt||'NeoLeo-'+Date.now()+'.png';
-  window._downloadPNG(img.src, filename);
+  var savedUrl=img.src;
+  window._downloadPNG(savedUrl, filename);
+  document.getElementById('export-modal').classList.remove('open');
+  document.getElementById('export-img').src='';
+  window._showSaveStatus(filename, savedUrl);
 });
 
 /* ── Export modal close (always wire — these elements are stable) ── */

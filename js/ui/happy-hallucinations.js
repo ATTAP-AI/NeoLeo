@@ -457,9 +457,13 @@ function renderHHStrip(){
       e.stopPropagation();
       var tmp=document.createElement('canvas');tmp.width=entry.img.width;tmp.height=entry.img.height;
       tmp.getContext('2d').drawImage(entry.img,0,0);
+      var fname='neoleo-hh-'+entry.mood.replace(/\s+/g,'-').toLowerCase()+'.png';
+      var savedUrl=tmp.toDataURL('image/png');
       var a=document.createElement('a');
-      a.download='neoleo-hh-'+entry.mood.replace(/\s+/g,'-').toLowerCase()+'.png';
-      a.href=tmp.toDataURL('image/png');a.click();
+      a.download=fname;
+      a.href=savedUrl;a.click();
+      if(window._showSaveStatus)window._showSaveStatus(fname, savedUrl);
+      else setI('\u2713 Image saved: '+fname);
     });
     btnRow.appendChild(delBtn);btnRow.appendChild(saveBtn);
     div.appendChild(btnRow);strip.appendChild(div);
@@ -745,6 +749,24 @@ setTimeout(function(){
 
       '<div style="font-size:7px;color:rgba(255,255,255,0.25);margin-bottom:12px;line-height:1.6;">Decay reduces opacity each pass for natural depth falloff</div>',
 
+      /* Active palette control — mirrors main panel */
+      '<div style="height:1px;background:rgba(232,245,10,0.08);margin:4px 0 12px;"></div>',
+      '<div style="font-size:8px;color:rgba(255,255,255,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;line-height:1.5;">Active Palette</div>',
+      '<div id="mp-swrow" style="display:flex;gap:3px;height:13px;margin-bottom:8px;"></div>',
+      '<select id="mp-active-pal" style="width:100%;margin-bottom:12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#ffffff;font-family:inherit;font-size:9px;padding:4px 6px;cursor:pointer;border-radius:3px;">',
+      '  <option value="ember">Ember</option>',
+      '  <option value="ink">Ink &amp; Paper</option>',
+      '  <option value="ocean">Deep Ocean</option>',
+      '  <option value="neon">Neon Circuit</option>',
+      '  <option value="earth">Earth Strata</option>',
+      '  <option value="ghost">Ghost</option>',
+      '  <option value="aurora">Aurora</option>',
+      '  <option value="void">Void</option>',
+      '  <option value="rust">Rust &amp; Salt</option>',
+      '  <option value="botanic">Botanic</option>',
+      '  <option value="custom">&#10022; Custom</option>',
+      '</select>',
+
       /* Per-pass palette assignment */
       '<div style="height:1px;background:rgba(232,245,10,0.08);margin:4px 0 12px;"></div>',
       '<div style="font-size:8px;color:rgba(255,255,255,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;line-height:1.5;">Pass Palettes</div>',
@@ -890,6 +912,52 @@ setTimeout(function(){
     /* Rebuild when pass count changes */
     var passInput=document.getElementById('mp-passes');
     if(passInput)passInput.addEventListener('input',buildPalList);
+
+    /* ── Active Palette control — sync with main #pal ── */
+    var mpActivePal=document.getElementById('mp-active-pal');
+    var mpSwRow=document.getElementById('mp-swrow');
+
+    function mpDrawSwatches(){
+      if(!mpSwRow)return;
+      var key=mpActivePal?mpActivePal.value:'ember';
+      var p=PALS[key]||PALS.ember;
+      mpSwRow.innerHTML='';
+      var bg=document.createElement('div');
+      bg.style.cssText='flex:1;border-radius:1px;background:'+(window._canvasBg||p.bg)+';border:1px solid #444;';
+      mpSwRow.appendChild(bg);
+      p.c.forEach(function(col){
+        var s=document.createElement('div');
+        s.style.cssText='flex:1;border-radius:1px;background:'+col+';cursor:pointer;';
+        s.title=col;
+        mpSwRow.appendChild(s);
+      });
+    }
+
+    /* Sync MP selector to current main palette on panel open */
+    if(mpActivePal){
+      mpActivePal.value=document.getElementById('pal').value;
+      mpDrawSwatches();
+
+      /* When MP palette changes → update main palette + swatches */
+      mpActivePal.addEventListener('change',function(){
+        var mainPal=document.getElementById('pal');
+        if(mainPal){
+          mainPal.value=mpActivePal.value;
+          mainPal.dispatchEvent(new Event('change'));
+        }
+        mpDrawSwatches();
+      });
+    }
+
+    /* Listen for main palette changes to keep MP selector in sync */
+    var _origPalChange=document.getElementById('pal').onchange;
+    document.getElementById('pal').onchange=function(){
+      if(_origPalChange)_origPalChange.call(this);
+      if(mpActivePal&&_mpOpen){
+        mpActivePal.value=document.getElementById('pal').value;
+        mpDrawSwatches();
+      }
+    };
 
     /* ── Stored pass data for live re-compositing ── */
     var _mpPasses=[]; /* [{engine:canvas, overlay:canvas, mood:str, blend:str}] */
@@ -1206,6 +1274,16 @@ setTimeout(function(){
       buildMPPanel();
       if(_mpOpen){_mpPanel.classList.remove('open');_mpOpen=false;return;}
       _mpOpen=true;
+      /* Sync active palette selector + swatches on open */
+      var mpAP=document.getElementById('mp-active-pal');
+      if(mpAP){mpAP.value=document.getElementById('pal').value;}
+      var mpSR=document.getElementById('mp-swrow');
+      if(mpSR){
+        var pk=mpAP?mpAP.value:'ember';var pp=PALS[pk]||PALS.ember;
+        mpSR.innerHTML='';
+        var bgd=document.createElement('div');bgd.style.cssText='flex:1;border-radius:1px;background:'+(window._canvasBg||pp.bg)+';border:1px solid #444;';mpSR.appendChild(bgd);
+        pp.c.forEach(function(c2){var s2=document.createElement('div');s2.style.cssText='flex:1;border-radius:1px;background:'+c2+';cursor:pointer;';s2.title=c2;mpSR.appendChild(s2);});
+      }
       if(_mpPos){_mpPanel.style.left=_mpPos.left+'px';_mpPanel.style.top=_mpPos.top+'px';}
       else{var tb=document.getElementById('tb');if(tb){var r=tb.getBoundingClientRect();_mpPanel.style.left=Math.max(4,r.left-308)+'px';_mpPanel.style.top='10px';}else{_mpPanel.style.left='50px';_mpPanel.style.top='40px';}}
       _mpPanel.classList.add('open');

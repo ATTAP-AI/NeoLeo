@@ -226,7 +226,7 @@ function saveEntryToStorage(entry, histIdx){
       slots.unshift(storeEntry);
       if(slots.length>8)slots.splice(8);
       localStorage.setItem(SK,JSON.stringify(slots));
-      setI('saved: '+name);
+      setI('\u2713 State saved: '+name);
       if(typeof renderSlots==='function')renderSlots();
     }catch(e){setI('Storage save failed: '+e.message);}
   });

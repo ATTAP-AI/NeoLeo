@@ -263,7 +263,7 @@ document.getElementById('save-btn').addEventListener('click',()=>{
     storeSave(slots);
     document.getElementById('slots-wrap').classList.add('open');
     renderSlots();
-    setI('saved: '+name);
+    setI('\u2713 State saved: '+name);
   });
 });
 
