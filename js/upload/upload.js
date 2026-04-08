@@ -48,6 +48,7 @@ function bakeUploadToCanvas(){
   document.getElementById('u-clear-row').style.display='none';
   var inp=document.getElementById('u-file');if(inp)inp.value='';
   setI('Image baked to canvas');
+  if(window._onCvRender)window._onCvRender('Upload Bake');
 }
 
 function renderUpload(){

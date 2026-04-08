@@ -414,6 +414,7 @@ function buildHumPanel(){
       tc2.fillText('Applied',to.width/2,to.height/2+3);}
     var si=document.getElementById('si');
     if(si)si.textContent='Humanize applied';
+    if(window._onCvRender)window._onCvRender('Humanize');
     if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
   });
 

@@ -635,6 +635,7 @@ function doHappyHallucination(){
       if(window._layersReset)window._layersReset();
       /* Push genUndo so this state is undoable */
       if(window.genUndoPush)window.genUndoPush();
+      if(window._onCvRender)window._onCvRender('HH: '+(mood?mood.name:'Flatten'));
 
       _hhPopup.phase('Compositing: '+(info?info.strategy:'')+'\u2026',90);
 
@@ -1022,6 +1023,7 @@ setTimeout(function(){
         }
       }
 
+      if(window._onCvRender)window._onCvRender('HH Multi-Pass');
       /* Update status */
       var statusEl=document.getElementById('mp-status');
       if(statusEl)statusEl.textContent='\u2728 Live \u2014 '+_mpPasses.length+' passes | Opacity '+Math.round(passOpacity*100)+'% | Decay '+Math.round(decay*100)+'%';

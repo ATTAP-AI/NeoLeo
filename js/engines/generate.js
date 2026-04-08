@@ -80,6 +80,7 @@ function generate(){
     renderLighting();renderAtmosphere();
     setPr(100);
     if(typeof _histPush==='function')_histPush();
+    if(window._onCvRender)window._onCvRender(ENAMES[eng]||eng);
     setTimeout(()=>{
       setPr(0);
       btn.textContent='CREATE';btn.style.background='';btn.style.color='';

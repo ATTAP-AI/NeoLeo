@@ -24,6 +24,7 @@ function applyBg(hex){
   if(cv.width > 0){
     ctx.fillStyle = hex;
     ctx.fillRect(0,0,cv.width,cv.height);
+    if(window._onCvRender)window._onCvRender('BG: '+hex);
   }
   /* Update active dot */
   presetRow.querySelectorAll('.cvbg-dot').forEach(d=>{
@@ -158,6 +159,7 @@ swatch.classList.add('active');
       ctx.clearRect(0,0,cv.width,cv.height);
       ctx.fillStyle=displayCol;
       ctx.fillRect(0,0,cv.width,cv.height);
+      if(window._onCvRender)window._onCvRender('BG: '+displayCol);
     }
     var nativePicker=document.getElementById('bg-col-picker');
     if(nativePicker)nativePicker.value=hex;

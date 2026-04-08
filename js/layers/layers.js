@@ -405,6 +405,19 @@ window._getActiveLayerCtx = function(){
 var engineLayers = [];
 var activeELayerIdx = -1; /* -1 = no active engine layer */
 
+/* ── Auto-Layer: opt-in toggle ── */
+var autoLayerOn = false;
+var AUTO_LAYER_MAX = 20;
+
+function _onCvRender(label){
+  if(!autoLayerOn) return;
+  if(engineLayers.length >= AUTO_LAYER_MAX) engineLayers.shift();
+  requestAnimationFrame(function(){
+    captureEngineLayer(label);
+    compositeEngineLayers();
+  });
+}
+
 var EBLENDS = ['source-over','multiply','screen','overlay','soft-light',
                  'color-dodge','difference','lighten','darken','luminosity'];
 
@@ -641,6 +654,9 @@ window._engineLayersCaptureAndComposite = function(){
 window._recompositeEngineLayers = compositeEngineLayers;
 window._captureEngineLayer = captureEngineLayer;
 window._renderEngineLayerUI = renderEngineLayerUI;
+window._onCvRender = _onCvRender;
+window._autoLayerOn = function(){ return autoLayerOn; };
+window._setAutoLayer = function(v){ autoLayerOn = !!v; };
 
 /* Init UI */
 renderEngineLayerUI();
@@ -657,16 +673,29 @@ if(elyrHdr){
   genBtn.addEventListener('mouseenter', function(){ genBtn.style.borderColor='#a080ff';genBtn.style.color='#c0a0ff'; });
   genBtn.addEventListener('mouseleave', function(){ genBtn.style.borderColor='#4a3080';genBtn.style.color='#a080ff'; });
   genBtn.addEventListener('click', function(){
-    /* First auto-capture current cv state as a locked layer, then generate */
     if(typeof generate === 'function'){
+      var wasAuto = autoLayerOn;
+      autoLayerOn = true;
       generate();
-      /* After generate, capture result */
-      setTimeout(function(){
-        captureEngineLayer();
-      }, 800);
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ autoLayerOn = wasAuto; });
+      });
     }
   });
   elyrHdr.appendChild(genBtn);
+}
+
+/* ── Auto-Layer toggle button ── */
+var autoBtn = document.getElementById('elyr-auto-btn');
+if(autoBtn){
+  autoBtn.addEventListener('click', function(){
+    autoLayerOn = !autoLayerOn;
+    autoBtn.classList.toggle('on', autoLayerOn);
+    autoBtn.textContent = autoLayerOn ? '\u25CF Auto' : '\u25CB Auto';
+    autoBtn.style.borderColor = autoLayerOn ? '#a080ff' : '#4a3080';
+    autoBtn.style.color = autoLayerOn ? '#c0a0ff' : '#666';
+    setI(autoLayerOn ? 'Auto-layer ON \u2014 renders become layers' : 'Auto-layer OFF');
+  });
 }
 
 })();
