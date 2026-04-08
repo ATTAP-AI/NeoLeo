@@ -236,7 +236,7 @@ function buildTexPicker(){
   sty.textContent=[
     '#tex-picker-panel{display:none;position:fixed;z-index:610;',
     '  width:300px;max-height:calc(100vh - 40px);',
-    '  background:#342e1e;',
+    '  background:#36281a;',
     '  border:1px solid rgba(255,255,255,0.2);border-radius:8px;',
     '  box-shadow:0 10px 50px rgba(0,0,0,0.85);',
     '  font-family:inherit;overflow:hidden;',

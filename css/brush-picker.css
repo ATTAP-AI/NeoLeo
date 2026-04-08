@@ -1,7 +1,7 @@
 /* ── BRUSH PICKER MODAL ── */
 #bp-modal{display:none;position:fixed;inset:0;z-index:600;background:none;pointer-events:none;}
 #bp-modal.open{display:block;}
-#bp-box{position:fixed;width:290px;background:#2a2230;border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-family:'Courier New',monospace;user-select:none;box-shadow:0 10px 40px rgba(0,0,0,.7);pointer-events:all;max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;z-index:610;}
+#bp-box{position:fixed;width:290px;background:#2a1a36;border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-family:'Courier New',monospace;user-select:none;box-shadow:0 10px 40px rgba(0,0,0,.7);pointer-events:all;max-height:calc(100vh - 40px);display:flex;flex-direction:column;overflow:hidden;z-index:610;}
 #bp-box-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.15);border-radius:8px 8px 0 0;cursor:grab;user-select:none;-webkit-user-select:none;flex-shrink:0;}
 #bp-box-head-title{font-size:10px;letter-spacing:.2em;color:#ffffff;text-transform:uppercase;font-weight:700;}
 #bp-box-head-sub{font-size:8px;color:#40c8a0;margin-top:2px;line-height:1.5;letter-spacing:.06em;}

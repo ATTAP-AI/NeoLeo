@@ -1,5 +1,5 @@
 /* ── AI PROMPT PANEL ── */
-#prompt-panel{display:none;position:fixed;top:0;bottom:auto;width:280px;max-width:40vw;max-height:calc(100vh - 60px);background:#1e2236;border:1px solid rgba(255,255,255,0.2);border-radius:8px;z-index:500;overflow-y:auto;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.2) transparent;box-shadow:0 10px 40px rgba(0,0,0,0.7);}
+#prompt-panel{display:none;position:fixed;top:0;bottom:auto;width:280px;max-width:40vw;max-height:calc(100vh - 60px);background:#1a1e36;border:1px solid rgba(255,255,255,0.2);border-radius:8px;z-index:500;overflow-y:auto;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.2) transparent;box-shadow:0 10px 40px rgba(0,0,0,0.7);}
 #prompt-panel.open{display:flex;}
 #prompt-panel .fx-hdr{border-bottom-color:rgba(255,255,255,0.1);background:rgba(0,0,0,0.15);border-radius:8px 8px 0 0;}
 #prompt-panel .fx-htit{color:#ffffff;}

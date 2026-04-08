@@ -816,7 +816,7 @@ function buildGradientPicker(){
   sty.textContent=[
     '#grad-picker-panel{display:none;position:fixed;z-index:600;',
     '  width:310px;max-height:calc(100vh - 40px);',
-    '  background:#1e2e34;',
+    '  background:#2e2a1a;',
     '  border:1px solid rgba(255,255,255,0.2);border-radius:8px;',
     '  box-shadow:0 10px 50px rgba(0,0,0,0.85);',
     '  font-family:inherit;overflow:hidden;',

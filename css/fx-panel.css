@@ -29,8 +29,8 @@
   border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,0.7);
   scrollbar-color:rgba(255,255,255,0.2) transparent;
 }
-#light-panel{background:#2a3a4a;}
-#atmo-panel{background:#352a3e;}
+#light-panel{background:#1a2e42;}
+#atmo-panel{background:#381a30;}
 #light-panel .fx-hdr,#atmo-panel .fx-hdr{
   background:rgba(0,0,0,0.15);border-bottom:1px solid rgba(255,255,255,0.1);
   border-radius:8px 8px 0 0;cursor:grab;user-select:none;-webkit-user-select:none;

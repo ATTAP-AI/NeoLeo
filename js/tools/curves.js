@@ -173,7 +173,7 @@ function buildCurvesPanel(){
   sty.textContent=[
     '#curves-panel{display:none;position:fixed;z-index:620;',
     '  width:320px;',
-    '  background:#321e28;',
+    '  background:#321a22;',
     '  border:1px solid rgba(255,255,255,0.2);border-radius:8px;',
     '  box-shadow:0 12px 60px rgba(0,0,0,0.9);',
     '  font-family:inherit;overflow:hidden;flex-direction:column;}',
