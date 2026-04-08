@@ -289,6 +289,12 @@ function buildHumPanel(){
     var W=cvEl.width,H=cvEl.height;
     var cctx=cvEl.getContext('2d');
 
+    /* If Naturalize has a live preview active, commit it first so we
+       capture those effects in the flattened composite */
+    if(window._natIsActive&&window._natIsActive()&&window._natClearSnap){
+      window._natClearSnap(); /* clear snap so Naturalize treats cv as committed */
+    }
+
     /* Save full state of ALL canvases for revert */
     _humFullSnap={
       cv:cctx.getImageData(0,0,W,H),
@@ -398,6 +404,8 @@ function buildHumPanel(){
     if(window.genUndoPush)window.genUndoPush();
     _humSnap=null;
     _humFullSnap=null;
+    /* Notify Naturalize to recapture from the committed humanized state */
+    if(window._natClearSnap)window._natClearSnap();
     /* Mark thumbnails as committed */
     var to=document.getElementById('hum-thumb-orig');
     if(to){var tc2=to.getContext('2d');tc2.clearRect(0,0,to.width,to.height);

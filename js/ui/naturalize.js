@@ -94,10 +94,11 @@ panel.innerHTML =
     '<input type="range" id="nat-mp-rot" min="0" max="10" value="1">' +
   '</div>' +
 
-  /* ── SAVE / RESET ── */
+  /* ── APPLY / SAVE / RESET ── */
   '<div style="padding:8px 12px;border-top:1px solid rgba(255,255,255,0.08);display:flex;gap:6px;">' +
-    '<button id="nat-save" class="nat-btn" style="flex:1;background:rgba(64,200,160,0.12);border-color:rgba(64,200,160,0.4);">\u25A0 Save Settings</button>' +
-    '<button id="nat-reset" class="nat-btn" style="flex:1;">\u21BA Reset</button>' +
+    '<button id="nat-apply" class="nat-btn" style="flex:1;background:rgba(64,200,160,0.18);border-color:#40c8a0;color:#ffffff;font-weight:700;">\u2713 Apply</button>' +
+    '<button id="nat-save" class="nat-btn" style="flex:0.7;background:rgba(64,200,160,0.08);border-color:rgba(64,200,160,0.3);">\u25A0 Save</button>' +
+    '<button id="nat-reset" class="nat-btn" style="flex:0.6;">\u21BA Reset</button>' +
   '</div>' +
   '<div id="nat-status" style="font-size:7px;color:rgba(255,255,255,0.3);text-align:center;min-height:10px;padding:0 12px 6px;"></div>';
 
@@ -311,6 +312,19 @@ recapBtn.textContent='\u27F3 Recapture Current Image';recapBtn.title='Take a fre
 recapBtn.addEventListener('click',function(){recaptureSnap();var st=document.getElementById('nat-status');if(st){st.textContent='Canvas recaptured';setTimeout(function(){st.textContent='';},2000);}});
 var footer=panel.querySelector('div[style*="border-top"]');if(footer)panel.insertBefore(recapBtn,footer);
 
+/* ── Apply: commit effects to cv, push undo ── */
+document.getElementById('nat-apply').addEventListener('click',function(){
+  if(!_natSnap){var st=document.getElementById('nat-status');if(st){st.textContent='Nothing to apply — adjust a slider first';setTimeout(function(){st.textContent='';},2500);}return;}
+  if(!(NAT.grainOn||NAT.jitterOn||NAT.multiOn)){var st2=document.getElementById('nat-status');if(st2){st2.textContent='Enable at least one effect first';setTimeout(function(){st2.textContent='';},2500);}return;}
+  /* Effects are already rendered on cv from livePreview — just commit */
+  if(window.genUndoPush)window.genUndoPush();
+  /* Clear snapshot so next interaction captures the committed state */
+  _natSnap=null;
+  var st3=document.getElementById('nat-status');if(st3){st3.textContent='Applied — effects committed to canvas';setTimeout(function(){st3.textContent='';},2500);}
+  var si=document.getElementById('si');if(si)si.textContent='Naturalize applied';
+  if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
+});
+
 /* ── Save / Reset ── */
 var _natSaved=null;
 document.getElementById('nat-save').addEventListener('click',function(){
@@ -340,5 +354,8 @@ document.getElementById('nat-reset').addEventListener('click',function(){
 });
 
 window._NAT=NAT;window._natGrain=applyGrain;window._natRecapture=recaptureSnap;
+window._natIsActive=function(){return NAT.grainOn||NAT.jitterOn||NAT.multiOn;};
+window._natApplyEffects=applyAllEffects;
+window._natClearSnap=function(){_natSnap=null;};
 
 })();

@@ -889,6 +889,7 @@ openBrushPicker=function(){
   if(mainPal) _bpCurrentPalKey=mainPal.value;
 };
 window._openBrushPicker=openBrushPicker;
+window._bpRecolorCanvas=_bpRecolorCanvas;
 
 /* Refresh swatches when color changes via native picker */
 colIn.addEventListener('input',function(){

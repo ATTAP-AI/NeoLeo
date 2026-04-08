@@ -84,6 +84,7 @@ document.getElementById('ranbtn').onclick=function(){
 };
 
 /* ── Palette change handler ── */
+window._palPrevKey=document.getElementById('pal').value;
 document.getElementById('pal').onchange=function(){
   drawSw();
 
@@ -152,8 +153,14 @@ document.getElementById('pal').onchange=function(){
     setTimeout(function(){window._TOPO.onPaletteChange();},80);
   }
 
-  /* Normal generate for engines */
-  if(_engineSelected&&typeof generate==='function')generate();
+  /* Instant recolor of existing canvas content instead of regenerating */
+  if(typeof window._bpRecolorCanvas==='function'){
+    var newKey=document.getElementById('pal').value;
+    if(window._palPrevKey&&window._palPrevKey!==newKey){
+      window._bpRecolorCanvas(window._palPrevKey,newKey);
+    }
+    window._palPrevKey=newKey;
+  }
 };
 
 /* ── PNG Export button (↓ PNG) — uses delegation to survive DOM replacements ── */
