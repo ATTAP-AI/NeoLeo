@@ -195,8 +195,15 @@ panel.id = 'help-panel';
 var hdr = document.createElement('div');
 hdr.id = 'help-hdr';
 hdr.innerHTML = '<div style="display:flex;align-items:baseline;"><span id="help-hdr-title">NeoLeo</span><span id="help-hdr-sub">Help Guide</span></div>' +
-  '<button id="help-close">Close</button>';
+  '<div id="help-hdr-right"><button id="help-search-btn">\u2315 Find</button><button id="help-close">Close</button></div>';
 panel.appendChild(hdr);
+
+var searchBar = document.createElement('div');
+searchBar.id = 'help-search-bar';
+searchBar.innerHTML = '<input id="help-search-input" type="text" placeholder="Search help\u2026">' +
+  '<button id="help-search-go">\u2315</button>' +
+  '<span id="help-search-info"></span>';
+panel.appendChild(searchBar);
 
 var body = document.createElement('div');
 body.id = 'help-body';
@@ -235,29 +242,30 @@ document.body.appendChild(panel);
    LIVE LINK SYSTEM — highlight & navigate to UI elements
    ══════════════════════════════════════════════════════════ */
 var _hlTimer = null;
+var _hlInterval = null;
 function highlightEl(el){
   if(!el) return;
+  /* Clear any previous highlight */
+  if(_hlTimer) clearTimeout(_hlTimer);
+  if(_hlInterval) clearInterval(_hlInterval);
   /* Scroll element into view */
   el.scrollIntoView({behavior:'smooth', block:'center'});
-  /* Flash highlight */
+  /* Blink highlight for 3 seconds */
   var orig = el.style.outline;
-  var origBg = el.style.backgroundColor;
   var origShadow = el.style.boxShadow;
-  el.style.outline = '3px solid #E8F50A';
-  el.style.boxShadow = '0 0 18px 4px rgba(232,245,10,0.5)';
-  if(_hlTimer) clearTimeout(_hlTimer);
+  var on = true;
+  function setOn(){ el.style.outline = '3px solid #E8F50A'; el.style.boxShadow = '0 0 18px 4px rgba(232,245,10,0.5)'; }
+  function setOff(){ el.style.outline = orig; el.style.boxShadow = origShadow; }
+  setOn();
+  _hlInterval = setInterval(function(){
+    on = !on;
+    if(on) setOn(); else setOff();
+  }, 350);
   _hlTimer = setTimeout(function(){
-    el.style.outline = orig;
-    el.style.boxShadow = origShadow;
-    _hlTimer = setTimeout(function(){
-      el.style.outline = '3px solid #E8F50A';
-      el.style.boxShadow = '0 0 18px 4px rgba(232,245,10,0.5)';
-      _hlTimer = setTimeout(function(){
-        el.style.outline = orig;
-        el.style.boxShadow = origShadow;
-      }, 400);
-    }, 200);
-  }, 400);
+    clearInterval(_hlInterval);
+    _hlInterval = null;
+    setOff();
+  }, 3000);
 }
 
 function openSection(bodyId){
@@ -324,6 +332,115 @@ panel.addEventListener('click', function(e){
   }
 });
 
+/* ══════════════════════════════════════════════════════════
+   SEARCH SYSTEM — find text within help content
+   ══════════════════════════════════════════════════════════ */
+(function(){
+  var searchBtn = document.getElementById('help-search-btn');
+  var bar = document.getElementById('help-search-bar');
+  var input = document.getElementById('help-search-input');
+  var goBtn = document.getElementById('help-search-go');
+  var info = document.getElementById('help-search-info');
+  var hits = [];
+  var currentHit = -1;
+
+  searchBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    bar.classList.toggle('open');
+    if(bar.classList.contains('open')){
+      input.focus();
+      input.select();
+    } else {
+      clearHits();
+    }
+  });
+
+  function clearHits(){
+    hits.forEach(function(span){
+      var parent = span.parentNode;
+      if(parent){ parent.replaceChild(document.createTextNode(span.textContent), span); parent.normalize(); }
+    });
+    hits = [];
+    currentHit = -1;
+    info.textContent = '';
+  }
+
+  function doSearch(){
+    clearHits();
+    var query = input.value.trim();
+    if(!query) return;
+    /* Expand all sections so we can search all text */
+    body.querySelectorAll('.help-sec').forEach(function(s){ s.classList.add('open'); });
+    /* Walk text nodes in #help-body */
+    var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
+    var matches = [];
+    var node;
+    var re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    while(node = walker.nextNode()){
+      if(re.test(node.textContent)){
+        matches.push(node);
+      }
+      re.lastIndex = 0;
+    }
+    /* Wrap matches in highlight spans */
+    matches.forEach(function(textNode){
+      var parts = textNode.textContent.split(re);
+      if(parts.length <= 1) return;
+      var frag = document.createDocumentFragment();
+      parts.forEach(function(part){
+        if(re.test(part)){
+          var span = document.createElement('span');
+          span.className = 'help-search-hit';
+          span.textContent = part;
+          hits.push(span);
+          frag.appendChild(span);
+        } else {
+          frag.appendChild(document.createTextNode(part));
+        }
+        re.lastIndex = 0;
+      });
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+    if(hits.length > 0){
+      currentHit = 0;
+      hits[0].classList.add('current');
+      hits[0].scrollIntoView({behavior:'smooth', block:'center'});
+      info.textContent = '1 / ' + hits.length;
+    } else {
+      info.textContent = 'No results';
+    }
+  }
+
+  function nextHit(){
+    if(hits.length === 0) return;
+    hits[currentHit].classList.remove('current');
+    currentHit = (currentHit + 1) % hits.length;
+    hits[currentHit].classList.add('current');
+    hits[currentHit].scrollIntoView({behavior:'smooth', block:'center'});
+    info.textContent = (currentHit + 1) + ' / ' + hits.length;
+  }
+
+  goBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(hits.length > 0) nextHit();
+    else doSearch();
+  });
+
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(hits.length > 0 && input.value.trim() === input.dataset.lastQuery) nextHit();
+      else { input.dataset.lastQuery = input.value.trim(); doSearch(); }
+    }
+    if(e.key === 'Escape'){
+      clearHits();
+      bar.classList.remove('open');
+    }
+    e.stopPropagation();
+  });
+  input.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+})();
+
 /* ── Close button ── */
 document.getElementById('help-close').addEventListener('click', function(){
   panel.classList.remove('open');
@@ -338,7 +455,7 @@ panel.addEventListener('click', function(e){
 (function(){
   var drag = null;
   hdr.addEventListener('mousedown', function(e){
-    if(e.target.id === 'help-close') return;
+    if(e.target.id === 'help-close' || e.target.id === 'help-search-btn') return;
     e.preventDefault();
     hdr.style.cursor = 'grabbing';
     /* On first drag, switch from centered to absolute positioning */
