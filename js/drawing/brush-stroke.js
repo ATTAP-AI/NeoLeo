@@ -258,12 +258,20 @@ function applyBrushStroke(ctx2,pts,type,col,sz,hd,op){
     }
 
   } else if(type==='pomo'){
-    /* Splash ink -- wet broad wash with pooling */
-    ctx2.globalAlpha=op*0.55;ctx2.lineWidth=sz*1.8;ctx2.lineCap='round';ctx2.lineJoin='round';
-    ctx2.strokeStyle=col;ctx2.shadowBlur=sz*2;ctx2.shadowColor='rgba('+r+','+g+','+b+',0.4)';
+    /* Splash ink -- wet broad wash with pooling, blended at all sizes */
+    ctx2.lineCap='round';ctx2.lineJoin='round';ctx2.strokeStyle=col;
+    /* Outer soft halo */
+    ctx2.globalAlpha=op*0.32;ctx2.lineWidth=sz*1.9;
+    ctx2.shadowBlur=sz*1.6;ctx2.shadowColor='rgba('+r+','+g+','+b+',0.45)';
     buildBezierPath(ctx2,pts);ctx2.stroke();ctx2.shadowBlur=0;
-    /* Darker core */
-    ctx2.globalAlpha=op*0.35;ctx2.lineWidth=sz*0.5;
+    /* Mid wash */
+    ctx2.globalAlpha=op*0.45;ctx2.lineWidth=sz*1.45;
+    buildBezierPath(ctx2,pts);ctx2.stroke();
+    /* Inner saturated body -- matches mid for seamless blend */
+    ctx2.globalAlpha=op*0.55;ctx2.lineWidth=sz*1.05;
+    buildBezierPath(ctx2,pts);ctx2.stroke();
+    /* Darker pooled core, large enough to blend (was sz*0.5 -- caused nested look) */
+    ctx2.globalAlpha=op*0.38;ctx2.lineWidth=sz*0.7;
     buildBezierPath(ctx2,pts);ctx2.stroke();
     /* Wet scatter */
     ctx2.fillStyle=col;
@@ -302,14 +310,15 @@ function applyBrushStroke(ctx2,pts,type,col,sz,hd,op){
     ctx2.globalAlpha=op;ctx2.fillStyle=col;
     if(pts.length>=2){
       var upper=[],lower=[];
+      var sjK=Math.max(0.1,sz/5); /* size scaling: default sz=5 -> 1.0 */
       for(var si=0;si<pts.length;si++){
         var t2=si/(pts.length-1);
-        /* Slender Gold pressure signature */
+        /* Slender Gold pressure signature, scaled by brush size */
         var w;
-        if(t2<0.08) w=2.5+t2/0.08*1.5; /* nail-head entrance */
-        else if(t2<0.15) w=4-((t2-0.08)/0.07)*2.8; /* rapid thin-down */
-        else if(t2>0.88) w=1.2+((t2-0.88)/0.12)*2.0; /* crane-beak exit flare */
-        else w=1.0+Math.sin((t2-0.15)*Math.PI*0.8)*0.4; /* thin body */
+        if(t2<0.08) w=(2.5+t2/0.08*1.5)*sjK; /* nail-head entrance */
+        else if(t2<0.15) w=(4-((t2-0.08)/0.07)*2.8)*sjK; /* rapid thin-down */
+        else if(t2>0.88) w=(1.2+((t2-0.88)/0.12)*2.0)*sjK; /* crane-beak exit flare */
+        else w=(1.0+Math.sin((t2-0.15)*Math.PI*0.8)*0.4)*sjK; /* thin body */
         var nx=0,ny=1;
         if(si<pts.length-1){var ddx=pts[si+1][0]-pts[si][0],ddy=pts[si+1][1]-pts[si][1],len=Math.sqrt(ddx*ddx+ddy*ddy)||1;nx=-ddy/len;ny=ddx/len;}
         else if(si>0){var ddx=pts[si][0]-pts[si-1][0],ddy=pts[si][1]-pts[si-1][1],len=Math.sqrt(ddx*ddx+ddy*ddy)||1;nx=-ddy/len;ny=ddx/len;}

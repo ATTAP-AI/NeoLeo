@@ -335,21 +335,22 @@ function drawStroke(canvas,hd,sz,col,type){
     }
 
   } else if(t==='pomo'){
-    /* 泼墨 Splash ink — wet broad wash with pooling edges */
+    /* 泼墨 Splash ink — wet broad wash, blended at all sizes */
     const rgb=hex2rgb(col);
-    /* Large wet wash body */
-    sc.globalAlpha=0.55;sc.shadowBlur=sz*3;sc.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.4)';
-    sc.strokeStyle=col;sc.lineWidth=sz*1.8;sc.lineCap='round';sc.lineJoin='round';
-    sc.beginPath();sc.moveTo(12,H/2+4);
-    sc.bezierCurveTo(W*.25,H/2-H*.15,W*.5,H/2+H*.1,W*.75,H/2-2);
-    sc.bezierCurveTo(W*.85,H/2+6,W*.95,H/2,W-12,H/2+2);
-    sc.stroke();sc.shadowBlur=0;
-    /* Darker pooling at edges */
-    sc.globalAlpha=0.35;sc.strokeStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.6)';
-    sc.lineWidth=sz*0.5;
-    sc.beginPath();sc.moveTo(14,H/2+5);
-    sc.bezierCurveTo(W*.3,H/2-H*.12,W*.6,H/2+H*.12,W-14,H/2+3);
-    sc.stroke();
+    sc.lineCap='round';sc.lineJoin='round';sc.strokeStyle=col;
+    const pomoPath=()=>{sc.beginPath();sc.moveTo(12,H/2+4);
+      sc.bezierCurveTo(W*.25,H/2-H*.15,W*.5,H/2+H*.1,W*.75,H/2-2);
+      sc.bezierCurveTo(W*.85,H/2+6,W*.95,H/2,W-12,H/2+2);};
+    /* Outer halo */
+    sc.globalAlpha=0.32;sc.shadowBlur=sz*1.6;sc.shadowColor='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.45)';
+    sc.lineWidth=sz*1.9;pomoPath();sc.stroke();sc.shadowBlur=0;
+    /* Mid wash */
+    sc.globalAlpha=0.45;sc.lineWidth=sz*1.45;pomoPath();sc.stroke();
+    /* Inner body */
+    sc.globalAlpha=0.55;sc.lineWidth=sz*1.05;pomoPath();sc.stroke();
+    /* Pooled core (no longer nested-looking) */
+    sc.globalAlpha=0.38;sc.strokeStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.85)';
+    sc.lineWidth=sz*0.7;pomoPath();sc.stroke();
     /* Wet scatter */
     for(let i=0;i<50;i++){
       const tx=10+Math.random()*(W-20);
@@ -389,16 +390,17 @@ function drawStroke(canvas,hd,sz,col,type){
     const rgb=hex2rgb(col);
     sc.fillStyle=col;sc.globalAlpha=0.98;
     const steps=80;const upper=[],lower=[];
+    const sjK=Math.max(0.1,sz/5); /* size scaling: default sz=5 -> 1.0 */
     for(let i=0;i<=steps;i++){
       const t2=i/steps;
       const bx=cubicBez(8,W*.25,W*.7,W-8,t2);
       const by=cubicBez(H/2,H/2-H*.22,H/2+H*.12,H/2-2,t2);
-      /* Slender Gold signature: nail-head start, thin body, crane-beak end */
+      /* Slender Gold signature, scaled by brush size */
       let w;
-      if(t2<0.08) w=2.5+t2/0.08*1.5; /* nail-head entrance */
-      else if(t2<0.15) w=4-((t2-0.08)/0.07)*2.8; /* rapid thin-down */
-      else if(t2>0.88) w=1.2+((t2-0.88)/0.12)*2.0; /* crane-beak flare */
-      else w=1.0+Math.sin((t2-0.15)*Math.PI*0.8)*0.4; /* thin body with slight swell */
+      if(t2<0.08) w=(2.5+t2/0.08*1.5)*sjK; /* nail-head entrance */
+      else if(t2<0.15) w=(4-((t2-0.08)/0.07)*2.8)*sjK; /* rapid thin-down */
+      else if(t2>0.88) w=(1.2+((t2-0.88)/0.12)*2.0)*sjK; /* crane-beak flare */
+      else w=(1.0+Math.sin((t2-0.15)*Math.PI*0.8)*0.4)*sjK; /* thin body with slight swell */
       upper.push([bx,by-w]);lower.push([bx,by+w]);
     }
     sc.beginPath();sc.moveTo(upper[0][0],upper[0][1]);
