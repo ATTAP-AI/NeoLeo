@@ -1,7 +1,7 @@
 /* ── NeoLeo Help Panel ── */
-#help-panel{display:none;position:fixed;z-index:10001;width:480px;max-width:92vw;max-height:85vh;background:var(--acc,#e8c060);border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,0.6);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#222;overflow:hidden;top:50%;left:50%;transform:translate(-50%,-50%);}
+#help-panel{display:none;position:fixed;z-index:10001;width:640px;max-width:92vw;max-height:88vh;background:var(--acc,#e8c060);border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,0.6);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#222;overflow:hidden;top:50%;left:50%;transform:translate(-50%,-50%);}
 #help-panel.open{display:flex;flex-direction:column;}
-#help-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0d0d18;cursor:grab;flex-shrink:0;border-radius:6px 6px 0 0;}
+#help-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0d0d18;cursor:grab;flex-shrink:0;border-radius:6px 6px 0 0;margin:0;gap:12px;}
 #help-hdr-title{font-size:13px;font-weight:700;letter-spacing:.14em;color:#E8F50A;text-transform:uppercase;font-family:'Courier New',monospace;}
 #help-hdr-sub{font-size:9px;color:#28E0D1;letter-spacing:.08em;margin-left:8px;font-style:italic;}
 #help-hdr-right{display:flex;align-items:center;gap:6px;}
@@ -18,7 +18,7 @@
 #help-search-info{font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:.04em;white-space:nowrap;}
 .help-search-hit{background:rgba(232,245,10,0.35);border-radius:2px;padding:0 1px;}
 .help-search-hit.current{background:rgba(232,245,10,0.7);}
-#help-body{overflow-y:auto;flex:1;padding:20px 22px 24px;scrollbar-width:thin;scrollbar-color:#b89a40 var(--acc,#e8c060);}
+#help-body{overflow-y:auto;flex:1;padding:22px 28px 28px;scrollbar-width:thin;scrollbar-color:#b89a40 var(--acc,#e8c060);}
 #help-body::-webkit-scrollbar{width:6px;}
 #help-body::-webkit-scrollbar-track{background:var(--acc,#e8c060);}
 #help-body::-webkit-scrollbar-thumb{background:#9a7a30;border-radius:3px;}
