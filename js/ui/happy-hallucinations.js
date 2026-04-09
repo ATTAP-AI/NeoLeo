@@ -60,18 +60,60 @@ var DRAW_TOOLS=['brush','pencil','line','rect','ellipse','triangle','shape','tex
 /* ── Composition strategies ── */
 var STRATEGIES=['scatter','radial','flow','grid','burst','crosshatch','constellation'];
 
-/* ── Organic Forms integration — render a random organic system on top ── */
-var ORGF_SYSTEMS=['meta','super','nblob','lava','radio'];
-function _applyOrganic(){
-  if(!window._ORGF)return null;
-  var sysIdx=Math.floor(Math.random()*ORGF_SYSTEMS.length);
-  /* Select the system in the Organic Forms panel */
-  var sysRows=document.querySelectorAll('[id^="orgf-sr-"]');
-  if(sysRows.length>sysIdx){sysRows[sysIdx].click();}
-  /* Randomise its sliders for variety */
-  window._ORGF.randomise();
-  return ORGF_SYSTEMS[sysIdx];
+/* ── Experimental Tools integration — blend a random tool on top ── */
+var _EXP_TOOLS=[
+  {id:'organic',   label:'Organic Forms',     check:function(){return !!window._ORGF;},
+   run:function(){
+     var sys=['meta','super','nblob','lava','radio'];
+     var i=Math.floor(Math.random()*sys.length);
+     var rows=document.querySelectorAll('[id^="orgf-sr-"]');
+     if(rows.length>i) rows[i].click();
+     window._ORGF.randomise();
+     return sys[i];
+   }},
+  {id:'morpho',    label:'Morphogenesis',     check:function(){return !!window._MORPH;},
+   run:function(){
+     var sys=['rd','phyl','branch','chladni','voronoi'];
+     var i=Math.floor(Math.random()*sys.length);
+     var rows=document.querySelectorAll('[id^="morph-sr-"]');
+     if(rows.length>i) rows[i].click();
+     window._MORPH.randomise();
+     return sys[i];
+   }},
+  {id:'topo',      label:'Topology Engine',   check:function(){return !!(window._TOPO&&window._TOPO.randomise);},
+   run:function(){
+     window._TOPO.randomise();
+     return 'shape';
+   }},
+  {id:'prob',      label:'Probability Paint',  check:function(){return !!(window._PP&&window._PP.cycle);},
+   run:function(){
+     window._PP.cycle();
+     return 'expression';
+   }},
+  {id:'memory',    label:'Memory Drawing',     check:function(){return !!(window._MBD&&window._MBD.cycle);},
+   run:function(){
+     window._MBD.cycle();
+     return 'architecture';
+   }},
+  {id:'temporal',  label:'Temporal Canvases',  check:function(){return !!(window._tc&&document.getElementById('tc-rand-hdr-btn'));},
+   run:function(){
+     var btn=document.getElementById('tc-rand-hdr-btn');
+     if(btn) btn.click();
+     return 'mode';
+   }}
+];
+
+function _applyExperimental(){
+  /* Collect available tools */
+  var avail=_EXP_TOOLS.filter(function(t){return t.check();});
+  if(!avail.length) return null;
+  var tool=avail[Math.floor(Math.random()*avail.length)];
+  var detail=tool.run();
+  return tool.id+(detail?':'+detail:'');
 }
+
+/* Legacy wrapper for backward compat */
+function _applyOrganic(){ return _applyExperimental(); }
 
 /* ── Utility ── */
 function _rr(a,b){return a+Math.random()*(b-a);}
@@ -628,15 +670,15 @@ function doHappyHallucination(){
     if(gbtn)gbtn.click();
   }
 
-  /* 3. After engine renders → optional organic layer → draw tool overlay → flatten → capture */
+  /* 3. After engine renders → optional experimental layer → draw tool overlay → flatten → capture */
   setTimeout(function(){
-    /* ~35% chance to add an Organic Forms layer on top of the engine */
-    var orgSys=null;
-    if(window._ORGF&&Math.random()<0.35){
-      _hhPopup.phase('Blending organic forms\u2026',45);
+    /* ~40% chance to blend a random experimental tool on top of the engine */
+    var expTag=null;
+    if(Math.random()<0.40){
+      _hhPopup.phase('Blending experimental layer\u2026',45);
       var prevConnect=window._ENG_CONNECT;
       window._ENG_CONNECT=true; /* Blend on top */
-      orgSys=_applyOrganic();
+      expTag=_applyExperimental();
       window._ENG_CONNECT=prevConnect;
     }
 
@@ -644,7 +686,7 @@ function doHappyHallucination(){
 
     setTimeout(function(){
       var info=drawHHOverlay(mood.pal);
-      if(orgSys&&info) info.tools.push('organic:'+orgSys);
+      if(expTag&&info) info.tools.push(expTag);
 
       _hhPopup.phase('Flattening composite\u2026',80);
 
@@ -1206,18 +1248,18 @@ setTimeout(function(){
         setTimeout(function(){
           _hhPopup.phase('Capturing engine\u2026',50);
 
-          /* Optional: blend an Organic Forms layer on top (40% per pass, guaranteed ≥1) */
-          var orgSys=null;
-          var doOrg=(window._ORGF&&(Math.random()<0.4||(currentPass===totalPasses&&!_mpPasses.some(function(p){return p.orgSys;}))));
-          if(doOrg){
-            _hhPopup.phase('Blending organic forms\u2026',55);
+          /* Optional: blend a random experimental tool on top (40% per pass, guaranteed ≥1) */
+          var expTag=null;
+          var doExp=(Math.random()<0.4||(currentPass===totalPasses&&!_mpPasses.some(function(p){return p.expTag;})));
+          if(doExp){
+            _hhPopup.phase('Blending experimental layer\u2026',55);
             var prevConnect=window._ENG_CONNECT;
             window._ENG_CONNECT=true;
-            orgSys=_applyOrganic();
+            expTag=_applyExperimental();
             window._ENG_CONNECT=prevConnect;
           }
 
-          /* Capture engine render (now includes organic layer if applied) */
+          /* Capture engine render (now includes experimental layer if applied) */
           var W=cvEl.width,H=cvEl.height;
           var engCv=document.createElement('canvas');
           engCv.width=W;engCv.height=H;
@@ -1228,7 +1270,7 @@ setTimeout(function(){
           setTimeout(function(){
             /* Draw overlay onto dv */
             var info=drawHHOverlay(usePal);
-            if(orgSys&&info) info.tools.push('organic:'+orgSys);
+            if(expTag&&info) info.tools.push(expTag);
 
             /* Capture overlay */
             var dvEl=document.getElementById('dv');
@@ -1242,7 +1284,7 @@ setTimeout(function(){
             if(window._layersReset)window._layersReset();
 
             /* Store pass */
-            _mpPasses.push({engine:engCv,overlay:ovrCv,mood:mood.name,blend:thisBlend,info:info,orgSys:orgSys});
+            _mpPasses.push({engine:engCv,overlay:ovrCv,mood:mood.name,blend:thisBlend,info:info,expTag:expTag});
 
             captureHH(mood.name+' (P'+currentPass+')',info);
 
