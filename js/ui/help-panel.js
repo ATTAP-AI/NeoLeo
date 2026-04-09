@@ -268,6 +268,13 @@ SECTIONS.forEach(function(sec){
 });
 
 panel.appendChild(body);
+/* Backdrop overlay */
+var helpOverlay = document.createElement('div');
+helpOverlay.id = 'help-overlay';
+helpOverlay.addEventListener('click', function(e){
+  if(e.target === helpOverlay) panel.classList.remove('open');
+});
+document.body.appendChild(helpOverlay);
 document.body.appendChild(panel);
 
 /* ══════════════════════════════════════════════════════════
@@ -476,11 +483,15 @@ panel.addEventListener('click', function(e){
 /* ── Close button ── */
 document.getElementById('help-close').addEventListener('click', function(){
   panel.classList.remove('open');
+  helpOverlay.classList.remove('open');
 });
 
 /* ── Click outside to close ── */
 panel.addEventListener('click', function(e){
-  if(e.target === panel) panel.classList.remove('open');
+  if(e.target === panel){
+    panel.classList.remove('open');
+    helpOverlay.classList.remove('open');
+  }
 });
 
 /* ── Draggable header ── */
@@ -524,12 +535,14 @@ if(helpBtn){
     e.preventDefault();
     if(panel.classList.contains('open')){
       panel.classList.remove('open');
+      helpOverlay.classList.remove('open');
     } else {
       /* Reset to centered position */
       panel.style.left = '50%';
       panel.style.top = '50%';
       panel.style.transform = 'translate(-50%,-50%)';
       panel.classList.add('open');
+      helpOverlay.classList.add('open');
       body.scrollTop = 0;
     }
   });
