@@ -65,6 +65,7 @@
     'js/experimental/morphogenesis.js',
     'js/experimental/organic-forms.js',
     'js/experimental/topology-engine.js',
+    'js/experimental/leo-toolset.js',
 
     // ── Export (depends on core + FX) ──
     'js/export/export.js',

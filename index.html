@@ -992,6 +992,48 @@
       </div>
     </div>
 
+    <!-- ◆ LEO TOOLSET — Renaissance ink-and-vellum primitives -->
+    <div id="leo-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="leo-toggle" onclick="(function(){var b=document.getElementById('leo-body');var t=document.getElementById('leo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,160,64,0.07)':'none';t.style.borderColor=open?'#c0a040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c0a040;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9998; Leo Toolset</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="leo-cycle-btn" class="cycle-btn" onclick="window._LEO&&window._LEO.cycle&&window._LEO.cycle()">Cycle</button>
+      </div>
+      <div id="leo-cycle-label" style="font-size:8px;color:#c0a040;padding:2px 10px 3px;background:rgba(192,160,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="leo-cycle-name">--</span></div>
+      <div id="leo-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#b09060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Renaissance ink-and-vellum primitives extracted from Leonardo da Vinci&rsquo;s notebooks. Aged paper, iron-gall line, sanguine chalk, chiaroscuro hatching, mirror-writing margins.</div>
+
+        <!-- System list -->
+        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div id="leo-sys-list" style="margin-bottom:8px;"></div>
+
+        <!-- Parameter sliders -->
+        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l1">Line tremor</span><span class="pv" id="leo-v1">60%</span></div><input type="range" id="leo-p1" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l2">Hatch density</span><span class="pv" id="leo-v2">60%</span></div><input type="range" id="leo-p2" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l3">Foxing spots</span><span class="pv" id="leo-v3">60%</span></div><input type="range" id="leo-p3" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l4">Sanguine chalk</span><span class="pv" id="leo-v4">50%</span></div><input type="range" id="leo-p4" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l5">Mirror text lines</span><span class="pv" id="leo-v5">7</span></div><input type="range" id="leo-p5" min="0" max="20" value="7"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l6">Edge burn</span><span class="pv" id="leo-v6">55%</span></div><input type="range" id="leo-p6" min="0" max="100" value="55"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l7">Construction grid</span><span class="pv" id="leo-v7">100%</span></div><input type="range" id="leo-p7" min="0" max="100" value="100"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l8">Contour weight</span><span class="pv" id="leo-v8">100%</span></div><input type="range" id="leo-p8" min="20" max="220" value="100"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l9">Hatch length</span><span class="pv" id="leo-v9">100%</span></div><input type="range" id="leo-p9" min="30" max="220" value="100"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l10">Cross-hatch angle</span><span class="pv" id="leo-v10">78&deg;</span></div><input type="range" id="leo-p10" min="20" max="160" value="78"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l11">Ink darkness</span><span class="pv" id="leo-v11">94%</span></div><input type="range" id="leo-p11" min="20" max="100" value="94"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l12">Mirror chars/line</span><span class="pv" id="leo-v12">14</span></div><input type="range" id="leo-p12" min="2" max="40" value="14"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="leo-l13">Signature</span><span class="pv" id="leo-v13">100%</span></div><input type="range" id="leo-p13" min="0" max="100" value="100"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="leo-render-btn" class="fx-bb" style="flex:2;border-color:#c0a040;color:#c0a040;" onclick="window._LEO&&window._LEO.render&&window._LEO.render()">&#9998; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#4a3a1a;color:#b09060;" onclick="window._LEO&&window._LEO.randomise&&window._LEO.randomise()">&#8635; Rand</button>
+        </div>
+        <div id="leo-status" style="font-size:8px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+      </div>
+    </div>
+
   </div>
 
   <div class="sp"></div>

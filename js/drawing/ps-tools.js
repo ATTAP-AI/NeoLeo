@@ -9,6 +9,11 @@
 
 /* ── State for new tools ── */
 var cloneSrcX=null, cloneSrcY=null, cloneOffX=0, cloneOffY=0;
+var cloneAligned=true;          // Photoshop "Aligned" checkbox
+var cloneStrokeStarted=false;   // tracks first stamp of current stroke (for non-aligned mode reset)
+var cloneAnchorX=null, cloneAnchorY=null; // remembered source anchor for non-aligned restart
+var cloneSpaced=0;               // accumulated stroke distance since last stamp
+var cloneSnap=null;              // canvas snapshot of full source composite at stroke start
 var gradStartX=null, gradStartY=null;
 var bgCol='#000000';
 var toolStrength=0.5;
@@ -140,20 +145,112 @@ function applyPixelOp(tool,x,y,sz,str){
   tctx.putImageData(id,x0,y0);
 }
 
-/* ── Clone stamp paint ── */
-function paintClone(x,y,sz,op){
-  if(cloneSrcX===null)return;
-  var tctx=window._getActiveLayerCtx?window._getActiveLayerCtx():ctx;
-  /* Read from composite */
-  var tmp3=document.createElement('canvas');tmp3.width=cv.width;tmp3.height=cv.height;
-  var tc3=tmp3.getContext('2d');tc3.drawImage(uv,0,0);tc3.drawImage(cv,0,0);
+/* ── Clone stamp helpers ── */
+/* Build a full-composite source snapshot of all currently visible art.
+   Excludes the active draw layer to prevent feedback when painting onto it. */
+function buildCloneSnapshot(){
+  var snap=document.createElement('canvas');
+  snap.width=cv.width;snap.height=cv.height;
+  var sctx=snap.getContext('2d');
+  /* Layer order matches what the user sees: upload → engine → draw */
+  if(uv)sctx.drawImage(uv,0,0);
+  if(cv)sctx.drawImage(cv,0,0);
+  if(dv)sctx.drawImage(dv,0,0);
+  return snap;
+}
+
+/* Build a soft-edge stamp brush of given size, hardness 0..1.
+   Returns an offscreen canvas containing a white circular mask with
+   the requested hardness falloff. The mask is then used as a clipping
+   alpha for drawing the source patch. */
+var _cloneBrushCache={};
+function getCloneBrush(sz,hd){
+  var key=sz+'_'+hd;
+  if(_cloneBrushCache[key])return _cloneBrushCache[key];
+  var b=document.createElement('canvas');b.width=sz;b.height=sz;
+  var bc=b.getContext('2d');
   var r=sz/2;
+  var hard=Math.max(0,Math.min(1,hd));
+  var inner=r*hard;
+  var g=bc.createRadialGradient(r,r,inner,r,r,r);
+  g.addColorStop(0,'rgba(255,255,255,1)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  bc.fillStyle=g;
+  bc.fillRect(0,0,sz,sz);
+  _cloneBrushCache[key]=b;
+  /* Bound cache size */
+  var keys=Object.keys(_cloneBrushCache);
+  if(keys.length>32)delete _cloneBrushCache[keys[0]];
+  return b;
+}
+
+/* Stamp a single soft clone dab at (x,y), sampling from cloneSnap with
+   the current source offset. */
+function paintCloneStamp(x,y,sz,hd,op){
+  if(cloneSrcX===null||!cloneSnap)return;
+  var tctx=window._getActiveLayerCtx?window._getActiveLayerCtx():ctx;
+  var sx=x-cloneOffX, sy=y-cloneOffY;        // source position for this dab
+  if(sx<-sz||sy<-sz||sx>cv.width+sz||sy>cv.height+sz)return;
+  var r=sz/2;
+  /* Build the dab in an offscreen buffer: source patch * soft brush mask */
+  var dab=document.createElement('canvas');dab.width=sz;dab.height=sz;
+  var dctx2=dab.getContext('2d');
+  /* 1. paint the source patch */
+  dctx2.drawImage(cloneSnap, sx-r, sy-r, sz, sz, 0, 0, sz, sz);
+  /* 2. mask it with the soft brush using destination-in */
+  dctx2.globalCompositeOperation='destination-in';
+  dctx2.drawImage(getCloneBrush(sz,hd),0,0);
+  /* 3. composite onto target */
   tctx.save();
   tctx.globalAlpha=op;
   tctx.globalCompositeOperation='source-over';
-  tctx.beginPath();tctx.arc(x,y,r,0,Math.PI*2);tctx.clip();
-  tctx.drawImage(tmp3,cloneSrcX-r+cloneOffX,cloneSrcY-r+cloneOffY,sz,sz,x-r,y-r,sz,sz);
+  tctx.drawImage(dab, x-r, y-r);
   tctx.restore();
+}
+
+/* Stamp a stroke segment from (x0,y0) to (x1,y1), interpolating dabs at
+   spacing of ~25% brush size for a continuous painted line. */
+function paintCloneSegment(x0,y0,x1,y1,sz,hd,op){
+  var spacing=Math.max(1, sz*0.25);
+  var dx=x1-x0, dy=y1-y0;
+  var dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<0.01){paintCloneStamp(x1,y1,sz,hd,op);return;}
+  var steps=Math.max(1, Math.ceil((dist+cloneSpaced)/spacing));
+  var firstT=Math.max(0, (spacing-cloneSpaced)/dist);
+  for(var i=0;i<steps;i++){
+    var t=firstT + i*(spacing/dist);
+    if(t>1)break;
+    paintCloneStamp(x0+dx*t, y0+dy*t, sz, hd, op);
+  }
+  cloneSpaced=(cloneSpaced+dist)%spacing;
+}
+
+/* Source crosshair overlay drawn on av canvas */
+function drawCloneSrcMarker(x,y,sz){
+  if(!actx)return;
+  actx.clearRect(0,0,av.width,av.height);
+  if(x===null||y===null)return;
+  actx.save();
+  actx.lineWidth=1.5;
+  actx.strokeStyle='rgba(64,200,160,0.95)';
+  actx.beginPath();actx.arc(x,y,Math.max(6,sz/2),0,Math.PI*2);actx.stroke();
+  /* crosshair */
+  actx.strokeStyle='rgba(64,200,160,0.85)';
+  actx.beginPath();
+  actx.moveTo(x-7,y);actx.lineTo(x+7,y);
+  actx.moveTo(x,y-7);actx.lineTo(x,y+7);
+  actx.stroke();
+  /* small filled center dot */
+  actx.fillStyle='rgba(64,200,160,1)';
+  actx.beginPath();actx.arc(x,y,1.5,0,Math.PI*2);actx.fill();
+  actx.restore();
+}
+function clearCloneSrcMarker(){if(actx)actx.clearRect(0,0,av.width,av.height);}
+
+/* Legacy entry retained for any external callers */
+function paintClone(x,y,sz,op){
+  if(cloneSrcX===null)return;
+  paintCloneStamp(x,y,sz,(typeof brushHd==='number'?brushHd/100:0.7),op);
 }
 
 /* ── Smudge direction tracking ── */
@@ -188,7 +285,11 @@ document.addEventListener('mousedown',function(e){
     e.preventDefault();e.stopPropagation();
     var pos=getCanvasPos(e);if(!pos)return;
     cloneSrcX=pos[0];cloneSrcY=pos[1];
-    setI('Clone source: '+Math.round(pos[0])+', '+Math.round(pos[1]));return;
+    cloneAnchorX=pos[0];cloneAnchorY=pos[1];
+    cloneOffX=0;cloneOffY=0;
+    cloneStrokeStarted=false;
+    drawCloneSrcMarker(pos[0],pos[1],brushSz);
+    setI('Clone source: '+Math.round(pos[0])+', '+Math.round(pos[1])+(cloneAligned?'  (Aligned)':'  (Non-aligned)'));return;
   }
   /* Gradient start */
   if(curTool==='gradient'&&onCanvas(e)&&!e.altKey){
@@ -208,8 +309,21 @@ document.addEventListener('mousedown',function(e){
     isDown=true;lastX=pos3[0];lastY=pos3[1];pts=[[pos3[0],pos3[1]]];
     smudgeDX=0;smudgeDY=0;
     if(curTool==='clone'&&cloneSrcX!==null){
-      cloneOffX=pos3[0]-cloneSrcX;cloneOffY=pos3[1]-cloneSrcY;
-      cloneSrcX=pos3[0]-cloneOffX;cloneSrcY=pos3[1]-cloneOffY;
+      /* On stroke start: lock the source-to-cursor offset.
+         Aligned mode keeps the offset persistent across strokes (Photoshop default).
+         Non-aligned resets to the original anchor on every stroke. */
+      if(!cloneAligned||!cloneStrokeStarted){
+        cloneOffX = pos3[0] - (cloneAnchorX!=null?cloneAnchorX:cloneSrcX);
+        cloneOffY = pos3[1] - (cloneAnchorY!=null?cloneAnchorY:cloneSrcY);
+      }
+      cloneStrokeStarted=true;
+      cloneSpaced=0;
+      cloneSnap=buildCloneSnapshot();
+      /* First dab + initial source marker */
+      var hd0=(typeof brushHd==='number'?brushHd/100:0.7);
+      paintCloneStamp(pos3[0],pos3[1],brushSz,hd0,brushOp);
+      drawCloneSrcMarker(pos3[0]-cloneOffX, pos3[1]-cloneOffY, brushSz);
+      if(window._layersCompositeFn)window._layersCompositeFn();
     }
   }
 },{capture:true,passive:false});
@@ -236,8 +350,9 @@ document.addEventListener('mousemove',function(e){
   }
   if(curTool==='clone'){
     pts.push([x,y]);
-    restSnap();
-    paintClone(x,y,brushSz,brushOp);
+    var hd1=(typeof brushHd==='number'?brushHd/100:0.7);
+    paintCloneSegment(lastX,lastY,x,y,brushSz,hd1,brushOp);
+    drawCloneSrcMarker(x-cloneOffX, y-cloneOffY, brushSz);
     if(window._layersCompositeFn)window._layersCompositeFn();
     lastX=x;lastY=y;return;
   }
@@ -288,6 +403,7 @@ document.addEventListener('mouseup',function(e){
   }
   if(curTool==='eraser'||curTool==='clone'||curTool==='texturemap'){
     isDown=false;pts=[];snap=null;
+    if(curTool==='clone'){cloneSnap=null;clearCloneSrcMarker();}
     if(window._layersUpdateThumbs)window._layersUpdateThumbs();return;
   }
   if(curTool==='gradient'&&gradStartX!==null){
@@ -344,7 +460,15 @@ document.addEventListener('mouseup',function(e){
     +'<label style="font-size:8px;color:var(--dim);display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" id="grad-reverse"> Reverse</label>'
     +'</div>'
     +'</div>'
-    +'<div id="clone-info" style="display:none;font-size:8px;color:#40c8a0;padding:3px 2px;">Alt+click canvas to set source</div>'
+    +'<div id="clone-info" style="display:none;padding:6px 0;border-top:1px solid var(--brd);margin-top:4px;">'
+    +'<div style="font-size:8px;letter-spacing:.12em;color:#40c8a0;text-transform:uppercase;margin-bottom:5px;">Clone Stamp</div>'
+    +'<div style="font-size:8px;color:var(--dim);line-height:1.6;margin-bottom:6px;">'
+    +'<b style="color:#40c8a0;">Alt+click</b> to set source &middot; drag to paint<br>'
+    +'Honors <b>Size</b>, <b>Hardness</b>, <b>Opacity</b>'
+    +'</div>'
+    +'<label style="font-size:8px;color:var(--dim);display:flex;align-items:center;gap:5px;cursor:pointer;">'
+    +'<input type="checkbox" id="clone-aligned" checked> Aligned (locked source offset)</label>'
+    +'</div>'
     +'<div id="tex-pm" style="display:none;padding:6px 0;">'
     +'<div style="font-size:8px;letter-spacing:.12em;color:#E8F50A;text-transform:uppercase;margin-bottom:6px;border-bottom:1px solid var(--brd);padding-bottom:5px;">Texture Map</div>'
     +'<div class="pm"><div class="pr"><span class="pn">Type</span></div>'
@@ -373,6 +497,13 @@ document.addEventListener('mouseup',function(e){
   var strr=document.getElementById('strr');
   var strv=document.getElementById('strv');
   if(strr)strr.addEventListener('input',function(){toolStrength=parseInt(strr.value)/100;if(strv)strv.textContent=strr.value+'%';});
+
+  /* Wire clone Aligned checkbox */
+  var caEl=document.getElementById('clone-aligned');
+  if(caEl)caEl.addEventListener('change',function(){
+    cloneAligned=caEl.checked;
+    cloneStrokeStarted=false; // force re-anchor on next stroke
+  });
 
   /* Wire sponge mode */
   var spSel=document.getElementById('sponge-sel');

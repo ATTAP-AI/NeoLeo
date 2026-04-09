@@ -1,4 +1,4 @@
-#panel{width:340px;min-width:340px;flex-shrink:0;height:100%;background:var(--sur);border-left:1px solid var(--brd);border-right:none;display:block;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;order:2;box-sizing:border-box;padding-right:10px;}
+#panel{width:360px;min-width:360px;flex-shrink:0;height:100%;background:var(--sur);border-left:1px solid var(--brd);border-right:none;display:block;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--brd) transparent;order:2;box-sizing:border-box;padding-right:24px;}
 .sec{padding:11px 13px;border-bottom:1px solid var(--brd);}
 .stit{font-size:10px;letter-spacing:.24em;color:var(--dim);text-transform:uppercase;margin-bottom:7px;}
 button.eng{display:block;width:100%;text-align:left;background:none;border:1px solid transparent;color:var(--dim);font-family:inherit;font-size:12px;padding:5px 7px;cursor:pointer;letter-spacing:.04em;margin-bottom:2px;transition:all .1s;}
