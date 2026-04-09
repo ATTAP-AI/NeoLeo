@@ -138,6 +138,18 @@ var SECTIONS = [
       '<p><strong>Blend Modes</strong> \u2014 These control how layers combine: Normal stacks them, Multiply darkens, Screen brightens, Overlay adds contrast, and many more. Experiment to find combinations you like.</p>'
   },
   {
+    title: 'Free Form Canvas',
+    body: '<p>Create a custom-shaped '+L('Image Creation Window','#canvas-toggle2','open-section:canvas-body2')+' instead of the standard rectangular canvas:</p>' +
+      '<ul>' +
+      '<li>Open the '+L('Image Creation Window','#canvas-toggle2','open-section:canvas-body2')+' section and select the <strong>Free Form</strong> swatch from the shape options.</li>' +
+      '<li>A mode selection menu appears with two drawing modes:</li>' +
+      '</ul>' +
+      '<p><strong>Polygon Mode</strong> \u2014 Click anywhere on the canvas to place vertices one at a time. Each click adds a corner point connected by straight lines. You need at least three points to form a shape. Double-click, press Enter, or click near the first point to close the shape. Press Backspace to remove the last point, or Escape to cancel.</p>' +
+      '<p><strong>Hand Drawn Mode</strong> \u2014 Click and hold the mouse button, then drag freely to draw any shape you like. The line follows your mouse movement naturally. When you release the mouse, NeoLeo automatically smooths your drawing into a clean, antialiased curve using corner-cutting refinement, so even a rough sketch becomes an elegant shape.</p>' +
+      '<p>Once your shape is complete, the Image Creation Window is clipped to your custom outline. You can then generate art, paint, and use all tools within your custom shape. The background color you have selected fills the area outside your shape.</p>' +
+      '<p>Use <strong>Undo</strong> and <strong>Redo</strong> to step back and forward through freeform changes, and <strong>Reset</strong> to return to a standard square canvas.</p>'
+  },
+  {
     title: 'Uploading and Compositing Images',
     body: '<p>You can bring your own images into NeoLeo to combine with generated art:</p>' +
       '<ul>' +

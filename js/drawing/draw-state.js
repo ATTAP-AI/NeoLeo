@@ -42,6 +42,8 @@ function genUndoPush(){
     /* Image layer (uv) */
     snap.uv=uctx.getImageData(0,0,uv.width,uv.height);
     snap.w=cv.width;snap.h=cv.height;
+    snap.freeformClip=window._freeformClip||null;
+    snap.canvasRatio=window._canvasRatio||'square';
     genUndoSt.push(snap);
     if(genUndoSt.length>MAX_GEN_UNDO)genUndoSt.shift();
     genRedoSt=[];
@@ -57,12 +59,20 @@ function genUndo(){
     cur.dv=dctx.getImageData(0,0,dv.width,dv.height);
     cur.uv=uctx.getImageData(0,0,uv.width,uv.height);
     cur.w=cv.width;cur.h=cv.height;
+    cur.freeformClip=window._freeformClip||null;
+    cur.canvasRatio=window._canvasRatio||'square';
     genRedoSt.push(cur);
     /* Restore previous */
     var prev=genUndoSt.pop();
     ctx.putImageData(prev.cv,0,0);
     dctx.putImageData(prev.dv,0,0);
     uctx.putImageData(prev.uv,0,0);
+    /* Restore freeform clip state */
+    window._freeformClip=prev.freeformClip||null;
+    window._canvasRatio=prev.canvasRatio||'square';
+    var wrap=document.getElementById('cvwrap');
+    wrap.style.clipPath=window._freeformClip||'';
+    wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
     renderLighting();renderAtmosphere();
     updateGenUndoBtns();
   }catch(e){}
@@ -75,11 +85,19 @@ function genRedo(){
     cur.dv=dctx.getImageData(0,0,dv.width,dv.height);
     cur.uv=uctx.getImageData(0,0,uv.width,uv.height);
     cur.w=cv.width;cur.h=cv.height;
+    cur.freeformClip=window._freeformClip||null;
+    cur.canvasRatio=window._canvasRatio||'square';
     genUndoSt.push(cur);
     var next=genRedoSt.pop();
     ctx.putImageData(next.cv,0,0);
     dctx.putImageData(next.dv,0,0);
     uctx.putImageData(next.uv,0,0);
+    /* Restore freeform clip state */
+    window._freeformClip=next.freeformClip||null;
+    window._canvasRatio=next.canvasRatio||'square';
+    var wrap=document.getElementById('cvwrap');
+    wrap.style.clipPath=window._freeformClip||'';
+    wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
     renderLighting();renderAtmosphere();
     updateGenUndoBtns();
   }catch(e){}

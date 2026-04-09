@@ -15,11 +15,12 @@
     '16:9':   [16,9],
     'circle': [1,1],
     'golden': [1.618,1],
-    'custom': [16,9]
+    'custom': [16,9],
+    'freeform': [1,1]
   };
   const LABELS = {
     'square':'1:1', '9:16':'9:16', '16:9':'16:9',
-    'circle':'Circle', 'golden':'\u03C6:1', 'custom':'Custom'
+    'circle':'Circle', 'golden':'\u03C6:1', 'custom':'Custom', 'freeform':'Free Form'
   };
   const THUMB_DEFS=[
     {val:'square', label:'1:1',    w:24,h:24, radius:'2px'},
@@ -28,6 +29,7 @@
     {val:'circle', label:'Circle', w:24,h:24, radius:'50%'},
     {val:'golden', label:'\u03C6:1',    w:28,h:17, radius:'2px'},
     {val:'custom', label:'Custom', w:20,h:20, radius:'2px', dashed:true},
+    {val:'freeform', label:'Free', w:22,h:22, radius:'2px', freeform:true},
   ];
 
   /* Build thumbnails */
@@ -40,7 +42,8 @@
     shape.className='rt-shape';
     shape.style.width=td.w+'px';shape.style.height=td.h+'px';
     shape.style.borderRadius=td.radius;
-    if(td.dashed){shape.style.background='none';shape.style.border='1px dashed #555';}
+    if(td.freeform){shape.style.background='none';shape.style.border='none';shape.style.clipPath='polygon(50% 5%,85% 20%,95% 55%,75% 85%,40% 95%,10% 70%,5% 35%,25% 10%)';shape.style.outline='1.5px solid #e8c060';shape.style.outlineOffset='-1px';}
+    else if(td.dashed){shape.style.background='none';shape.style.border='1px dashed #555';}
     var lbl=document.createElement('div');
     lbl.className='rt-label';lbl.textContent=td.label;
     div.appendChild(shape);div.appendChild(lbl);
@@ -110,6 +113,12 @@
     const val = sel.value;
     _canvasRatio = val;
     custRow.classList.toggle('show', val==='custom');
+    if(val === 'freeform'){
+      /* Activate freeform drawing mode */
+      if(window._startFreeformDraw) window._startFreeformDraw();
+      updatePreview(val);
+      return;
+    }
     if(val === 'custom'){
       _customW = Math.max(100, Math.min(4096, parseInt(wIn.value)||1000));
       _customH = Math.max(100, Math.min(4096, parseInt(hIn.value)||1000));

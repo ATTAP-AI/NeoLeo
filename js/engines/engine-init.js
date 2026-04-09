@@ -42,6 +42,18 @@ function resetToBlank(){
   _lastStroke=null;
   /* Reset the layers system */
   if(window._layersReset)window._layersReset();
+  /* Clear freeform clip and reset to square */
+  window._freeformClip=null;
+  if(window._canvasRatio==='freeform'){
+    window._canvasRatio='square';
+    var _sel=document.getElementById('res-sel');if(_sel)_sel.value='square';
+    var _tr=document.getElementById('ratio-thumbs');
+    if(_tr)_tr.querySelectorAll('.ratio-thumb').forEach(function(t){t.classList.toggle('active',t.dataset.ratio==='square');});
+    sz();
+  }
+  var _w=document.getElementById('cvwrap');if(_w)_w.style.clipPath='';
+  /* Cancel active freeform overlay */
+  var _fov=document.getElementById('freeform-overlay');if(_fov&&_fov.parentNode)_fov.parentNode.removeChild(_fov);
   setTool('');
   setI('ready');
   setPr(0);

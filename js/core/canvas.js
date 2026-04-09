@@ -14,11 +14,12 @@ function getRatioDims(stW,stH){
     '16:9':    [16,9],
     'circle':  [1,1],
     'golden':  [golden,1],
-    'custom':  [window._customW,window._customH]
+    'custom':  [window._customW,window._customH],
+    'freeform':[window._customW,window._customH]
   };
   const [rw,rh]=amap[window._canvasRatio]||[1,1];
   if(window._canvasRatio==='square')return[750,750];
-  if(window._canvasRatio==='custom'){const cW=Math.max(100,Math.min(1400,window._customW));const cH=Math.max(100,Math.min(1400,window._customH));return[cW,cH];}
+  if(window._canvasRatio==='custom'||window._canvasRatio==='freeform'){const cW=Math.max(100,Math.min(1400,window._customW));const cH=Math.max(100,Math.min(1400,window._customH));return[cW,cH];}
   const ratio=rw/rh;
   let W,H;
   if(ratio>=1){W=Math.min(avW,avH*ratio);H=W/ratio;}
@@ -81,9 +82,15 @@ function sz(){
   const wrap2=document.getElementById('cvwrap');
   if(wrap2){wrap2.style.width=dispW+'px';wrap2.style.height=dispH+'px';}
 
-  /* Circle clip */
+  /* Shape clip */
   const wrap=document.getElementById('cvwrap');
   wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
+  /* Freeform clip-path */
+  if(window._canvasRatio==='freeform'&&window._freeformClip){
+    wrap.style.clipPath=window._freeformClip;
+  } else {
+    wrap.style.clipPath='';
+  }
 
   /* Update info display */
   const disp=document.getElementById('res-disp');

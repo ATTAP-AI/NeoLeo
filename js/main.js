@@ -53,6 +53,7 @@
     'js/tools/curves.js',
     'js/tools/gradient-tool.js',
     'js/tools/canvas-resize.js',
+    'js/tools/freeform-canvas.js',
 
     // ── Experimental (depend on core + drawing) ──
     'js/experimental/intent-sculpting.js',
