@@ -260,7 +260,7 @@ document.getElementById('opr').oninput=function(){document.getElementById('opv')
 document.getElementById('hdr').oninput=function(){document.getElementById('hdv').textContent=this.value+'%';brushHd=+this.value/100;var bp=document.getElementById('bp-hd');if(bp){bp.value=this.value;}var bpv=document.getElementById('bp-hd-val');if(bpv)bpv.textContent=this.value+'%';if(_lastStroke){window.brushHd=brushHd;replayLastStroke();}};
 document.getElementById('tlr').oninput=function(){document.getElementById('tlv').textContent=this.value;tol=+this.value;};
 document.getElementById('fmod').onchange=e=>fillMd=e.target.value;
-document.getElementById('ubtn').onclick=doUndo;
+document.getElementById('ubtn').onclick=function(){ if(window.globalUndo) window.globalUndo(); else doUndo(); };
 /* ── Global undo/redo: covers both drawing (undoSt) and canvas-level (genUndoSt) ── */
 function globalUndo(){
   /* Deactivate Topology Object Mode so undo restores underlying canvas */
@@ -318,7 +318,7 @@ const _um=document.getElementById('undo-main');
 if(_um){_um.onclick=globalUndo;_um.title='Undo (global)';}
 const _rm=document.getElementById('redo-main');
 if(_rm){_rm.onclick=globalRedo;_rm.title='Redo (global)';}
-updateGenUndoBtns();document.getElementById('redobtn').onclick=doRedo;
+updateGenUndoBtns();document.getElementById('redobtn').onclick=function(){ if(window.globalRedo) window.globalRedo(); else doRedo(); };
 document.getElementById('clrbtn').onclick=()=>{if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();saveU();genUndoPush();dctx.clearRect(0,0,dv.width,dv.height);ctx.fillStyle=_canvasBg;ctx.fillRect(0,0,cv.width,cv.height);snap=null;window._snapLayer=null;window._snapLayerCtx=null;window._strokePreSnap=null;window._strokePreCtx=null;_lastStroke=null;if(window._layersReset)window._layersReset();/* Clear freeform clip and reset to square */window._freeformClip=null;if(window._canvasRatio==='freeform'){window._canvasRatio='square';var _sel=document.getElementById('res-sel');if(_sel)_sel.value='square';var _tr=document.getElementById('ratio-thumbs');if(_tr)_tr.querySelectorAll('.ratio-thumb').forEach(function(t){t.classList.toggle('active',t.dataset.ratio==='square');});sz();}var _w=document.getElementById('cvwrap');if(_w)_w.style.clipPath='';/* Cancel active freeform overlay */var _fov=document.getElementById('freeform-overlay');if(_fov&&_fov.parentNode)_fov.parentNode.removeChild(_fov);if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();};
 
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||e.target.tagName==='TEXTAREA')return;if(e.shiftKey&&e.key==='P'){e.preventDefault();document.getElementById('aitool').click();return;}if(e.shiftKey&&e.key==='U'){e.preventDefault();document.getElementById('utool').click();return;}if(e.shiftKey&&e.key==='L'){e.preventDefault();document.getElementById('ltool').click();return;}if(e.shiftKey&&e.key==='A'){e.preventDefault();document.getElementById('atool').click();return;}const km={b:'brush',p:'pencil',f:'fill',c:'creplace',l:'line',r:'rect',e:'ellipse',t:'triangle',g:'polygon',s:'shape'};if(km[e.key]){setTool(km[e.key]);return;}if(e.key==='Escape'){setTool('');return;}if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();globalUndo();}if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.shiftKey&&e.key==='Z'))){e.preventDefault();globalRedo();}
