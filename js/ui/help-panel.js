@@ -33,6 +33,7 @@ var SECTIONS = [
       '<li>'+L('Pick an engine','#eng-toggle','open-section:eng-body')+' \u2014 Open the '+L('Engines','#eng-toggle','open-section:eng-body')+' section in the right panel and click any engine name. Each one produces a completely different style of visual output.</li>' +
       '<li>'+L('Press CREATE','#gbtn')+' \u2014 The large button at the top generates a new image. Every press creates something unique.</li>' +
       '<li>'+L('Change the palette','#pal-toggle','open-section:pal-body')+' \u2014 Open the '+L('Palette','#pal-toggle','open-section:pal-body')+' section and choose a different color scheme. The same engine with a different palette gives you an entirely new mood.</li>' +
+      '<li>'+L('Choose your canvas shape','#canvas-toggle2','open-section:canvas-body2')+' \u2014 Open the '+L('Image Creation Window','#canvas-toggle2','open-section:canvas-body2')+' section to pick a shape for your canvas \u2014 square, landscape, portrait, widescreen, or '+L('Free Form','[data-ratio="freeform"]','click:[data-ratio="freeform"]')+' to draw your own custom shape using polygon or hand-drawn modes.</li>' +
       '<li><strong>Experiment freely</strong> \u2014 There is no wrong way to use NeoLeo. Try different engines, adjust the sliders, layer multiple generations together.</li>' +
       '<li>'+L('Lock your seed','#lbtn')+' \u2014 The seed number controls the randomness. Click LOCK to keep the same seed while you change palettes or settings, letting you explore variations of the same composition.</li>' +
       '</ul>'
