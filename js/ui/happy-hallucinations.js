@@ -60,6 +60,19 @@ var DRAW_TOOLS=['brush','pencil','line','rect','ellipse','triangle','shape','tex
 /* ── Composition strategies ── */
 var STRATEGIES=['scatter','radial','flow','grid','burst','crosshatch','constellation'];
 
+/* ── Organic Forms integration — render a random organic system on top ── */
+var ORGF_SYSTEMS=['meta','super','nblob','lava','radio'];
+function _applyOrganic(){
+  if(!window._ORGF)return null;
+  var sysIdx=Math.floor(Math.random()*ORGF_SYSTEMS.length);
+  /* Select the system in the Organic Forms panel */
+  var sysRows=document.querySelectorAll('[id^="orgf-sr-"]');
+  if(sysRows.length>sysIdx){sysRows[sysIdx].click();}
+  /* Randomise its sliders for variety */
+  window._ORGF.randomise();
+  return ORGF_SYSTEMS[sysIdx];
+}
+
 /* ── Utility ── */
 function _rr(a,b){return a+Math.random()*(b-a);}
 function _ri(a,b){return Math.floor(_rr(a,b+1));}
@@ -615,12 +628,23 @@ function doHappyHallucination(){
     if(gbtn)gbtn.click();
   }
 
-  /* 3. After engine renders → draw tool overlay → flatten → capture */
+  /* 3. After engine renders → optional organic layer → draw tool overlay → flatten → capture */
   setTimeout(function(){
+    /* ~35% chance to add an Organic Forms layer on top of the engine */
+    var orgSys=null;
+    if(window._ORGF&&Math.random()<0.35){
+      _hhPopup.phase('Blending organic forms\u2026',45);
+      var prevConnect=window._ENG_CONNECT;
+      window._ENG_CONNECT=true; /* Blend on top */
+      orgSys=_applyOrganic();
+      window._ENG_CONNECT=prevConnect;
+    }
+
     _hhPopup.phase('Applying drawing tools\u2026',60);
 
     setTimeout(function(){
       var info=drawHHOverlay(mood.pal);
+      if(orgSys&&info) info.tools.push('organic:'+orgSys);
 
       _hhPopup.phase('Flattening composite\u2026',80);
 
@@ -1182,7 +1206,18 @@ setTimeout(function(){
         setTimeout(function(){
           _hhPopup.phase('Capturing engine\u2026',50);
 
-          /* Capture engine render */
+          /* Optional: blend an Organic Forms layer on top (40% per pass, guaranteed ≥1) */
+          var orgSys=null;
+          var doOrg=(window._ORGF&&(Math.random()<0.4||(currentPass===totalPasses&&!_mpPasses.some(function(p){return p.orgSys;}))));
+          if(doOrg){
+            _hhPopup.phase('Blending organic forms\u2026',55);
+            var prevConnect=window._ENG_CONNECT;
+            window._ENG_CONNECT=true;
+            orgSys=_applyOrganic();
+            window._ENG_CONNECT=prevConnect;
+          }
+
+          /* Capture engine render (now includes organic layer if applied) */
           var W=cvEl.width,H=cvEl.height;
           var engCv=document.createElement('canvas');
           engCv.width=W;engCv.height=H;
@@ -1193,6 +1228,7 @@ setTimeout(function(){
           setTimeout(function(){
             /* Draw overlay onto dv */
             var info=drawHHOverlay(usePal);
+            if(orgSys&&info) info.tools.push('organic:'+orgSys);
 
             /* Capture overlay */
             var dvEl=document.getElementById('dv');
@@ -1206,7 +1242,7 @@ setTimeout(function(){
             if(window._layersReset)window._layersReset();
 
             /* Store pass */
-            _mpPasses.push({engine:engCv,overlay:ovrCv,mood:mood.name,blend:thisBlend,info:info});
+            _mpPasses.push({engine:engCv,overlay:ovrCv,mood:mood.name,blend:thisBlend,info:info,orgSys:orgSys});
 
             captureHH(mood.name+' (P'+currentPass+')',info);
 
