@@ -459,6 +459,39 @@ panel.addEventListener('click', function(e){
     info.textContent = (currentHit + 1) + ' / ' + hits.length;
   }
 
+  function prevHit(){
+    if(hits.length === 0) return;
+    hits[currentHit].classList.remove('current');
+    currentHit = (currentHit - 1 + hits.length) % hits.length;
+    hits[currentHit].classList.add('current');
+    hits[currentHit].scrollIntoView({behavior:'smooth', block:'center'});
+    info.textContent = (currentHit + 1) + ' / ' + hits.length;
+  }
+
+  /* ── Cmd/Ctrl+G : next match · Cmd/Ctrl+Shift+G : previous match ──
+     Active only while the help panel is open. Captures globally so it
+     works whether or not the search input has focus. */
+  document.addEventListener('keydown', function(e){
+    if(!panel.classList.contains('open')) return;
+    if((e.metaKey || e.ctrlKey) && (e.key === 'g' || e.key === 'G')){
+      e.preventDefault();
+      e.stopPropagation();
+      if(hits.length === 0){
+        /* If no active search yet but the input has text, run it now */
+        if(input.value.trim()){
+          input.dataset.lastQuery = input.value.trim();
+          doSearch();
+        } else {
+          /* Open the search bar so the user can type */
+          bar.classList.add('open');
+          input.focus();
+        }
+        return;
+      }
+      if(e.shiftKey) prevHit(); else nextHit();
+    }
+  }, true);
+
   goBtn.addEventListener('click', function(e){
     e.stopPropagation();
     if(hits.length > 0) nextHit();

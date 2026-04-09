@@ -18,8 +18,8 @@
 #help-search-go{background:none;border:1px solid rgba(40,224,209,0.4);color:#28E0D1;font-size:10px;padding:4px 10px;cursor:pointer;border-radius:3px;font-family:inherit;letter-spacing:.06em;text-transform:uppercase;}
 #help-search-go:hover{border-color:#28E0D1;background:rgba(40,224,209,0.1);}
 #help-search-info{font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:.04em;white-space:nowrap;}
-.help-search-hit{background:rgba(232,245,10,0.35);border-radius:2px;padding:0 1px;}
-.help-search-hit.current{background:rgba(232,245,10,0.7);}
+.help-search-hit{background:rgba(62,234,154,0.35);color:#000;border-radius:2px;padding:0 1px;}
+.help-search-hit.current{background:#3eea9a;color:#000;}
 #help-body{overflow-y:auto;flex:1;padding:22px 28px 28px;scrollbar-width:thin;scrollbar-color:#3a4a3a #5a6d5a;}
 #help-body::-webkit-scrollbar{width:6px;}
 #help-body::-webkit-scrollbar-track{background:#5a6d5a;}
