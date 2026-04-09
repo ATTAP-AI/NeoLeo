@@ -30,6 +30,7 @@
     'js/drawing/draw-tools.js',
     'js/drawing/ps-tools.js',
     'js/drawing/texture-tool.js',
+    'js/drawing/mark-color-picker.js',
 
     // ── FX (depend on core) ──
     'js/fx/lighting.js',
