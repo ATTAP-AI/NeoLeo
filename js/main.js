@@ -63,6 +63,7 @@
     'js/experimental/probability-painting.js',
     'js/experimental/memory-drawing.js',
     'js/experimental/morphogenesis.js',
+    'js/experimental/organic-forms.js',
     'js/experimental/topology-engine.js',
 
     // ── Export (depends on core + FX) ──

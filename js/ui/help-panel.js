@@ -108,6 +108,7 @@ var SECTIONS = [
       '<li>'+L('Probability Painting','#pp-toggle','open-exp:pp-body')+' \u2014 Paint with mathematical probability distributions. Each stroke is a field of chance, creating unique textures impossible to achieve by hand.</li>' +
       '<li><strong>Memory Drawing</strong> \u2014 Inscribe text and ideas that become part of the visual texture of your artwork.</li>' +
       '<li><strong>Temporal Canvases</strong> \u2014 Create art that evolves over time, blending and shifting through different states.</li>' +
+      '<li>'+L('Organic Forms','#orgf-toggle','open-exp:orgf-body')+' \u2014 Generate smooth, sculptural shapes: metaballs that merge like liquid, superformula curves (starfish, flowers, pollen), noise blobs (amoebas, smooth stones), lava lamp fluids, and radiolaria inspired by Ernst Haeckel\u2019s microscopic illustrations.</li>' +
       '<li>'+L('Modality Cycler','#intent-cycle-btn','open-exp:intent-sculpt-body')+' \u2014 Found within Intent Sculpting, the Cycle button steps through eight named force-field modalities (such as Tension Web, Fragile Emergence, and Pure Symmetry), each emphasizing a different aesthetic principle to discover unexpected combinations.</li>' +
       '</ul>' +
       '<p>Use the <strong>Connect</strong> button to blend experimental tool output on top of your engine generation.</p>'
@@ -125,6 +126,7 @@ var SECTIONS = [
       '<li>'+L('Memory Drawing Cycle','#mbd-cycle-btn','open-exp:mbd-body')+' \u2014 Cycles through different <strong>neural architectures</strong> that transform your inscribed text and ideas into visual textures, each one interpreting your words in a different visual language.</li>' +
       '<li>'+L('Morphogenesis Cycle','#morph-cycle-btn','open-exp:morph-body')+' \u2014 Tours <strong>5 biological growth systems</strong>: Reaction-Diffusion (Turing patterns like animal markings), Phylogenetic (evolutionary branching), Branching (tree-like growth), Chladni (vibration patterns on a surface), and Voronoi (cell-like territory maps). Nature\u2019s own design principles, one click at a time.</li>' +
       '<li>'+L('Topology Engine Cycle','#topo-cycle-btn','open-exp:topo-body')+' \u2014 Steps through <strong>mathematical surfaces</strong> \u2014 toruses, Klein bottles, spheres, and other shapes from the field of topology, each one rendered as a unique piece of three-dimensional art.</li>' +
+      '<li>'+L('Organic Forms Cycle','#orgf-cycle-btn','open-exp:orgf-body')+' \u2014 Tours <strong>5 sculptural form systems</strong>: Metaballs (merging blobs), Superformula (Gielis parametric shapes), Noise Blobs (amoeba silhouettes), Lava Lamp (smooth-union fluids), and Radiolaria (Haeckel-inspired microscopic forms).</li>' +
       '</ul>' +
       '<p>The Cycle buttons are designed for playful exploration. You do not need to understand the mathematics behind any of these \u2014 just click, look, and follow your eye to what inspires you.</p>'
   },
