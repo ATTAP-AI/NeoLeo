@@ -261,49 +261,56 @@ document.getElementById('hdr').oninput=function(){document.getElementById('hdv')
 document.getElementById('tlr').oninput=function(){document.getElementById('tlv').textContent=this.value;tol=+this.value;};
 document.getElementById('fmod').onchange=e=>fillMd=e.target.value;
 document.getElementById('ubtn').onclick=function(){ if(window.globalUndo) window.globalUndo(); else doUndo(); };
-/* ── Global undo/redo: covers both drawing (undoSt) and canvas-level (genUndoSt) ── */
+/* ── Unified globalUndo / globalRedo ──
+   draw-state.js owns _actionLog and calls _logAction inside saveU/genUndoPush so
+   the log is always in sync with the underlying stacks. globalUndo pops the most
+   recent action marker and routes to the right do/Undo or genUndo. */
+
 function globalUndo(){
   /* Deactivate Topology Object Mode so undo restores underlying canvas */
   if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
-  /* If no undo available at all, bail */
   if(!undoSt.length && !genUndoSt.length){ updateGlobalUndoBtns(); return; }
-  var tDraw = undoSt.length>0 ? (undoSt[undoSt.length-1].t || 1) : 0;
-  var tGen  = genUndoSt.length>0 ? (genUndoSt[genUndoSt.length-1].t || 1) : 0;
-  if(tDraw >= tGen && undoSt.length>0){
-    doUndo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  } else if(genUndoSt.length>0){
-    genUndo();
-  } else if(undoSt.length>0){
-    doUndo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
+  /* Pop the most recent action from the unified log */
+  var action = window._actionLog.length ? window._actionLog.pop() : null;
+  /* If log is empty (e.g. external code pushed without going through wrappers), fall back to whichever stack has anything */
+  if(!action){
+    if(genUndoSt.length){ genUndo(); window._redoLog.push({k:'gen',t:Date.now()}); }
+    else if(undoSt.length){ doUndo(); window._redoLog.push({k:'draw',t:Date.now()}); }
+  } else if(action.k==='draw'){
+    if(undoSt.length){ doUndo(); window._redoLog.push(action); }
+    else if(genUndoSt.length){ genUndo(); window._redoLog.push({k:'gen',t:action.t}); }
+  } else { /* gen */
+    if(genUndoSt.length){ genUndo(); window._redoLog.push(action); }
+    else if(undoSt.length){ doUndo(); window._redoLog.push({k:'draw',t:action.t}); }
   }
+  /* Always recomposite layers so dv reflects restored state */
+  if(window._layersCompositeFn) window._layersCompositeFn();
+  if(window._layersUpdateThumbs) window._layersUpdateThumbs();
   updateGlobalUndoBtns();
 }
 window.globalUndo = globalUndo;
-window.genUndoPush = genUndoPush;
 function globalRedo(){
-  /* Deactivate Topology Object Mode so redo restores correct state */
   if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
-  /* If no redo available at all, bail */
   if(!redoSt.length && !genRedoSt.length){ updateGlobalUndoBtns(); return; }
-  var tDraw = redoSt.length>0 ? (redoSt[redoSt.length-1].t || 1) : 0;
-  var tGen  = genRedoSt.length>0 ? (genRedoSt[genRedoSt.length-1].t || 1) : 0;
-  if(tDraw >= tGen && redoSt.length>0){
-    doRedo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  } else if(genRedoSt.length>0){
-    genRedo();
-  } else if(redoSt.length>0){
-    doRedo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
+  var action = window._redoLog.length ? window._redoLog.pop() : null;
+  if(!action){
+    if(genRedoSt.length){ genRedo(); window._actionLog.push({k:'gen',t:Date.now()}); }
+    else if(redoSt.length){ doRedo(); window._actionLog.push({k:'draw',t:Date.now()}); }
+  } else if(action.k==='draw'){
+    if(redoSt.length){ doRedo(); window._actionLog.push(action); }
+    else if(genRedoSt.length){ genRedo(); window._actionLog.push({k:'gen',t:action.t}); }
+  } else {
+    if(genRedoSt.length){ genRedo(); window._actionLog.push(action); }
+    else if(redoSt.length){ doRedo(); window._actionLog.push({k:'draw',t:action.t}); }
   }
+  if(window._layersCompositeFn) window._layersCompositeFn();
+  if(window._layersUpdateThumbs) window._layersUpdateThumbs();
   updateGlobalUndoBtns();
 }
 window.globalRedo = globalRedo;
 function updateGlobalUndoBtns(){
-  var hasUndo=undoSt.length>0||genUndoSt.length>0;
-  var hasRedo=redoSt.length>0||genRedoSt.length>0;
+  var hasUndo=undoSt.length>0||genUndoSt.length>0||(window._actionLog&&window._actionLog.length>0);
+  var hasRedo=redoSt.length>0||genRedoSt.length>0||(window._redoLog&&window._redoLog.length>0);
   ['undo-main','undo-persist'].forEach(function(id){
     var el=document.getElementById(id);
     if(el){el.disabled=!hasUndo; el.style.opacity=hasUndo?'1':'0.4';}

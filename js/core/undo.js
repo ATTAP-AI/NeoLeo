@@ -1,65 +1,40 @@
-/* ── Global undo/redo: covers both drawing (undoSt) and canvas-level (genUndoSt) ── */
-function globalUndo(){
-  /* Deactivate Topology Object Mode so undo restores underlying canvas */
-  if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
-  /* If no undo available at all, bail */
-  if(!undoSt.length && !genUndoSt.length){ updateGlobalUndoBtns(); return; }
-  var tDraw = undoSt.length>0 ? (undoSt[undoSt.length-1].t || 1) : 0;
-  var tGen  = genUndoSt.length>0 ? (genUndoSt[genUndoSt.length-1].t || 1) : 0;
-  if(tDraw >= tGen && undoSt.length>0){
-    doUndo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  } else if(genUndoSt.length>0){
-    genUndo();
-  } else if(undoSt.length>0){
-    doUndo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  }
-  updateGlobalUndoBtns();
-}
-window.globalUndo = globalUndo;
-window.genUndoPush = genUndoPush;
-function globalRedo(){
-  /* Deactivate Topology Object Mode so redo restores correct state */
-  if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
-  /* If no redo available at all, bail */
-  if(!redoSt.length && !genRedoSt.length){ updateGlobalUndoBtns(); return; }
-  var tDraw = redoSt.length>0 ? (redoSt[redoSt.length-1].t || 1) : 0;
-  var tGen  = genRedoSt.length>0 ? (genRedoSt[genRedoSt.length-1].t || 1) : 0;
-  if(tDraw >= tGen && redoSt.length>0){
-    doRedo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  } else if(genRedoSt.length>0){
-    genRedo();
-  } else if(redoSt.length>0){
-    doRedo();
-    if(window._layersCompositeFn) window._layersCompositeFn();
-  }
-  updateGlobalUndoBtns();
-}
-window.globalRedo = globalRedo;
-function updateGlobalUndoBtns(){
-  var hasUndo=undoSt.length>0||genUndoSt.length>0;
-  var hasRedo=redoSt.length>0||genRedoSt.length>0;
-  ['undo-main','undo-persist'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){el.disabled=!hasUndo; el.style.opacity=hasUndo?'1':'0.4';}
-  });
-  ['redo-main','redo-persist'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){el.disabled=!hasRedo; el.style.opacity=hasRedo?'1':'0.4';}
-  });
-}
-window.updateGlobalUndoBtns = updateGlobalUndoBtns;
+/* ── undo.js — wires undo/redo buttons to the unified globalUndo/Redo from draw-tools.js ──
+   IMPORTANT: do NOT redefine globalUndo, globalRedo, updateGlobalUndoBtns, or genUndoPush here.
+   draw-tools.js owns the canonical implementations including the unified action log.
+   Redefining them here would strip the saveU/genUndoPush wrappers and break undo. */
 (function(){
-  var _um2=document.getElementById('undo-main');
-  if(_um2){_um2.onclick=globalUndo;_um2.title='Undo (global)';}
-  var _rm2=document.getElementById('redo-main');
-  if(_rm2){_rm2.onclick=globalRedo;_rm2.title='Redo (global)';}
+  function _gu(){ if(window.globalUndo) window.globalUndo(); else if(window.doUndo) window.doUndo(); }
+  function _gr(){ if(window.globalRedo) window.globalRedo(); else if(window.doRedo) window.doRedo(); }
+  var ids=[['undo-main',_gu,'Undo (global)'],['redo-main',_gr,'Redo (global)'],['ubtn',_gu,null],['redobtn',_gr,null]];
+  ids.forEach(function(t){
+    var el=document.getElementById(t[0]);
+    if(el){el.onclick=t[1];if(t[2])el.title=t[2];}
+  });
   if(typeof updateGenUndoBtns==='function') updateGenUndoBtns();
-  var _ubtnEl=document.getElementById('ubtn');
-  if(_ubtnEl) _ubtnEl.onclick=globalUndo;
-  var _redobtnEl=document.getElementById('redobtn');
-  if(_redobtnEl) _redobtnEl.onclick=globalRedo;
 })();
-document.getElementById('clrbtn').onclick=()=>{if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();saveU();genUndoPush();dctx.clearRect(0,0,dv.width,dv.height);ctx.fillStyle=_canvasBg;ctx.fillRect(0,0,cv.width,cv.height);snap=null;window._snapLayer=null;window._snapLayerCtx=null;window._strokePreSnap=null;window._strokePreCtx=null;_lastStroke=null;if(window._layersReset)window._layersReset();/* Clear freeform clip and reset to square */window._freeformClip=null;if(window._canvasRatio==='freeform'){window._canvasRatio='square';var _sel=document.getElementById('res-sel');if(_sel)_sel.value='square';var _tr=document.getElementById('ratio-thumbs');if(_tr)_tr.querySelectorAll('.ratio-thumb').forEach(function(t){t.classList.toggle('active',t.dataset.ratio==='square');});sz();}var _w=document.getElementById('cvwrap');if(_w)_w.style.clipPath='';/* Cancel active freeform overlay */var _fov=document.getElementById('freeform-overlay');if(_fov&&_fov.parentNode)_fov.parentNode.removeChild(_fov);if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();};
+document.getElementById('clrbtn').onclick=()=>{
+  if(window._TOPO&&window._TOPO.deactivateObj)window._TOPO.deactivateObj();
+  /* Push BOTH stacks so clear can be undone whether followed by gen or draw */
+  if(window.saveU)window.saveU();
+  if(window.genUndoPush)window.genUndoPush();
+  dctx.clearRect(0,0,dv.width,dv.height);
+  ctx.fillStyle=_canvasBg;ctx.fillRect(0,0,cv.width,cv.height);
+  snap=null;window._snapLayer=null;window._snapLayerCtx=null;
+  window._strokePreSnap=null;window._strokePreCtx=null;_lastStroke=null;
+  if(window._layersReset)window._layersReset();
+  /* Clear freeform clip and reset to square */
+  window._freeformClip=null;
+  if(window._canvasRatio==='freeform'){
+    window._canvasRatio='square';
+    var _sel=document.getElementById('res-sel');if(_sel)_sel.value='square';
+    var _tr=document.getElementById('ratio-thumbs');
+    if(_tr)_tr.querySelectorAll('.ratio-thumb').forEach(function(t){
+      t.classList.toggle('active',t.dataset.ratio==='square');
+    });
+    sz();
+  }
+  var _w=document.getElementById('cvwrap');if(_w)_w.style.clipPath='';
+  var _fov=document.getElementById('freeform-overlay');
+  if(_fov&&_fov.parentNode)_fov.parentNode.removeChild(_fov);
+  if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
+};

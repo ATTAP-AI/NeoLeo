@@ -26,79 +26,118 @@ Object.defineProperty(window,'redoSt',{get:()=>redoSt,set:v=>{redoSt=v;}});
 Object.defineProperty(window,'snap',{get:()=>snap,set:v=>{snap=v;}});
 Object.defineProperty(window,'lastX',{get:()=>lastX,set:v=>{lastX=v;}});
 Object.defineProperty(window,'lastY',{get:()=>lastY,set:v=>{lastY=v;}});
-/* Canvas-level undo (engine output on cv + dv composite) */
+/* ── Unified action log (lives at script-scope so saveU/genUndoPush always log) ──
+   Records {k:'draw'|'gen', t} markers in chronological order so globalUndo can
+   pop the most recent action regardless of which stack it lives on. */
+window._actionLog=window._actionLog||[];
+window._redoLog=window._redoLog||[];
+function _logAction(kind){
+  try{
+    window._actionLog.push({k:kind,t:Date.now()});
+    window._redoLog.length=0; /* new action invalidates redo */
+    if(window._actionLog.length>40)window._actionLog.shift();
+  }catch(e){}
+}
+window._logAction=_logAction;
+
+/* ── Canvas-level undo (engine output on cv + dv composite + ALL layer canvases) ──
+   ROBUSTNESS: captures every layer canvas so restoring doesn't get clobbered by
+   the next compositeLayers() rebuild from stale layer pixels. */
 let genUndoSt=[];let genRedoSt=[];
 const MAX_GEN_UNDO=20;
+function _captureFullState(){
+  var snap={t:Date.now()};
+  /* Engine canvas */
+  snap.cv=ctx.getImageData(0,0,cv.width,cv.height);
+  /* Drawing/composite canvas */
+  snap.dv=dctx.getImageData(0,0,dv.width,dv.height);
+  /* Image layer (uv) */
+  snap.uv=uctx.getImageData(0,0,uv.width,uv.height);
+  snap.w=cv.width;snap.h=cv.height;
+  snap.freeformClip=window._freeformClip||null;
+  snap.canvasRatio=window._canvasRatio||'square';
+  /* User layer canvases — critical for experimental tools that render into active layer */
+  snap.layers=[];
+  if(window.layers&&window.layers.length){
+    for(var i=0;i<window.layers.length;i++){
+      var L=window.layers[i];
+      if(!L||!L.canvas||!L.ctx)continue;
+      try{
+        snap.layers.push({
+          idx:i,
+          id:L.id,
+          w:L.canvas.width,
+          h:L.canvas.height,
+          data:L.ctx.getImageData(0,0,L.canvas.width,L.canvas.height),
+          visible:L.visible,opacity:L.opacity,blend:L.blend
+        });
+      }catch(e){}
+    }
+  }
+  /* Engine layers (auto-captured generative outputs) */
+  return snap;
+}
+function _restoreFullState(s){
+  if(!s)return;
+  try{ctx.putImageData(s.cv,0,0);}catch(e){}
+  try{dctx.putImageData(s.dv,0,0);}catch(e){}
+  try{uctx.putImageData(s.uv,0,0);}catch(e){}
+  /* Restore each user layer canvas */
+  if(s.layers&&window.layers){
+    for(var i=0;i<s.layers.length;i++){
+      var rec=s.layers[i];
+      var L=window.layers[rec.idx];
+      if(!L||!L.canvas||!L.ctx)continue;
+      try{
+        if(L.canvas.width!==rec.w||L.canvas.height!==rec.h){
+          L.canvas.width=rec.w;L.canvas.height=rec.h;
+        }
+        L.ctx.putImageData(rec.data,0,0);
+        if(typeof rec.visible==='boolean')L.visible=rec.visible;
+        if(typeof rec.opacity==='number')L.opacity=rec.opacity;
+        if(rec.blend)L.blend=rec.blend;
+      }catch(e){}
+    }
+  }
+  /* Restore freeform clip state */
+  window._freeformClip=s.freeformClip||null;
+  window._canvasRatio=s.canvasRatio||'square';
+  var wrap=document.getElementById('cvwrap');
+  if(wrap){
+    wrap.style.clipPath=window._freeformClip||'';
+    wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
+  }
+  /* Recomposite layers so dv reflects restored layer canvases */
+  if(window._layersCompositeFn)window._layersCompositeFn();
+  if(window._layersUpdateThumbs)window._layersUpdateThumbs();
+  if(window._layersRenderUI)window._layersRenderUI();
+  if(typeof renderLighting==='function')renderLighting();
+  if(typeof renderAtmosphere==='function')renderAtmosphere();
+}
 function genUndoPush(){
-  /* Capture full state: cv, dv, and uv (uploaded image) separately for accurate restore */
   try{
-    var snap={t:Date.now()};
-    /* Engine canvas */
-    var tc1=document.createElement('canvas');tc1.width=cv.width;tc1.height=cv.height;
-    tc1.getContext('2d').drawImage(cv,0,0);
-    snap.cv=tc1.getContext('2d').getImageData(0,0,cv.width,cv.height);
-    /* Drawing layer */
-    snap.dv=dctx.getImageData(0,0,dv.width,dv.height);
-    /* Image layer (uv) */
-    snap.uv=uctx.getImageData(0,0,uv.width,uv.height);
-    snap.w=cv.width;snap.h=cv.height;
-    snap.freeformClip=window._freeformClip||null;
-    snap.canvasRatio=window._canvasRatio||'square';
-    genUndoSt.push(snap);
+    genUndoSt.push(_captureFullState());
     if(genUndoSt.length>MAX_GEN_UNDO)genUndoSt.shift();
     genRedoSt=[];
+    _logAction('gen');
     updateGenUndoBtns();
   }catch(e){}
 }
 function genUndo(){
   if(!genUndoSt.length)return;
   try{
-    /* Push current state to redo stack */
-    var cur={};
-    cur.cv=ctx.getImageData(0,0,cv.width,cv.height);
-    cur.dv=dctx.getImageData(0,0,dv.width,dv.height);
-    cur.uv=uctx.getImageData(0,0,uv.width,uv.height);
-    cur.w=cv.width;cur.h=cv.height;
-    cur.freeformClip=window._freeformClip||null;
-    cur.canvasRatio=window._canvasRatio||'square';
-    genRedoSt.push(cur);
-    /* Restore previous */
+    genRedoSt.push(_captureFullState());
     var prev=genUndoSt.pop();
-    ctx.putImageData(prev.cv,0,0);
-    dctx.putImageData(prev.dv,0,0);
-    uctx.putImageData(prev.uv,0,0);
-    /* Restore freeform clip state */
-    window._freeformClip=prev.freeformClip||null;
-    window._canvasRatio=prev.canvasRatio||'square';
-    var wrap=document.getElementById('cvwrap');
-    wrap.style.clipPath=window._freeformClip||'';
-    wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
-    renderLighting();renderAtmosphere();
+    _restoreFullState(prev);
     updateGenUndoBtns();
   }catch(e){}
 }
 function genRedo(){
   if(!genRedoSt.length)return;
   try{
-    var cur={};
-    cur.cv=ctx.getImageData(0,0,cv.width,cv.height);
-    cur.dv=dctx.getImageData(0,0,dv.width,dv.height);
-    cur.uv=uctx.getImageData(0,0,uv.width,uv.height);
-    cur.w=cv.width;cur.h=cv.height;
-    cur.freeformClip=window._freeformClip||null;
-    cur.canvasRatio=window._canvasRatio||'square';
-    genUndoSt.push(cur);
+    genUndoSt.push(_captureFullState());
     var next=genRedoSt.pop();
-    ctx.putImageData(next.cv,0,0);
-    dctx.putImageData(next.dv,0,0);
-    uctx.putImageData(next.uv,0,0);
-    /* Restore freeform clip state */
-    window._freeformClip=next.freeformClip||null;
-    window._canvasRatio=next.canvasRatio||'square';
-    var wrap=document.getElementById('cvwrap');
-    wrap.style.clipPath=window._freeformClip||'';
-    wrap.classList.toggle('circle-clip',window._canvasRatio==='circle');
-    renderLighting();renderAtmosphere();
+    _restoreFullState(next);
     updateGenUndoBtns();
   }catch(e){}
 }
@@ -109,51 +148,91 @@ let _lastStroke=null; /* {pts,type,col,sz,hd,op,preSnap,ctx} -- for live slider 
 const saveU=()=>{
   try{
     var lctxA=window._getActiveLayerCtx?window._getActiveLayerCtx():null;
+    /* Snapshot every layer canvas, not just the active one — so undo restores the
+       complete layer state regardless of which layer was active when stroke happened. */
+    var allLayers=[];
+    if(window.layers&&window.layers.length){
+      for(var i=0;i<window.layers.length;i++){
+        var L=window.layers[i];
+        if(!L||!L.canvas||!L.ctx)continue;
+        try{
+          allLayers.push({
+            idx:i,id:L.id,
+            w:L.canvas.width,h:L.canvas.height,
+            data:L.ctx.getImageData(0,0,L.canvas.width,L.canvas.height),
+            visible:L.visible,opacity:L.opacity,blend:L.blend
+          });
+        }catch(e){}
+      }
+    }
     var entry={
       dv:dctx.getImageData(0,0,dv.width,dv.height),
-      layer:(lctxA&&lctxA!==dctx)?lctxA.getImageData(0,0,lctxA.canvas.width,lctxA.canvas.height):null,
-      lctx:lctxA,
+      layers:allLayers,
       t:Date.now()
     };
     undoSt.push(entry);
     if(undoSt.length>20)undoSt.shift();
     redoSt=[];
+    _logAction('draw');
     if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
   }catch(e){}
 };
+function _captureDrawState(){
+  var allLayers=[];
+  if(window.layers&&window.layers.length){
+    for(var i=0;i<window.layers.length;i++){
+      var L=window.layers[i];
+      if(!L||!L.canvas||!L.ctx)continue;
+      try{
+        allLayers.push({
+          idx:i,id:L.id,
+          w:L.canvas.width,h:L.canvas.height,
+          data:L.ctx.getImageData(0,0,L.canvas.width,L.canvas.height),
+          visible:L.visible,opacity:L.opacity,blend:L.blend
+        });
+      }catch(e){}
+    }
+  }
+  return {
+    dv:dctx.getImageData(0,0,dv.width,dv.height),
+    layers:allLayers,
+    t:Date.now()
+  };
+}
+function _restoreDrawState(s){
+  if(!s)return;
+  try{dctx.putImageData(s.dv,0,0);}catch(e){}
+  if(s.layers&&window.layers){
+    for(var i=0;i<s.layers.length;i++){
+      var rec=s.layers[i];
+      var L=window.layers[rec.idx];
+      if(!L||!L.canvas||!L.ctx)continue;
+      try{
+        if(L.canvas.width!==rec.w||L.canvas.height!==rec.h){
+          L.canvas.width=rec.w;L.canvas.height=rec.h;
+        }
+        L.ctx.putImageData(rec.data,0,0);
+      }catch(e){}
+    }
+  }
+  if(window._layersCompositeFn)window._layersCompositeFn();
+  if(window._layersUpdateThumbs)window._layersUpdateThumbs();
+}
 const doUndo=()=>{
   if(!undoSt.length)return;
   try{
-    var lctxA=window._getActiveLayerCtx?window._getActiveLayerCtx():null;
-    var cur={
-      dv:dctx.getImageData(0,0,dv.width,dv.height),
-      layer:(lctxA&&lctxA!==dctx)?lctxA.getImageData(0,0,lctxA.canvas.width,lctxA.canvas.height):null,
-      lctx:lctxA,
-      t:Date.now()
-    };
-    redoSt.push(cur);
+    redoSt.push(_captureDrawState());
     var prev=undoSt.pop();
-    dctx.putImageData(prev.dv,0,0);
-    if(prev.layer&&prev.lctx)prev.lctx.putImageData(prev.layer,0,0);
-    if(window._layersCompositeFn)window._layersCompositeFn();
+    _restoreDrawState(prev);
     if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
   }catch(e){}
 };
 const doRedo=()=>{
   if(!redoSt.length)return;
   try{
-    var lctxA=window._getActiveLayerCtx?window._getActiveLayerCtx():null;
-    var cur={
-      dv:dctx.getImageData(0,0,dv.width,dv.height),
-      layer:(lctxA&&lctxA!==dctx)?lctxA.getImageData(0,0,lctxA.canvas.width,lctxA.canvas.height):null,
-      lctx:lctxA,
-      t:Date.now()
-    };
-    undoSt.push(cur);
+    undoSt.push(_captureDrawState());
     var next=redoSt.pop();
-    dctx.putImageData(next.dv,0,0);
-    if(next.layer&&next.lctx)next.lctx.putImageData(next.layer,0,0);
-    if(window._layersCompositeFn)window._layersCompositeFn();
+    _restoreDrawState(next);
     if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
   }catch(e){}
 };

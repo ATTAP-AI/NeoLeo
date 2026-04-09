@@ -272,7 +272,8 @@ document.getElementById('lyr-flat').addEventListener('click', function(){
     flat.ctx.drawImage(l.canvas, 0, 0);
     flat.ctx.restore();
   });
-  layers = [flat];
+  /* Mutate in place so window.layers reference stays valid for undo system */
+  layers.length = 0; layers.push(flat);
   activeLayerIdx = 0;
   layerCounter = 2;
   syncActiveLayer();
@@ -357,7 +358,8 @@ function initLayers(){
   var bg = makeLayer('Layer 1');
   /* Copy current dv content into the first layer */
   try{ bg.ctx.drawImage(dv, 0, 0); }catch(e){}
-  layers = [bg];
+  /* Mutate in place so window.layers reference stays valid for undo system */
+  layers.length = 0; layers.push(bg);
   activeLayerIdx = 0;
   layerCounter = 2;
   syncActiveLayer();
@@ -371,7 +373,8 @@ function resetLayersToBlank(){
   var W = dv.width || 800, H = dv.height || 800;
   var fresh = makeLayer('Layer 1');
   fresh.canvas.width = W; fresh.canvas.height = H;
-  layers = [fresh];
+  /* Mutate in place so window.layers reference stays valid for undo system */
+  layers.length = 0; layers.push(fresh);
   activeLayerIdx = 0;
   layerCounter = 2;
   syncActiveLayer();
