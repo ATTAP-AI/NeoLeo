@@ -253,7 +253,7 @@
     </div>
     <div class="fx-pm">
       <div class="fx-pr"><span class="fx-pn">Merge opacity</span><span class="fx-pv" id="draw-merge-opv">100%</span></div>
-      <input type="range" id="draw-merge-op" min="1" max="100" value="100">
+      <input type="range" id="draw-merge-op" min="0" max="100" value="100">
     </div>
     <div style="display:flex;gap:4px;margin-top:6px;">
       <button class="fx-bb" id="img-merge-draw" style="flex:1;">&#8680; Merge Drawing</button>
@@ -369,7 +369,7 @@
     <div id="lyr-list"></div>
     <div class="lyr-op-wrap">
       <label>Opacity</label>
-      <input type="range" id="lyr-op-sl" min="1" max="100" value="100" style="flex:1;height:3px;">
+      <input type="range" id="lyr-op-sl" min="0" max="100" value="100" style="flex:1;height:3px;">
       <span id="lyr-op-val">100%</span>
     </div>
     <div id="lyr-actions">
@@ -642,7 +642,7 @@
   <div class="sec-body open" id="dt-body">
     <div class="crow"><div class="csw" id="csw"><input type="color" id="dcol" value="#ff4040"></div><div class="ctxt">Color &nbsp;<span id="dcoltxt">#ff4040</span></div></div>
     <div class="pm"><div class="pr"><span class="pn">Size</span><span class="pv" id="szv">10</span></div><input type="range" id="szr" min="1" max="80" value="10"></div>
-    <div class="pm"><div class="pr"><span class="pn">Opacity</span><span class="pv" id="opv">90%</span></div><input type="range" id="opr" min="5" max="100" value="90"></div>
+    <div class="pm"><div class="pr"><span class="pn">Opacity</span><span class="pv" id="opv">90%</span></div><input type="range" id="opr" min="0" max="100" value="90"></div>
     <div class="pm"><div class="pr"><span class="pn">Hardness</span><span class="pv" id="hdv">70%</span></div><input type="range" id="hdr" min="0" max="100" value="70"></div>
     <div class="pm"><div class="pr"><span class="pn">Tolerance</span><span class="pv" id="tlv">30</span></div><input type="range" id="tlr" min="0" max="100" value="30"></div>
     <div class="pm"><div class="pr"><span class="pn">Shape Mode</span></div><select id="fmod"><option value="stroke">Stroke only</option><option value="fill">Fill only</option><option value="both">Fill + Stroke</option></select></div>
@@ -662,7 +662,7 @@
   <div class="sec-body" id="exp-body">
     <div class="pm" style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1a0a2a;">
       <div class="pr"><span class="pn">Layer Opacity</span><span class="pv" id="exp-op-v">100%</span></div>
-      <input type="range" id="exp-op" min="0" max="100" value="100" oninput="(function(v){document.getElementById('exp-op-v').textContent=v+'%';var ov=document.getElementById('dv-opov');if(ov){ov.style.opacity=1-(v/100);}})(parseInt(this.value));" >
+      <input type="range" id="exp-op" min="0" max="100" value="100" oninput="(function(v){document.getElementById('exp-op-v').textContent=v+'%';var dv=document.getElementById('dv');if(dv){dv.style.opacity=v/100;}var ov=document.getElementById('dv-opov');if(ov){ov.style.opacity=0;}})(parseInt(this.value));" >
     </div>
     <div id="intent-sculpt-sec">
       <div style="display:flex;align-items:stretch;gap:0;">
@@ -697,7 +697,7 @@
       </div>
       <div class="fx-pm">
         <div class="fx-pr"><span class="fx-pn">Mark opacity</span><span class="fx-pv" id="intent-op-v">70%</span></div>
-        <input type="range" id="intent-op" min="5" max="100" value="70">
+        <input type="range" id="intent-op" min="0" max="100" value="70">
       </div>
       <div class="fx-pm">
         <div class="fx-pr"><span class="fx-pn">Mark color</span></div>
@@ -819,7 +819,7 @@
         <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-top:8px;margin-bottom:4px;">EXPRESSION</div>
         <div class="pm"><div class="pr"><span class="pn">Multiplicity</span><span class="pv" id="pp-mult-v">3</span></div><input type="range" id="pp-mult" min="1" max="8" value="3"></div>
         <div class="pm"><div class="pr"><span class="pn">Volatility</span><span class="pv" id="pp-vol-v">40%</span></div><input type="range" id="pp-vol" min="0" max="100" value="40"></div>
-        <div class="pm"><div class="pr"><span class="pn">Ghost Opacity</span><span class="pv" id="pp-ghost-v">22%</span></div><input type="range" id="pp-ghost" min="0" max="60" value="22"></div>
+        <div class="pm"><div class="pr"><span class="pn">Ghost Opacity</span><span class="pv" id="pp-ghost-v">22%</span></div><input type="range" id="pp-ghost" min="0" max="100" value="22"></div>
         <div class="pm"><div class="pr"><span class="pn">Scatter</span><span class="pv" id="pp-scatter-v">24</span></div><input type="range" id="pp-scatter" min="0" max="80" value="24"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:4px 6px;background:rgba(232,245,10,0.04);border:1px solid rgba(232,245,10,0.15);border-radius:2px;">
           <span style="font-size:8px;color:#97c3b0;letter-spacing:.08em;">SEED</span>
@@ -1045,7 +1045,7 @@
         </div>
         <div>
           <div class="bp-ctrl-row"><span class="bp-ctrl-lbl">Opacity</span><span class="bp-ctrl-val" id="bp-op-val">90%</span></div>
-          <input type="range" class="bp-slider" id="bp-op" min="5" max="100" value="90">
+          <input type="range" class="bp-slider" id="bp-op" min="0" max="100" value="90">
         </div>
       </div>
     </div>
