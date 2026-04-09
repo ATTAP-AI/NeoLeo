@@ -133,7 +133,7 @@ function wireSliders(){
    RENDERERS
    ════════════════════════════════════════════════════════════════════ */
 
-/* ── 1. Metaballs ── */
+/* ── 1. Metaballs (full-resolution per-pixel) ── */
 function renderMeta(ctx,W,H,cols){
   var count=pv(0), radius=pv(1)/100, thresh=pv(2)/100, turb=pv(3)/100, edge=pv(4)/1000;
   var rng=prng(0xB10B1A);
@@ -142,26 +142,27 @@ function renderMeta(ctx,W,H,cols){
   for(var i=0;i<count;i++){
     var bx,by;
     if(window._IS&&window._IS.active){
-      /* Rejection sampling toward high density */
       var att=0;
       do{bx=rng();by=rng();att++;}while(att<40&&rng()>window._IS.getDens(bx,by)+0.15);
     } else {
       bx=0.15+rng()*0.7; by=0.15+rng()*0.7;
     }
     var r=radius*(0.5+rng()*0.5);
-    /* Turbulence displacement */
     bx+=vn(i*7.1,0.3,42)*turb*0.3;
     by+=vn(0.3,i*7.1,42)*turb*0.3;
     blobs.push({x:bx,y:by,r:r});
   }
-  /* Evaluate field on coarse grid */
-  var gw=160,gh=Math.round(160*H/W);
+  /* Pre-parse palette colours for each blob */
+  var blobCols=[];
+  for(var i=0;i<blobs.length;i++) blobCols.push(hRGB(cols[i%cols.length]||'#c0a040'));
+  var cc=hRGB(cols[2%cols.length]||'#a08030');
+  /* Evaluate field per pixel for smooth antialiased output */
   var img=ctx.createImageData(W,H);
-  var ca=hRGB(cols[0]||'#c0a040'),cb=hRGB(cols[1%cols.length]||'#e0c870'),cc=hRGB(cols[2%cols.length]||'#a08030');
-  var sx=W/gw,sy=H/gh;
-  for(var gy=0;gy<gh;gy++){
-    for(var gx=0;gx<gw;gx++){
-      var nx=gx/gw, ny=gy/gh;
+  var d=img.data;
+  for(var py=0;py<H;py++){
+    var ny=py/H;
+    for(var px=0;px<W;px++){
+      var nx=px/W;
       var field=0, bestI=0, bestC=0;
       for(var bi=0;bi<blobs.length;bi++){
         var dx=nx-blobs[bi].x, dy=ny-blobs[bi].y;
@@ -171,22 +172,14 @@ function renderMeta(ctx,W,H,cols){
         field+=contribution;
       }
       if(field>=thresh){
-        /* Inside — colour by dominant blob */
         var t=Math.min(1,(field-thresh)*3);
-        var ci=bestI%cols.length;
-        var c=hRGB(cols[ci]);
+        var c=blobCols[bestI];
         var edgeFactor=Math.abs(field-thresh)<edge?0.7:1.0;
-        var cr=Math.floor(c[0]*edgeFactor+cc[0]*(1-edgeFactor));
-        var cg=Math.floor(c[1]*edgeFactor+cc[1]*(1-edgeFactor));
-        var cbl=Math.floor(c[2]*edgeFactor+cc[2]*(1-edgeFactor));
-        /* Paint pixels in this grid cell */
-        for(var py=0;py<sy;py++)for(var px=0;px<sx;px++){
-          var pixx=Math.floor(gx*sx+px), pixy=Math.floor(gy*sy+py);
-          if(pixx<W&&pixy<H){
-            var idx=(pixy*W+pixx)*4;
-            img.data[idx]=cr; img.data[idx+1]=cg; img.data[idx+2]=cbl; img.data[idx+3]=Math.floor(200+t*55);
-          }
-        }
+        var idx=(py*W+px)*4;
+        d[idx  ]=Math.floor(c[0]*edgeFactor+cc[0]*(1-edgeFactor));
+        d[idx+1]=Math.floor(c[1]*edgeFactor+cc[1]*(1-edgeFactor));
+        d[idx+2]=Math.floor(c[2]*edgeFactor+cc[2]*(1-edgeFactor));
+        d[idx+3]=Math.floor(200+t*55);
       }
     }
   }
@@ -306,52 +299,37 @@ function renderLava(ctx,W,H,cols){
     blobs.push({x:bx,y:by,r:r});
   }
   var k=softness*0.15+0.005; /* Merge kernel */
-  /* Evaluate SDF on coarse grid */
-  var gw=200,gh=Math.round(200*H/W);
+  /* Evaluate SDF per pixel for smooth antialiased output */
   var img=ctx.createImageData(W,H);
+  var d=img.data;
   var ca=hRGB(cols[0]||'#c0a040'),cb=hRGB(cols[1%cols.length]||'#e0c870'),cc=hRGB(cols[2%cols.length]||'#a08030');
-  var sx=W/gw,sy=H/gh;
+  var ar=W/H; /* Aspect ratio */
 
   function smin(a,b,k2){
     var h=Math.max(0,Math.min(1,0.5+0.5*(b-a)/k2));
     return b+(a-b)*h-k2*h*(1-h);
   }
 
-  for(var gy=0;gy<gh;gy++){
-    for(var gx=0;gx<gw;gx++){
-      var nx=gx/gw, ny=gy/gh;
-      /* Compute combined SDF */
+  for(var py=0;py<H;py++){
+    var ny=py/H;
+    for(var px=0;px<W;px++){
+      var nx=px/W;
       var combined=1e9;
       for(var bi=0;bi<blobs.length;bi++){
-        var dx=nx-blobs[bi].x, dy=(ny-blobs[bi].y)*(W/H); /* Aspect correction */
-        var d=Math.sqrt(dx*dx+dy*dy)-blobs[bi].r;
-        combined=smin(combined,d,k);
+        var dx=nx-blobs[bi].x, dy=(ny-blobs[bi].y)*ar;
+        var dist=Math.sqrt(dx*dx+dy*dy)-blobs[bi].r;
+        combined=smin(combined,dist,k);
       }
+      var idx=(py*W+px)*4;
       if(combined<0){
-        /* Inside */
         var depth=Math.min(1,Math.abs(combined)*12);
-        var t=depth;
-        var cr=Math.floor(ca[0]*(1-t)+cb[0]*t);
-        var cg=Math.floor(ca[1]*(1-t)+cb[1]*t);
-        var cbl=Math.floor(ca[2]*(1-t)+cb[2]*t);
-        var alpha=Math.floor(fillOp*255);
-        for(var py=0;py<sy;py++)for(var px=0;px<sx;px++){
-          var pixx=Math.floor(gx*sx+px), pixy=Math.floor(gy*sy+py);
-          if(pixx<W&&pixy<H){
-            var idx=(pixy*W+pixx)*4;
-            img.data[idx]=cr; img.data[idx+1]=cg; img.data[idx+2]=cbl; img.data[idx+3]=alpha;
-          }
-        }
+        d[idx  ]=Math.floor(ca[0]*(1-depth)+cb[0]*depth);
+        d[idx+1]=Math.floor(ca[1]*(1-depth)+cb[1]*depth);
+        d[idx+2]=Math.floor(ca[2]*(1-depth)+cb[2]*depth);
+        d[idx+3]=Math.floor(fillOp*255);
       } else if(combined<0.008){
-        /* Edge glow */
         var ef=1-combined/0.008;
-        for(var py=0;py<sy;py++)for(var px=0;px<sx;px++){
-          var pixx=Math.floor(gx*sx+px), pixy=Math.floor(gy*sy+py);
-          if(pixx<W&&pixy<H){
-            var idx=(pixy*W+pixx)*4;
-            img.data[idx]=cc[0]; img.data[idx+1]=cc[1]; img.data[idx+2]=cc[2]; img.data[idx+3]=Math.floor(ef*180);
-          }
-        }
+        d[idx]=cc[0]; d[idx+1]=cc[1]; d[idx+2]=cc[2]; d[idx+3]=Math.floor(ef*180);
       }
     }
   }
@@ -376,21 +354,29 @@ function renderRadio(ctx,W,H,cols){
   /* Draw shells back to front */
   for(var L=shells;L>=1;L--){
     var layerR=baseR*(L/shells)*(0.5+0.5*complexity);
-    var nSamples=sym*12;
+    var nSamples=Math.max(120, sym*24); /* High sample count for smooth shells */
     var col=cols[(shells-L)%cols.length]||'#c0a040';
     var c=hRGB(col);
     var alpha=0.3+0.5*(L/shells);
 
-    /* Build noise-displaced shell path */
-    ctx.beginPath();
-    for(var i=0;i<=nSamples;i++){
+    /* Build smooth shell path using Catmull-Rom → Bezier */
+    var shellPts=[];
+    for(var i=0;i<nSamples;i++){
       var theta=i/nSamples*Math.PI*2;
       var nr=layerR+vn(Math.cos(theta)*3,Math.sin(theta)*3,42+L*100)*layerR*0.15*complexity;
-      /* Add radial symmetry wobble */
       nr+=Math.cos(theta*sym)*layerR*0.06*complexity;
-      var x=cx+Math.cos(theta)*nr;
-      var y=cy+Math.sin(theta)*nr;
-      if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      shellPts.push({x:cx+Math.cos(theta)*nr, y:cy+Math.sin(theta)*nr});
+    }
+    ctx.beginPath();
+    for(var i=0;i<shellPts.length;i++){
+      var p0=shellPts[(i-1+shellPts.length)%shellPts.length];
+      var p1=shellPts[i];
+      var p2=shellPts[(i+1)%shellPts.length];
+      var p3=shellPts[(i+2)%shellPts.length];
+      if(i===0) ctx.moveTo(p1.x,p1.y);
+      var cp1x=p1.x+(p2.x-p0.x)/6, cp1y=p1.y+(p2.y-p0.y)/6;
+      var cp2x=p2.x-(p3.x-p1.x)/6, cp2y=p2.y-(p3.y-p1.y)/6;
+      ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,p2.x,p2.y);
     }
     ctx.closePath();
     ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+alpha+')';
@@ -482,6 +468,9 @@ function doRender(){
   var W=dv.width,H=dv.height;
   var cols=palCols();
   if(!window._ENG_CONNECT)lctx.clearRect(0,0,W,H);
+  /* Enable antialiasing for smooth rendering */
+  lctx.imageSmoothingEnabled=true;
+  lctx.imageSmoothingQuality='high';
   var sys=getSys();
   var st=document.getElementById('orgf-status');
   if(st)st.textContent='Generating '+sys.name+'\u2026';
