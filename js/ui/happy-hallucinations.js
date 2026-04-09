@@ -777,8 +777,8 @@ setTimeout(function(){
       /* Pass count */
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">',
       '  <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.06em;text-transform:uppercase;min-width:70px;line-height:1.5;">Passes</span>',
-      '  <input type="number" id="mp-passes" min="1" max="6" value="3" style="width:50px;padding:5px 8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#ffffff;font-family:inherit;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border-radius:3px;outline:none;-moz-appearance:textfield;">',
-      '  <span style="font-size:8px;color:rgba(255,255,255,0.3);line-height:1.5;">1\u20136</span>',
+      '  <input type="number" id="mp-passes" min="1" max="10" value="3" style="width:50px;padding:5px 8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#ffffff;font-family:inherit;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border-radius:3px;outline:none;-moz-appearance:textfield;">',
+      '  <span style="font-size:8px;color:rgba(255,255,255,0.3);line-height:1.5;">1\u201310</span>',
       '</div>',
 
       '<div style="height:1px;background:rgba(232,245,10,0.08);margin:4px 0 12px;"></div>',
@@ -915,7 +915,7 @@ setTimeout(function(){
     function buildPalList(){
       var wrap=document.getElementById('mp-pal-list');
       if(!wrap)return;
-      var count=Math.max(1,Math.min(6,parseInt(document.getElementById('mp-passes').value)||3));
+      var count=Math.max(1,Math.min(10,parseInt(document.getElementById('mp-passes').value)||3));
       wrap.innerHTML='';
       for(var i=0;i<count;i++){
         var row=document.createElement('div');
@@ -1167,7 +1167,7 @@ setTimeout(function(){
 
     /* ── Run multi-pass: render all passes, store, then enable live ── */
     document.getElementById('mp-run').addEventListener('click',function(){
-      var totalPasses=Math.max(1,Math.min(6,parseInt(document.getElementById('mp-passes').value)||3));
+      var totalPasses=Math.max(1,Math.min(10,parseInt(document.getElementById('mp-passes').value)||3));
 
       var runBtn=document.getElementById('mp-run');
       var progWrap=document.getElementById('mp-progress');
