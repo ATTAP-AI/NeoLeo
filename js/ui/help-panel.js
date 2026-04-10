@@ -73,7 +73,13 @@ var SECTIONS = [
       '<li>'+L('Color Replace','.tbtn[data-t="creplace"]','open-section:dt-body')+' (C) \u2014 Replace one color with another by painting over it.</li>' +
       '<li>'+L('Crop','.tbtn[data-t="crop"]','open-section:dt-body')+' \u2014 Trim the image creation window to a selected area.</li>' +
       '</ul>' +
-      '<p>Use the controls in the '+L('Drawing Tools','#dt-toggle','open-section:dt-body')+' section to adjust <strong>size</strong>, <strong>opacity</strong>, <strong>hardness</strong>, and <strong>color</strong>.</p>'
+      '<p>Use the controls in the '+L('Drawing Tools','#dt-toggle','open-section:dt-body')+' section to adjust <strong>size</strong>, <strong>opacity</strong>, <strong>hardness</strong>, and <strong>color</strong>.</p>' +
+      '<p><strong>Mark Color Picker</strong> \u2014 Whenever a mark-making tool is active, a small floating panel anchors next to the vertical toolbar with two swatches:</p>' +
+      '<ul>' +
+      '<li><strong>LAST</strong> \u2014 Recolors the most recently placed mark in place. Pick a new color and the pixels of your last stroke change to it while preserving softness and opacity. Repeated picks keep targeting that same original mark until you place a new one.</li>' +
+      '<li><strong>NEXT</strong> \u2014 Sets the color the next mark will be drawn with. This stays in sync with the main color picker.</li>' +
+      '</ul>' +
+      '<p>The picker disappears for tools that don\u2019t make marks (like Crop), and reappears as soon as you switch back to a mark-making tool.</p>'
   },
   {
     title: 'Brushes (26 Types)',
