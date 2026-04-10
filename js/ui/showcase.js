@@ -117,23 +117,35 @@ var ITEMS = [
   {id:'sc-nat-paper',  sec:'naturalize', name:'Paper Texture',       engine:'watercolor',  pal:'earth',   seed:2000, naturalize:'paper'},
   {id:'sc-nat-multi',  sec:'naturalize', name:'Multi-Pass Organic',  engine:'spirograph',  pal:'ocean',   seed:2100, naturalize:'multi'},
 
-  /* ── Happy Hallucinations (4) ── */
-  {id:'sc-hh-ember',   sec:'hh', name:'Ember Storm',     engine:'flowfield',   pal:'ember',  seed:2200, hh:{strategy:'scatter',  tools:['brush','line']}},
-  {id:'sc-hh-neon',    sec:'hh', name:'Neon Pulse',       engine:'julia_set',   pal:'neon',   seed:2300, hh:{strategy:'radial',   tools:['ellipse','brush']}},
-  {id:'sc-hh-aurora',  sec:'hh', name:'Aurora Drift',     engine:'curl_noise',  pal:'aurora', seed:2400, hh:{strategy:'flow',     tools:['pencil','line']}},
-  {id:'sc-hh-crystal', sec:'hh', name:'Crystal Weave',    engine:'delaunay',    pal:'void',   seed:2500, hh:{strategy:'constellation', tools:['line','triangle']}},
+  /* ── Happy Hallucinations (8) ── */
+  {id:'sc-hh-ember',    sec:'hh', name:'Ember Storm',       engine:'flowfield',          pal:'ember',  seed:2200, hh:{strategy:'scatter',       tools:['brush','line','rect'],        count:60, alpha:0.6}},
+  {id:'sc-hh-neon',     sec:'hh', name:'Neon Pulse',        engine:'julia_set',          pal:'neon',   seed:2300, hh:{strategy:'radial',        tools:['ellipse','brush','triangle'], count:50, alpha:0.55}},
+  {id:'sc-hh-aurora',   sec:'hh', name:'Aurora Drift',      engine:'curl_noise',         pal:'aurora', seed:2400, hh:{strategy:'flow',          tools:['pencil','line','brush'],      count:70, alpha:0.5}},
+  {id:'sc-hh-crystal',  sec:'hh', name:'Crystal Weave',     engine:'delaunay',           pal:'void',   seed:2500, hh:{strategy:'constellation', tools:['line','triangle'],            count:55, alpha:0.65}},
+  {id:'sc-hh-ocean',    sec:'hh', name:'Ocean Dream',       engine:'interference',       pal:'ocean',  seed:2510, hh:{strategy:'flow',          tools:['ellipse','brush','pencil'],   count:45, alpha:0.5}},
+  {id:'sc-hh-grid',     sec:'hh', name:'Grid Construct',    engine:'truchet',            pal:'ink',    seed:2520, hh:{strategy:'grid',          tools:['rect','line','triangle'],     count:65, alpha:0.55}},
+  {id:'sc-hh-burst',    sec:'hh', name:'Cosmic Burst',      engine:'attractor',          pal:'neon',   seed:2530, hh:{strategy:'burst',         tools:['brush','line','ellipse'],     count:80, alpha:0.5}},
+  {id:'sc-hh-crosshatch',sec:'hh',name:'Crosshatch Growth', engine:'growth',             pal:'earth',  seed:2540, hh:{strategy:'crosshatch',    tools:['pencil','line'],              count:90, alpha:0.45}},
 
-  /* ── Multi-Pass Blend (4) ── */
-  {id:'sc-mp-screen5',  sec:'multipass', name:'5-Pass Screen',    engine:'curl_noise',          pal:'ember',   seed:2600, multipass:{passes:5,  blend:'screen',  decay:0.7}},
-  {id:'sc-mp-overlay8', sec:'multipass', name:'8-Pass Overlay',   engine:'flowfield',           pal:'aurora',  seed:2700, multipass:{passes:8,  blend:'overlay', decay:0.8}},
-  {id:'sc-mp-screen6',  sec:'multipass', name:'6-Pass Luminous',  engine:'reaction_diffusion_b',pal:'ocean',   seed:2800, multipass:{passes:6,  blend:'screen',  decay:0.75}},
-  {id:'sc-mp-over10',   sec:'multipass', name:'10-Pass Deep',     engine:'physarum',            pal:'neon',    seed:2900, multipass:{passes:10, blend:'overlay', decay:0.85}},
+  /* ── Multi-Pass Blend (6) ── */
+  {id:'sc-mp-screen5',   sec:'multipass', name:'5-Pass Screen',       engine:'curl_noise',          pal:'ember',   seed:2600, multipass:{passes:5,  blend:'screen',     decay:0.7}},
+  {id:'sc-mp-overlay8',  sec:'multipass', name:'8-Pass Overlay',      engine:'flowfield',           pal:'aurora',  seed:2700, multipass:{passes:8,  blend:'overlay',    decay:0.8}},
+  {id:'sc-mp-screen6',   sec:'multipass', name:'6-Pass Luminous',     engine:'reaction_diffusion_b',pal:'ocean',   seed:2800, multipass:{passes:6,  blend:'screen',     decay:0.75}},
+  {id:'sc-mp-over10',    sec:'multipass', name:'10-Pass Deep',        engine:'physarum',            pal:'neon',    seed:2900, multipass:{passes:10, blend:'overlay',    decay:0.85}},
+  {id:'sc-mp-softlight', sec:'multipass', name:'Soft Light Layers',   engine:'watercolor',          pal:'earth',   seed:2910, multipass:{passes:4,  blend:'soft-light', decay:0.6}},
+  {id:'sc-mp-multiply',  sec:'multipass', name:'Multiply Fractal',    engine:'flame_fractal',       pal:'rust',    seed:2920, multipass:{passes:6,  blend:'multiply',   decay:0.65}},
 
-  /* ── Experimental (4) ── */
-  {id:'sc-exp-morph',  sec:'experimental', name:'Morphogenesis',    engine:'reaction_diffusion', pal:'botanic', seed:3000, experimental:'morphogenesis'},
-  {id:'sc-exp-orgf',   sec:'experimental', name:'Organic Forms',    engine:'domain_warp',        pal:'aurora',  seed:3100, experimental:'organic-forms'},
-  {id:'sc-exp-topo',   sec:'experimental', name:'Topology 3D',      engine:'mobius_torus',       pal:'neon',    seed:3200, experimental:'topology'},
-  {id:'sc-exp-prob',   sec:'experimental', name:'Probability Paint', engine:'flowfield',          pal:'ember',   seed:3300, experimental:'probability'}
+  /* ── Experimental Tools (10) ── */
+  {id:'sc-exp-morph',    sec:'experimental', name:'Morphogenesis',       engine:'reaction_diffusion', pal:'botanic', seed:3000, experimental:'morphogenesis'},
+  {id:'sc-exp-morph2',   sec:'experimental', name:'Phyllotaxis Spirals', engine:'spirograph',         pal:'aurora',  seed:3010, experimental:'morphogenesis-phyllotaxis'},
+  {id:'sc-exp-orgf',     sec:'experimental', name:'Organic Metaballs',   engine:'domain_warp',        pal:'aurora',  seed:3100, experimental:'organic-forms'},
+  {id:'sc-exp-orgf2',    sec:'experimental', name:'Organic Radiolaria',  engine:'diatom',             pal:'ocean',   seed:3110, experimental:'organic-forms-radiolaria'},
+  {id:'sc-exp-topo',     sec:'experimental', name:'Topology Torus',      engine:'mobius_torus',       pal:'neon',    seed:3200, experimental:'topology'},
+  {id:'sc-exp-topo2',    sec:'experimental', name:'Topology Klein',      engine:'lissajous',          pal:'aurora',  seed:3210, experimental:'topology-klein'},
+  {id:'sc-exp-prob',     sec:'experimental', name:'Probability Paint',   engine:'flowfield',          pal:'ember',   seed:3300, experimental:'probability'},
+  {id:'sc-exp-memory',   sec:'experimental', name:'Memory Drawing',      engine:'watercolor',         pal:'earth',   seed:3400, experimental:'memory'},
+  {id:'sc-exp-leo',      sec:'experimental', name:'LEO da Vinci',        engine:'lsystem',            pal:'ink',     seed:3500, experimental:'leo'},
+  {id:'sc-exp-leo2',     sec:'experimental', name:'LEO Mechanical',      engine:'spirograph',         pal:'ghost',   seed:3510, experimental:'leo-mechanical'}
 ];
 
 /* ── State ── */
@@ -397,59 +409,97 @@ function applySimpleNaturalize(W, H, type){
 /* ── HH-style drawing overlay on dv canvas ── */
 function drawHHOverlay(W, H, pal, hh){
   var cols = pal.c || ['#ff4040','#40ff40','#4040ff'];
-  var count = 30 + Math.floor(Math.random()*20);
+  var count = hh.count || (30 + Math.floor(Math.random()*20));
+  var baseAlpha = hh.alpha || 0.5;
   var dc = window.dctx || dv.getContext('2d');
 
   for(var i=0; i<count; i++){
-    dc.globalAlpha = 0.4 + Math.random()*0.4;
+    dc.globalAlpha = baseAlpha * (0.5 + Math.random()*0.5);
     dc.strokeStyle = cols[i % cols.length];
     dc.fillStyle = cols[i % cols.length];
-    dc.lineWidth = 1 + Math.random()*3;
+    dc.lineWidth = 1 + Math.random()*4;
 
     var x = Math.random()*W, y = Math.random()*H;
 
     /* Position by strategy */
     if(hh.strategy === 'radial'){
-      var ang = (i/count)*Math.PI*2;
-      var r = W*0.12 + Math.random()*W*0.28;
+      var ang = (i/count)*Math.PI*2 + Math.random()*0.3;
+      var r = W*0.08 + Math.random()*W*0.35;
       x = W/2 + Math.cos(ang)*r;
       y = H/2 + Math.sin(ang)*r;
     } else if(hh.strategy === 'flow'){
-      x = (i/count)*W;
-      y = H/2 + Math.sin(i*0.6)*H*0.3;
+      x = (i/count)*W + Math.random()*20-10;
+      y = H/2 + Math.sin(i*0.4)*H*0.3 + Math.cos(i*0.15)*H*0.1;
     } else if(hh.strategy === 'constellation'){
+      dc.lineWidth = 0.5 + Math.random()*2;
       dc.beginPath();
-      dc.moveTo(Math.random()*W, Math.random()*H);
-      dc.lineTo(Math.random()*W, Math.random()*H);
+      var cx1=Math.random()*W, cy1=Math.random()*H, cx2=Math.random()*W, cy2=Math.random()*H;
+      dc.moveTo(cx1, cy1);
+      dc.lineTo(cx2, cy2);
+      dc.stroke();
+      /* Draw star dots at endpoints */
+      dc.globalAlpha = baseAlpha * 0.8;
+      dc.beginPath(); dc.arc(cx1,cy1,2+Math.random()*3,0,Math.PI*2); dc.fill();
+      dc.beginPath(); dc.arc(cx2,cy2,2+Math.random()*3,0,Math.PI*2); dc.fill();
+      continue;
+    } else if(hh.strategy === 'grid'){
+      var cols_g = 6 + Math.floor(Math.random()*4);
+      var rows_g = 6 + Math.floor(Math.random()*4);
+      x = (i % cols_g) * (W/cols_g) + W/(cols_g*2) + Math.random()*20-10;
+      y = Math.floor(i/cols_g) * (H/rows_g) + H/(rows_g*2) + Math.random()*20-10;
+    } else if(hh.strategy === 'burst'){
+      var bAng = Math.random()*Math.PI*2;
+      var bDist = Math.random()*Math.random()*W*0.45;
+      x = W/2 + Math.cos(bAng)*bDist;
+      y = H/2 + Math.sin(bAng)*bDist;
+    } else if(hh.strategy === 'crosshatch'){
+      /* Diagonal hatching pattern */
+      var hAng = (i%2===0) ? Math.PI*0.25 : Math.PI*-0.25;
+      var hLen = 30 + Math.random()*60;
+      dc.lineWidth = 0.5 + Math.random()*1.5;
+      dc.beginPath();
+      dc.moveTo(x, y);
+      dc.lineTo(x+Math.cos(hAng)*hLen, y+Math.sin(hAng)*hLen);
       dc.stroke();
       continue;
     }
     /* scatter = default random position — already set */
 
     var tool = hh.tools[i % hh.tools.length];
-    if(tool === 'brush' || tool === 'pencil'){
+    if(tool === 'brush'){
       dc.beginPath();
-      dc.arc(x, y, 3+Math.random()*8, 0, Math.PI*2);
+      dc.arc(x, y, 4+Math.random()*12, 0, Math.PI*2);
       dc.fill();
+      /* Add smaller satellite dots */
+      if(Math.random()>0.5){ dc.globalAlpha *= 0.5; dc.beginPath(); dc.arc(x+Math.random()*16-8, y+Math.random()*16-8, 2+Math.random()*4, 0, Math.PI*2); dc.fill(); }
+    } else if(tool === 'pencil'){
+      dc.lineWidth = 0.5 + Math.random()*1.5;
+      dc.beginPath();
+      dc.moveTo(x, y);
+      for(var p=0; p<4; p++){ x+=Math.random()*30-15; y+=Math.random()*30-15; dc.lineTo(x,y); }
+      dc.stroke();
     } else if(tool === 'line'){
       dc.beginPath();
       dc.moveTo(x, y);
-      dc.lineTo(x+Math.random()*80-40, y+Math.random()*80-40);
+      dc.lineTo(x+Math.random()*120-60, y+Math.random()*120-60);
       dc.stroke();
     } else if(tool === 'rect'){
-      dc.strokeRect(x, y, 10+Math.random()*30, 10+Math.random()*30);
+      var rw=10+Math.random()*40, rh=10+Math.random()*40;
+      if(Math.random()>0.5) dc.fillRect(x,y,rw,rh);
+      else dc.strokeRect(x,y,rw,rh);
     } else if(tool === 'ellipse'){
       dc.beginPath();
-      try { dc.ellipse(x, y, 5+Math.random()*15, 5+Math.random()*15, 0, 0, Math.PI*2); } catch(e){ dc.arc(x,y,8,0,Math.PI*2); }
-      dc.stroke();
+      var ex=5+Math.random()*20, ey=5+Math.random()*20;
+      try { dc.ellipse(x, y, ex, ey, Math.random()*Math.PI, 0, Math.PI*2); } catch(e){ dc.arc(x,y,ex,0,Math.PI*2); }
+      if(Math.random()>0.4) dc.fill(); else dc.stroke();
     } else if(tool === 'triangle'){
-      var s = 10+Math.random()*18;
+      var s = 10+Math.random()*25;
       dc.beginPath();
       dc.moveTo(x, y-s);
-      dc.lineTo(x-s, y+s);
-      dc.lineTo(x+s, y+s);
+      dc.lineTo(x-s*0.87, y+s*0.5);
+      dc.lineTo(x+s*0.87, y+s*0.5);
       dc.closePath();
-      dc.stroke();
+      if(Math.random()>0.5) dc.fill(); else dc.stroke();
     }
   }
   dc.globalAlpha = 1;
@@ -791,10 +841,36 @@ function doMultiPassRender(item, p, isReplace){
 }
 
 function triggerExperimental(type){
-  if(type==='morphogenesis' && window._MORPH && window._MORPH.render) window._MORPH.render();
-  else if(type==='organic-forms' && window._ORGF && window._ORGF.render) window._ORGF.render();
-  else if(type==='topology' && window._TOPO && window._TOPO.render) window._TOPO.render();
-  else if(type==='probability' && window._PP && window._PP.toggle) window._PP.toggle();
+  if(type==='morphogenesis' && window._MORPH && window._MORPH.render){
+    window._MORPH.render();
+  } else if(type==='morphogenesis-phyllotaxis' && window._MORPH){
+    /* Select phyllotaxis system (index 1) then render */
+    if(window._MORPH.selectSystem) window._MORPH.selectSystem(1);
+    else if(window._MORPH.render) window._MORPH.render();
+  } else if(type==='organic-forms' && window._ORGF && window._ORGF.render){
+    window._ORGF.render();
+  } else if(type==='organic-forms-radiolaria' && window._ORGF){
+    /* Select radiolaria system (index 4) then render */
+    if(window._ORGF.selectSystem) window._ORGF.selectSystem(4);
+    else if(window._ORGF.render) window._ORGF.render();
+  } else if(type==='topology' && window._TOPO && window._TOPO.render){
+    window._TOPO.render();
+  } else if(type==='topology-klein' && window._TOPO){
+    /* Select Klein bottle (index 3) then render */
+    if(window._TOPO.selectSystem) window._TOPO.selectSystem(3);
+    else if(window._TOPO.render) window._TOPO.render();
+  } else if(type==='probability' && window._PP){
+    if(window._PP.reseed) window._PP.reseed();
+    else if(window._PP.toggle) window._PP.toggle();
+  } else if(type==='memory' && window._MBD && window._MBD.render){
+    window._MBD.render();
+  } else if(type==='leo' && window._LEO && window._LEO.render){
+    window._LEO.render();
+  } else if(type==='leo-mechanical' && window._LEO){
+    /* Select mechanical mode (index 3) then render */
+    if(window._LEO.selectSystem) window._LEO.selectSystem(3);
+    else if(window._LEO.render) window._LEO.render();
+  }
 }
 
 /* ── Sync UI helpers ── */
