@@ -205,7 +205,28 @@ document.getElementById('export-save-as').addEventListener('click',function(){
   document.getElementById('export-modal').classList.remove('open');
   document.getElementById('export-img').src='';
   window._showSaveStatus(filename, savedUrl);
+  window._showSaveConfirmation(filename);
 });
+
+/* ── Save confirmation notification popup ── */
+(function(){var s=document.createElement('style');s.textContent='@keyframes sc-fade-in{from{opacity:0;transform:translate(-50%,-50%) scale(0.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}';document.head.appendChild(s);})();
+window._showSaveConfirmation=function(filename){
+  var existing=document.getElementById('save-confirm-popup');
+  if(existing) existing.remove();
+  var popup=document.createElement('div');
+  popup.id='save-confirm-popup';
+  popup.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a2e28;border:1px solid rgba(64,200,160,0.5);border-radius:8px;padding:24px 32px;z-index:9999;box-shadow:0 12px 50px rgba(0,0,0,0.7);text-align:center;font-family:inherit;min-width:300px;max-width:480px;animation:sc-fade-in .25s ease-out;';
+  popup.innerHTML='<div style="font-size:28px;margin-bottom:10px;color:#40c8a0;">&#10003;</div><div style="font-size:11px;font-weight:bold;letter-spacing:.15em;color:#40c8a0;text-transform:uppercase;margin-bottom:12px;">Image Saved Successfully</div><div style="font-size:10px;color:rgba(255,255,255,0.85);margin-bottom:6px;word-break:break-all;"><span style="color:rgba(255,255,255,0.5);">File:</span> <strong>'+filename+'</strong></div><div style="font-size:9px;color:rgba(255,255,255,0.5);margin-bottom:16px;">Saved to your browser\'s default <strong style="color:rgba(255,255,255,0.7);">Downloads</strong> folder</div><button id="save-confirm-ok" style="padding:6px 28px;background:rgba(64,200,160,0.12);border:1px solid rgba(64,200,160,0.4);color:#40c8a0;font-family:inherit;font-size:9px;font-weight:600;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;">OK</button>';
+  var backdrop=document.createElement('div');
+  backdrop.id='save-confirm-backdrop';
+  backdrop.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;animation:sc-fade-in .2s ease-out;';
+  document.body.appendChild(backdrop);
+  document.body.appendChild(popup);
+  function dismiss(){popup.remove();backdrop.remove();}
+  document.getElementById('save-confirm-ok').onclick=dismiss;
+  backdrop.onclick=dismiss;
+  setTimeout(function(){if(document.getElementById('save-confirm-popup'))dismiss();},5000);
+};
 
 /* ── Export modal close (always wire — these elements are stable) ── */
 document.getElementById('export-close').addEventListener('click',function(){

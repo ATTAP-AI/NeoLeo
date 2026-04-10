@@ -3,12 +3,15 @@
  *  backward-compat with the monolith.
  */
 
-/* ── Canvas element references ── */
-const uv=document.getElementById('uv'),uctx=uv.getContext('2d');
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const lv=document.getElementById('lv'),lctx=lv.getContext('2d');
-const dv=document.getElementById('dv'),dctx=dv.getContext('2d');
-const av=document.getElementById('av'),actx=av.getContext('2d');
+/* ── Canvas element references ──
+   Use `var` (not const) so these live on `window.*` and can be
+   temporarily swapped to offscreen canvases by the Showcase
+   thumbnail renderer without affecting the visible canvas.       */
+var uv=document.getElementById('uv'),uctx=uv.getContext('2d');
+var cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+var lv=document.getElementById('lv'),lctx=lv.getContext('2d');
+var dv=document.getElementById('dv'),dctx=dv.getContext('2d');
+var av=document.getElementById('av'),actx=av.getContext('2d');
 
 /* ── Upload state ── */
 let uploadedImg=null,uploadedOp=1,uploadedMode='under',uploadedFit='contain',uploadedBlend='source-over',uploadedEngBlend='source-over',uploadedEngOp=0.8,uploadedEngOn=true;
