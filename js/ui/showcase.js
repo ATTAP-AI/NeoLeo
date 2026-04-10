@@ -842,6 +842,12 @@ function doMultiPassRender(item, p, isReplace){
   setTimeout(function(){ finishApply(item); }, 100);
 }
 
+/* ── Set topology slider value ── */
+function setTopoSlider(id, val){
+  var el = document.getElementById(id);
+  if(el){ el.value = val; el.dispatchEvent(new Event('input')); }
+}
+
 function triggerExperimental(type){
   if(type==='morphogenesis' && window._MORPH && window._MORPH.render){
     window._MORPH.render();
@@ -856,11 +862,26 @@ function triggerExperimental(type){
     if(window._ORGF.selectSystem) window._ORGF.selectSystem(4);
     else if(window._ORGF.render) window._ORGF.render();
   } else if(type==='topology' && window._TOPO && window._TOPO.render){
+    /* Select Torus (index 1), high-res with max resolution */
+    if(window._TOPO.selectShape) window._TOPO.selectShape(1);
+    setTopoSlider('topo-resolution', 200);
+    setTopoSlider('topo-zoom', 55);
+    setTopoSlider('topo-lighting', 85);
+    setTopoSlider('topo-wireframe', 15);
+    setTopoSlider('topo-deform', 0);
+    setTopoSlider('topo-twist', 0);
+    setTopoSlider('topo-tube', 50);
+    setTopoSlider('topo-rotation', 40);
     window._TOPO.render();
   } else if(type==='topology-klein' && window._TOPO){
-    /* Select Klein bottle (index 3) then render */
-    if(window._TOPO.selectSystem) window._TOPO.selectSystem(3);
-    else if(window._TOPO.render) window._TOPO.render();
+    /* Select Klein Bottle (index 3), high-res */
+    if(window._TOPO.selectShape) window._TOPO.selectShape(3);
+    setTopoSlider('topo-resolution', 200);
+    setTopoSlider('topo-zoom', 50);
+    setTopoSlider('topo-lighting', 80);
+    setTopoSlider('topo-wireframe', 20);
+    setTopoSlider('topo-deform', 10);
+    window._TOPO.render();
   } else if(type==='probability' && window._PP){
     if(window._PP.reseed) window._PP.reseed();
     else if(window._PP.toggle) window._PP.toggle();

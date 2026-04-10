@@ -733,11 +733,17 @@ wireSliders();
 var objBtn=document.getElementById('topo-obj-btn');
 if(objBtn) objBtn.addEventListener('click',toggleObjMode);
 
+/* ── Select shape by index (0=Sphere,1=Torus,2=Möbius,3=Klein) ── */
+function selectShape(idx){
+  if(idx>=0 && idx<SHAPES.length){ T.shapeIdx=idx; buildShapeList(); updateDesc(); }
+}
+
 /* ── Public API ── */
 window._TOPO={
   render:doRender,
   randomise:randomise,
   cycle:cycle,
+  selectShape:selectShape,
   onPaletteChange:onPaletteChange,
   toggleObj:toggleObjMode,
   deactivateObj:deactivateObjMode
