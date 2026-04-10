@@ -273,8 +273,8 @@ function renderNextItem(){
       }
     }
 
-    /* Yield, then next */
-    setTimeout(renderNextItem, 20);
+    /* Yield to browser for repaint, then next */
+    requestAnimationFrame(function(){ setTimeout(renderNextItem, 60); });
   });
 }
 
@@ -336,10 +336,11 @@ function renderSingleItem(item, callback){
     applySimpleNaturalize(W, H, item.naturalize);
   }
 
-  /* Multi-pass blend */
+  /* Multi-pass blend — cap at 3 passes for thumbnails to avoid UI freeze */
   if(item.multipass){
     var mp = item.multipass;
-    for(var pi=1; pi<mp.passes; pi++){
+    var thumbPasses = Math.min(mp.passes, 3);
+    for(var pi=1; pi<thumbPasses; pi++){
       if(window.seed) window.seed(item.seed + pi*137);
       ctx.globalCompositeOperation = mp.blend;
       ctx.globalAlpha = Math.pow(mp.decay, pi);
@@ -349,9 +350,10 @@ function renderSingleItem(item, callback){
     ctx.globalAlpha = 1;
   }
 
-  /* HH drawing overlay */
+  /* HH drawing overlay — cap at 25 marks for thumbnails */
   if(item.hh){
-    drawHHOverlay(W, H, p, item.hh);
+    var thumbHH = {strategy:item.hh.strategy, tools:item.hh.tools, count:Math.min(item.hh.count||40, 25), alpha:item.hh.alpha||0.5};
+    drawHHOverlay(W, H, p, thumbHH);
   }
 
   /* Experimental — just use the base engine render (the tool itself
