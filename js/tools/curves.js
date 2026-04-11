@@ -431,6 +431,7 @@ function openCurvesPanel(){
   if(_cvPos){_cvPanel.style.left=_cvPos.left+'px';_cvPanel.style.top=_cvPos.top+'px';}
   else{var tb=document.getElementById('tb');if(tb){var r=tb.getBoundingClientRect();_cvPanel.style.left=Math.max(4,r.left-328)+'px';_cvPanel.style.top='10px';}else{_cvPanel.style.left='50px';_cvPanel.style.top='40px';}}
   _cvPanel.classList.add('open');
+  if(window.bringToFront) window.bringToFront('curves-panel');
   _cvSnap=null;_histogram=null;
   /* Reset curves to linear on open */
   POINTS={rgb:[[0,0],[255,255]],r:[[0,0],[255,255]],g:[[0,0],[255,255]],b:[[0,0],[255,255]]};

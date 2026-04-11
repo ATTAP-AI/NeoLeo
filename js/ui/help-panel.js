@@ -115,6 +115,7 @@ var SECTIONS = [
       '<li><strong>Memory Drawing</strong> \u2014 Inscribe text and ideas that become part of the visual texture of your artwork.</li>' +
       '<li><strong>Temporal Canvases</strong> \u2014 Create art that evolves over time, blending and shifting through different states.</li>' +
       '<li>'+L('Organic Forms','#orgf-toggle','open-exp:orgf-body')+' \u2014 Generate smooth, sculptural shapes from pure mathematics, rendered at full resolution with antialiasing. Five systems are included: <strong>Metaballs</strong> \u2014 merging blobs like oil droplets or liquid mercury via implicit surface evaluation; <strong>Superformula</strong> \u2014 Gielis parametric curves that produce starfish, flowers, pollen grains, and sea urchin shapes; <strong>Noise Blobs</strong> \u2014 fractal-noise-displaced circles drawn with smooth b\u00e9zier curves for amoeba and ink-drop silhouettes; <strong>Lava Lamp</strong> \u2014 SDF smooth-union fluids that merge and divide like cell mitosis; and <strong>Radiolaria</strong> \u2014 radially symmetric microscopic organisms inspired by Ernst Haeckel\u2019s illustrations, with concentric shells, lattice structures, and decorative spines. Use the five sliders to sculpt each form, or click Rand for instant surprises.</li>' +
+      '<li>'+L('Chromatic Physics','#chrp-toggle','open-exp:chrp-body')+' \u2014 Explore color as a physical phenomenon. Five systems model real optical and material processes: <strong>Thin-Film Interference</strong> \u2014 iridescent colors from soap bubbles and oil slicks via wave physics; <strong>Light Scattering</strong> \u2014 Rayleigh and Mie scattering that produces natural sky-to-sunset gradients; <strong>Subtractive Pigment</strong> \u2014 Kubelka-Munk pigment model where colors mix like real paint on paper; <strong>Chromatic Fields</strong> \u2014 colors as charged particles that attract and repel based on hue relationships; and <strong>Spectral Dispersion</strong> \u2014 white light decomposed through prisms using Snell\u2019s law and the Cauchy equation. Colors emerge from physics, not palettes.</li>' +
       '<li>'+L('Modality Cycler','#intent-cycle-btn','open-exp:intent-sculpt-body')+' \u2014 Found within Intent Sculpting, the Cycle button steps through eight named force-field modalities (such as Tension Web, Fragile Emergence, and Pure Symmetry), each emphasizing a different aesthetic principle to discover unexpected combinations.</li>' +
       '</ul>' +
       '<p>Use the <strong>Connect</strong> button to blend experimental tool output on top of your engine generation.</p>'
@@ -133,6 +134,7 @@ var SECTIONS = [
       '<li>'+L('Morphogenesis Cycle','#morph-cycle-btn','open-exp:morph-body')+' \u2014 Tours <strong>5 biological growth systems</strong>: Reaction-Diffusion (Turing patterns like animal markings), Phylogenetic (evolutionary branching), Branching (tree-like growth), Chladni (vibration patterns on a surface), and Voronoi (cell-like territory maps). Nature\u2019s own design principles, one click at a time.</li>' +
       '<li>'+L('Topology Engine Cycle','#topo-cycle-btn','open-exp:topo-body')+' \u2014 Steps through <strong>mathematical surfaces</strong> \u2014 toruses, Klein bottles, spheres, and other shapes from the field of topology, each one rendered as a unique piece of three-dimensional art.</li>' +
       '<li>'+L('Organic Forms Cycle','#orgf-cycle-btn','open-exp:orgf-body')+' \u2014 Tours <strong>5 sculptural form systems</strong>: Metaballs (merging blobs), Superformula (Gielis parametric shapes), Noise Blobs (amoeba silhouettes), Lava Lamp (smooth-union fluids), and Radiolaria (Haeckel-inspired microscopic forms).</li>' +
+      '<li>'+L('Chromatic Physics Cycle','#chrp-cycle-btn','open-exp:chrp-body')+' \u2014 Tours <strong>5 color physics systems</strong>: Thin-Film Interference (iridescent rainbow patterns), Light Scattering (atmospheric sky gradients), Subtractive Pigment (watercolor-like paint mixing), Chromatic Fields (color force field interactions), and Spectral Dispersion (prismatic light refraction). Each system produces colors from real-world optical physics.</li>' +
       '</ul>' +
       '<p>The Cycle buttons are designed for playful exploration. You do not need to understand the mathematics behind any of these \u2014 just click, look, and follow your eye to what inspires you.</p>'
   },
@@ -226,15 +228,14 @@ var SECTIONS = [
   },
   {
     title: 'Showcase Gallery',
-    body: '<p>The '+L('Showcase','#showcase-btn','click:#showcase-btn')+' is a curated gallery of <strong>87 pre-configured artworks</strong> spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool \u2014 each thumbnail shows you what a particular engine or tool combination can produce.</p>' +
+    body: '<p>The '+L('Showcase','#showcase-btn','click:#showcase-btn')+' is a curated gallery of <strong>92 pre-configured artworks</strong> spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool \u2014 each thumbnail shows you what a particular engine or tool combination can produce.</p>' +
       '<ul>' +
-      '<li><strong>8 Categories</strong> \u2014 Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, and Happy Hallucinations. Click a category tab to filter the gallery.</li>' +
-      '<li><strong>Click any thumbnail</strong> to instantly load that artwork\u2019s exact engine, palette, seed, and settings into the Image Creation Window. NeoLeo will generate a fresh render using those parameters.</li>' +
+      '<li><strong>9 Categories</strong> \u2014 Artworks are organized by type: Generative Engines (48), Lighting Effects, Atmosphere & Post-Process, Humanize, Naturalize, Happy Hallucinations, Multi-Pass Blend, Experimental Tools, and Chromatic Physics.</li>' +
+      '<li><strong>Instant Preview</strong> \u2014 When thumbnails are rendered, NeoLeo caches a medium-resolution preview of each artwork. Clicking any thumbnail draws the cached image instantly onto the Image Creation Window (no rendering delay). The engine, palette, and seed are loaded into the UI so pressing <strong>CREATE</strong> will produce a full-resolution render from scratch.</li>' +
       '<li><strong>Menu Highlighting</strong> \u2014 When you click a showcase thumbnail, the corresponding engine or tool in the main menu is automatically highlighted with a blinking yellow outline so you can see exactly which feature created that artwork.</li>' +
       '<li><strong>Replace vs. Additive Mode</strong> \u2014 Toggle between replacing the current canvas entirely or layering the showcase artwork on top of your existing work.</li>' +
       '<li><strong>My Gallery</strong> \u2014 Save your own favorite creations to a personal gallery within Showcase for quick recall.</li>' +
-      '</ul>' +
-      '<p>An <strong>"Image Rendering\u2026"</strong> notification appears in the center of the screen while the showcase artwork is being generated, so you know the system is working.</p>'
+      '</ul>'
   },
   {
     title: 'Background Color & Auto Re-Render',
@@ -603,6 +604,7 @@ if(helpBtn){
       panel.style.transform = 'translate(-50%,-50%)';
       panel.classList.add('open');
       helpOverlay.classList.add('open');
+      if(window.bringToFront) window.bringToFront('help-panel');
       body.scrollTop = 0;
     }
   });

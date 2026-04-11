@@ -594,6 +594,7 @@ function openBrushPicker(){
   opSlider.value=Math.round(op*100);opVal.textContent=Math.round(op*100)+'%';
   updateColSwatch();buildTips();buildList();drawPreview();
   modal.classList.add('open');
+  if(window.bringToFront) window.bringToFront('bp-box');
 }
 
 function closeBrushPicker(){

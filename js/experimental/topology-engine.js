@@ -746,7 +746,25 @@ window._TOPO={
   selectShape:selectShape,
   onPaletteChange:onPaletteChange,
   toggleObj:toggleObjMode,
-  deactivateObj:deactivateObjMode
+  deactivateObj:deactivateObjMode,
+  /** Render directly to an arbitrary context with preset slider values.
+   *  shapeIdx: 0-4 (sphere, torus, klein, mobius, cross-cap)
+   *  sliders: {resolution, zoom, lighting, wireframe, deform, twist, tube, rotation}
+   */
+  renderDirect:function(tctx, W, H, shapeIdx, sliders){
+    var prev = T.shapeIdx;
+    T.shapeIdx = shapeIdx;
+    /* Set sliders to requested values */
+    var ids = ['topo-resolution','topo-zoom','topo-lighting','topo-wireframe',
+               'topo-deform','topo-twist','topo-tube','topo-rotation'];
+    var keys = ['resolution','zoom','lighting','wireframe','deform','twist','tube','rotation'];
+    for(var i=0;i<ids.length;i++){
+      var el=document.getElementById(ids[i]);
+      if(el && sliders && sliders[keys[i]]!==undefined) el.value=sliders[keys[i]];
+    }
+    renderShape(tctx, W, H, true);
+    T.shapeIdx = prev;
+  }
 };
 
 })();

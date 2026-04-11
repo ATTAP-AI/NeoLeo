@@ -1252,6 +1252,7 @@ function openGradientPicker(){
   }
 
   gPickerEl.classList.add('open');
+  if(window.bringToFront) window.bringToFront('grad-picker-panel');
 
   /* Sync type buttons state */
   gPickerEl.querySelectorAll('.gp-type-btn').forEach(function(b){

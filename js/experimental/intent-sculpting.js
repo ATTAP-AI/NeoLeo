@@ -310,6 +310,7 @@ function _regenIntent(){
     }
     body.classList.add('open');
     _expOpen=true;
+    if(window.bringToFront) window.bringToFront('exp-body');
     btn.querySelector('.chev').style.transform='rotate(180deg)';
   }
   function closeExpPanel(){
@@ -326,7 +327,9 @@ function _regenIntent(){
   /* Drag header */
   hdr.addEventListener('mousedown',function(e){
     if(e.target.id==='exp-panel-close'||e.target.closest('#exp-panel-close'))return;
-    e.preventDefault();hdr.style.cursor='grabbing';
+    e.preventDefault();
+    if(window.bringToFront) window.bringToFront('exp-body');
+    hdr.style.cursor='grabbing';
     var r=body.getBoundingClientRect();
     var drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top};
     function mv(ev){

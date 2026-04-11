@@ -65,6 +65,7 @@
     'js/experimental/memory-drawing.js',
     'js/experimental/morphogenesis.js',
     'js/experimental/organic-forms.js',
+    'js/experimental/chromatic-physics.js',
     'js/experimental/topology-engine.js',
     'js/experimental/leo-toolset.js',
 

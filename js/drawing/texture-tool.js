@@ -529,6 +529,7 @@ function openTexPicker(){
     else{tpEl.style.left='50px';tpEl.style.top='40px';}
   }
   tpEl.classList.add('open');
+  if(window.bringToFront) window.bringToFront('tex-picker-panel');
   /* Sync color from current drawCol */
   var curCol=window.drawCol||'#E8F50A';
   tpColor=curCol;

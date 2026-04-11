@@ -34,6 +34,7 @@ NeoLeo is entirely open source and intended (as a platform for creative artists 
 16. [Keyboard Shortcuts](#keyboard-shortcuts)
 17. [Showcase Gallery](#showcase-gallery)
 18. [Background Color and Auto Re-Render](#background-color-and-auto-re-render)
+19. [Popup Panel Management](#popup-panel-management)
 
 ---
 
@@ -155,6 +156,14 @@ These are cutting-edge creative tools found only in NeoLeo. Open the Experimenta
   - **Radiolaria** — Radially symmetric microscopic organisms inspired by Ernst Haeckel's illustrations, with concentric shells, lattice structures, and decorative spines.
   
   Use the five sliders to sculpt each form, or click Rand for instant surprises.
+- **Chromatic Physics** — Simulate how light physically interacts with materials to produce color. Five optical systems are included:
+  - **Thin-Film Interference** — Soap bubbles, oil slicks, and beetle wings — colors emerge from light waves bouncing between ultra-thin layers.
+  - **Rayleigh Scattering** — The physics of blue skies and red sunsets — short wavelengths scatter more than long ones.
+  - **Subtractive Mixing** — How real pigments blend on a surface — layered transparent inks that absorb and transmit light like watercolor glazes.
+  - **Electromagnetic Field** — Visualize oscillating electric and magnetic field vectors as color, mapping field strength and direction to hue and brightness.
+  - **Prism Dispersion** — White light splitting into spectral rainbows as it passes through a glass prism, following Snell's law of refraction.
+  
+  Each system produces colors that arise from actual physics equations rather than artistic choice, creating effects impossible to achieve with conventional color pickers.
 - **Modality Cycler** — Found within Intent Sculpting, the Cycle button steps through eight named force-field modalities (such as Tension Web, Fragile Emergence, and Pure Symmetry), each emphasizing a different aesthetic principle to discover unexpected combinations.
 
 Use the **Connect** button to blend experimental tool output on top of your engine generation.
@@ -177,6 +186,7 @@ Here is every Cycle button in NeoLeo:
 - **Morphogenesis Cycle** — Tours **5 biological growth systems**: Reaction-Diffusion (Turing patterns like animal markings), Phylogenetic (evolutionary branching), Branching (tree-like growth), Chladni (vibration patterns on a surface), and Voronoi (cell-like territory maps). Nature's own design principles, one click at a time.
 - **Topology Engine Cycle** — Steps through **mathematical surfaces** — toruses, Klein bottles, spheres, and other shapes from the field of topology, each one rendered as a unique piece of three-dimensional art.
 - **Organic Forms Cycle** — Tours **5 sculptural form systems**: Metaballs (merging blobs), Superformula (Gielis parametric shapes), Noise Blobs (amoeba silhouettes), Lava Lamp (smooth-union fluids), and Radiolaria (Haeckel-inspired microscopic forms).
+- **Chromatic Physics Cycle** — Tours **5 optical systems**: Thin-Film Interference (soap-bubble iridescence), Rayleigh Scattering (sky and sunset physics), Subtractive Mixing (pigment glazes), Electromagnetic Field (oscillating field vectors), and Prism Dispersion (spectral rainbows). Each one demonstrates a different way that real physics produces color.
 
 The Cycle buttons are designed for playful exploration. You do not need to understand the mathematics behind any of these — just click, look, and follow your eye to what inspires you.
 
@@ -297,10 +307,11 @@ The AI only changes settings and parameters. It does not generate images, access
 
 ## Showcase Gallery
 
-The **Showcase** is a curated gallery of **87 pre-configured artworks** spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool — each thumbnail shows you what a particular engine or tool combination can produce.
+The **Showcase** is a curated gallery of **92 pre-configured artworks** spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool — each thumbnail shows you what a particular engine or tool combination can produce.
 
-- **8 Categories** — Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, and Happy Hallucinations. Click a category tab to filter the gallery.
-- **Click any thumbnail** to instantly load that artwork's exact engine, palette, seed, and settings into the Image Creation Window. NeoLeo will generate a fresh render using those parameters.
+- **9 Categories** — Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, Chromatic Physics, and Happy Hallucinations. Click a category tab to filter the gallery.
+- **Instant Preview** — Each thumbnail is a pre-rendered 400×400 snapshot cached during batch rendering. Clicking a thumbnail instantly displays the cached preview at full resolution in the Image Creation Window while the engine re-renders in the background for maximum quality. This gives you immediate visual feedback with no waiting.
+- **Click any thumbnail** to load that artwork's exact engine, palette, seed, and settings into the Image Creation Window.
 - **Menu Highlighting** — When you click a showcase thumbnail, the corresponding engine or tool in the main menu is automatically highlighted with a blinking yellow outline so you can see exactly which feature created that artwork.
 - **Replace vs. Additive Mode** — Toggle between replacing the current canvas entirely or layering the showcase artwork on top of your existing work.
 - **My Gallery** — Save your own favorite creations to a personal gallery within Showcase for quick recall.
@@ -316,6 +327,19 @@ The background color sets the base color behind your artwork. You can change it 
 - **Auto Re-Render** — When you change the background color while an engine image is displayed, NeoLeo automatically re-renders the current artwork onto the new background. This happens with a short debounce delay (180ms) so you can drag through colors smoothly without triggering excessive renders.
 - **Lighting & Atmosphere preserved** — After the re-render, any active lighting and atmosphere effects are automatically re-applied on top of the new background.
 - The re-render uses the same seed and settings, so you see the exact same composition — just on a different background color.
+
+---
+
+## Popup Panel Management
+
+NeoLeo's floating panels (Lighting, Atmosphere, Upload, AI Prompt, Layers, Showcase, Help, Experimental Tools, and all tool panels) behave like windows on your desktop:
+
+- **Multiple panels open at once** — Opening a new panel never closes any already-open panel. Every panel stays open until you explicitly close it with its ✕ button.
+- **Click to front** — Click anywhere on an open panel to bring it to the top of the stack, above all other panels.
+- **New panels on top** — Whenever you open a panel, it automatically appears above any currently visible panels.
+- **Draggable** — Grab any panel by its header bar to drag it to a new position. Your drag position is remembered if you close and reopen the panel.
+
+This lets you arrange your workspace however you like — keep Layers open on the left, Lighting on the right, and the AI Prompt floating in between, for example.
 
 ---
 

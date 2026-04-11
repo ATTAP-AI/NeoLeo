@@ -32,7 +32,8 @@ var SECTIONS = [
   { id:'naturalize', name:'Naturalize',                color:'#70d0a0' },
   { id:'hh',         name:'Happy Hallucinations',      color:'#E8F50A' },
   { id:'multipass',  name:'Multi-Pass Blend',          color:'#ff44cc' },
-  { id:'experimental',name:'Experimental Tools',       color:'#c060ff' }
+  { id:'experimental',name:'Experimental Tools',       color:'#c060ff' },
+  { id:'chrp',        name:'Chromatic Physics',        color:'#6a8ccc' }
 ];
 
 var ITEMS = [
@@ -73,7 +74,7 @@ var ITEMS = [
   {id:'sc-contourmap',    sec:'engines', name:'Contour / Isoline Map', engine:'contour_map',          pal:'ocean',   seed:2030},
   {id:'sc-chladni',       sec:'engines', name:'Chladni Figures',       engine:'chladni',              pal:'ghost',   seed:8765},
   {id:'sc-weaveknot',     sec:'engines', name:'Weave / Knot Diagram',  engine:'weave_knot',           pal:'ember',   seed:2040},
-  {id:'sc-mobiustorus',   sec:'engines', name:'Möbius / Torus',        engine:'mobius_torus',         pal:'neon',    seed:2050},
+  {id:'sc-mobiustorus',   sec:'engines', name:'Möbius / Torus',        engine:'mobius_torus',         pal:'neon',    seed:2050, experimental:'topology-hires'},
   {id:'sc-oscilloscope',  sec:'engines', name:'Oscilloscope',          engine:'oscilloscope',         pal:'aurora',  seed:2060},
   {id:'sc-asciidensity',  sec:'engines', name:'ASCII Density Map',     engine:'ascii_density',        pal:'void',    seed:2070},
   {id:'sc-wfc',           sec:'engines', name:'Waveform Collapse',     engine:'wfc',                  pal:'earth',   seed:2080},
@@ -145,12 +146,21 @@ var ITEMS = [
   {id:'sc-exp-prob',     sec:'experimental', name:'Probability Paint',   engine:'flowfield',          pal:'ember',   seed:3300, experimental:'probability'},
   {id:'sc-exp-memory',   sec:'experimental', name:'Memory Drawing',      engine:'watercolor',         pal:'earth',   seed:3400, experimental:'memory'},
   {id:'sc-exp-leo',      sec:'experimental', name:'LEO da Vinci',        engine:'lsystem',            pal:'ink',     seed:3500, experimental:'leo'},
-  {id:'sc-exp-leo2',     sec:'experimental', name:'LEO Mechanical',      engine:'spirograph',         pal:'ghost',   seed:3510, experimental:'leo-mechanical'}
+  {id:'sc-exp-leo2',     sec:'experimental', name:'LEO Mechanical',      engine:'spirograph',         pal:'ghost',   seed:3510, experimental:'leo-mechanical'},
+
+  /* ── Chromatic Physics (5) — own section ── */
+  {id:'sc-chrp-film',    sec:'chrp', name:'Thin-Film Interference', engine:'domain_warp',    pal:'aurora',  seed:4001, experimental:'chrp-film'},
+  {id:'sc-chrp-scatter', sec:'chrp', name:'Light Scattering',       engine:'flowfield',      pal:'ember',   seed:4002, experimental:'chrp-scatter'},
+  {id:'sc-chrp-mix',     sec:'chrp', name:'Subtractive Pigment',    engine:'watercolor',     pal:'earth',   seed:4003, experimental:'chrp-mix'},
+  {id:'sc-chrp-field',   sec:'chrp', name:'Chromatic Fields',       engine:'curl_noise',     pal:'neon',    seed:4004, experimental:'chrp-field'},
+  {id:'sc-chrp-prism',   sec:'chrp', name:'Spectral Dispersion',    engine:'interference',   pal:'aurora',  seed:4005, experimental:'chrp-prism'}
 ];
 
 /* ── State ── */
 var THUMB_SZ   = 150;
-var _thumbCache = {};   // id -> dataURL
+var PREVIEW_SZ = 400;   // medium-res cached snapshots for instant ICW display
+var _thumbCache = {};    // id -> dataURL (150×150 JPEG for panel thumbnails)
+var _previewCache = {};  // id -> dataURL (400×400 JPEG for instant ICW preview)
 var _isOpen = false;
 var _rendering = false;
 var _renderQueue = [];
@@ -258,8 +268,9 @@ function renderNextItem(){
   if(card) card.classList.add('rendering');
 
   /* Render this item at full canvas size */
-  renderSingleItem(item, function(thumbDataUrl){
+  renderSingleItem(item, function(thumbDataUrl, previewDataUrl){
     _thumbCache[item.id] = thumbDataUrl;
+    _previewCache[item.id] = previewDataUrl;
 
     /* Paint thumbnail onto card canvas */
     if(card){
@@ -358,22 +369,60 @@ function renderSingleItem(item, callback){
     drawHHOverlay(W, H, p, thumbHH);
   }
 
-  /* Experimental — just use the base engine render (the tool itself
-     would need interactive activation which we can't batch) */
+  /* Experimental — most tools need interactive activation which we
+     can't batch, BUT some can be rendered directly and synchronously */
 
-  /* ── Snapshot composite → thumbnail ── */
-  var thumb = document.createElement('canvas');
-  thumb.width = THUMB_SZ; thumb.height = THUMB_SZ;
-  var tc = thumb.getContext('2d');
-  tc.drawImage(cv, 0, 0, THUMB_SZ, THUMB_SZ);
-  /* Composite FX layers */
-  tc.globalCompositeOperation = 'screen';
-  tc.drawImage(lv, 0, 0, THUMB_SZ, THUMB_SZ);
-  tc.globalCompositeOperation = 'source-over';
-  tc.drawImage(dv, 0, 0, THUMB_SZ, THUMB_SZ);
-  tc.drawImage(av, 0, 0, THUMB_SZ, THUMB_SZ);
+  /* Chromatic Physics */
+  if(item.experimental && item.experimental.indexOf('chrp-') === 0 && window._CHRP && window._CHRP.renderDirect){
+    var chrpMap = {'chrp-film':0,'chrp-scatter':1,'chrp-mix':2,'chrp-field':3,'chrp-prism':4};
+    var chrpIdx = chrpMap[item.experimental];
+    if(chrpIdx !== undefined){
+      try {
+        window._CHRP.renderDirect(chrpIdx, ctx, W, H, p.c);
+      } catch(e){
+        console.warn('Showcase: Chromatic Physics ' + item.experimental + ' failed:', e.message);
+      }
+    }
+  }
 
-  callback(thumb.toDataURL('image/jpeg', 0.85));
+  /* Topology — high-res anti-aliased render (torus shape=1) */
+  if(item.experimental && item.experimental.indexOf('topology') === 0 && window._TOPO && window._TOPO.renderDirect){
+    var topoSliders = {resolution:200, zoom:55, lighting:85, wireframe:15, deform:0, twist:0, tube:50, rotation:40};
+    var topoShape = 1; /* torus */
+    if(item.experimental === 'topology-klein'){ topoShape = 3; topoSliders.wireframe = 20; topoSliders.deform = 10; topoSliders.zoom = 50; topoSliders.lighting = 80; }
+    else if(item.experimental === 'topology-hires'){ topoShape = 1; /* torus, same hi-res settings */ }
+    try {
+      window._TOPO.renderDirect(ctx, W, H, topoShape, topoSliders);
+    } catch(e){
+      console.warn('Showcase: Topology ' + item.experimental + ' failed:', e.message);
+    }
+  }
+
+  /* ── Snapshot composite → thumbnail + medium-res preview ── */
+
+  /* Helper: composite all layers onto a target canvas at given size */
+  function compositeSnapshot(sz){
+    var c = document.createElement('canvas');
+    c.width = sz; c.height = sz;
+    var t = c.getContext('2d');
+    t.imageSmoothingEnabled = true;
+    t.imageSmoothingQuality = 'high';
+    t.drawImage(cv, 0, 0, sz, sz);
+    t.globalCompositeOperation = 'screen';
+    t.drawImage(lv, 0, 0, sz, sz);
+    t.globalCompositeOperation = 'source-over';
+    t.drawImage(dv, 0, 0, sz, sz);
+    t.drawImage(av, 0, 0, sz, sz);
+    return c;
+  }
+
+  var thumbCanvas   = compositeSnapshot(THUMB_SZ);
+  var previewCanvas = compositeSnapshot(PREVIEW_SZ);
+
+  callback(
+    thumbCanvas.toDataURL('image/jpeg', 0.85),
+    previewCanvas.toDataURL('image/jpeg', 0.88)
+  );
 }
 
 /* ── Humanize: simple wobble displacement on ctx ── */
@@ -856,7 +905,7 @@ function applyShowcaseItem(item){
   /* Push undo state */
   if(window.genUndoPush) window.genUndoPush();
 
-  /* Set engine */
+  /* ── Set engine, palette, seed into UI so CREATE works for full-res ── */
   window.eng = item.engine;
   window._engineSelected = true;
   document.querySelectorAll('.eng').forEach(function(b){
@@ -918,12 +967,60 @@ function applyShowcaseItem(item){
     var aOn = document.getElementById('a-on'); if(aOn) aOn.checked = false;
   }
 
-  if(window.setI) window.setI('Showcase: rendering ' + item.name + ' (' + _renderMode + ')\u2026');
+  /* Update engine/seed display */
+  document.getElementById('se').textContent = window.ENAMES[item.engine] || item.engine;
+  document.getElementById('ss').textContent = item.seed;
 
-  showRenderingNotification(item.name);
   highlightMainMenu(item);
 
-  /* ── Direct engine render — bypass generate() to avoid export popup ── */
+  /* ══════════════════════════════════════════════════════════
+     INSTANT PREVIEW PATH — Use cached 400×400 snapshot if available
+     Draws the cached preview onto the ICW immediately (< 5ms).
+     The engine/palette/seed are loaded into the UI, so pressing
+     CREATE will produce a full-resolution render from scratch.
+     ══════════════════════════════════════════════════════════ */
+  var cachedPreview = _previewCache[item.id];
+
+  if(cachedPreview){
+    /* Instant draw from cache — no engine render needed.
+       The cached JPEG already includes all effects (LS, AS, humanize, etc.)
+       baked in, so we must NOT re-apply renderLighting/renderAtmosphere
+       or the effects will be doubled.  The cache was rendered on white bg,
+       so we match that here. */
+    var previewImg = new Image();
+    previewImg.onload = function(){
+      if(isReplace){
+        /* Match the white bg used during batch render */
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0,0,W,H);
+      }
+      /* Draw cached preview onto main canvas, upscaled with smoothing */
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(previewImg, 0, 0, W, H);
+
+      /* Do NOT re-apply renderLighting/renderAtmosphere — effects are
+         already baked into the cached JPEG from the batch render.
+         LS/AS settings are loaded into the UI (lines 921-934 above)
+         so pressing CREATE will produce a correct full-res render. */
+
+      if(typeof window._histPush === 'function') window._histPush();
+
+      /* Show instant feedback */
+      if(window.setI) window.setI('Showcase: ' + item.name + ' \u2014 preview loaded instantly. Press CREATE for full resolution.');
+      if(typeof window.updateGlobalUndoBtns === 'function') window.updateGlobalUndoBtns();
+    };
+    previewImg.src = cachedPreview;
+    return;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     FALLBACK — No cached preview available (e.g. batch render
+     didn't finish). Do full engine render as before.
+     ══════════════════════════════════════════════════════════ */
+  if(window.setI) window.setI('Showcase: rendering ' + item.name + ' (' + _renderMode + ')\u2026');
+  showRenderingNotification(item.name);
+
   setTimeout(function(){
     var p = window.gpal ? window.gpal() : {bg:'#000000',c:['#ff4040']};
 
@@ -932,10 +1029,6 @@ function applyShowcaseItem(item){
       ctx.fillStyle = p.bg;
       ctx.fillRect(0,0,W,H);
     }
-
-    /* Update engine/seed display for ALL paths */
-    document.getElementById('se').textContent = window.ENAMES[item.engine] || item.engine;
-    document.getElementById('ss').textContent = item.seed;
 
     if(item.multipass){
       doMultiPassRender(item, p, isReplace);
@@ -1033,8 +1126,8 @@ function triggerExperimental(type){
     /* Select radiolaria system (index 4) then render */
     if(window._ORGF.selectSystem) window._ORGF.selectSystem(4);
     else if(window._ORGF.render) window._ORGF.render();
-  } else if(type==='topology' && window._TOPO && window._TOPO.render){
-    /* Select Torus (index 1), high-res with max resolution */
+  } else if((type==='topology' || type==='topology-hires') && window._TOPO && window._TOPO.render){
+    /* Select Torus (index 1), high-res anti-aliased with max resolution */
     if(window._TOPO.selectShape) window._TOPO.selectShape(1);
     setTopoSlider('topo-resolution', 200);
     setTopoSlider('topo-zoom', 55);
@@ -1065,6 +1158,22 @@ function triggerExperimental(type){
     /* Select mechanical mode (index 3) then render */
     if(window._LEO.selectSystem) window._LEO.selectSystem(3);
     else if(window._LEO.render) window._LEO.render();
+  /* ── Chromatic Physics ── */
+  } else if(type==='chrp-film' && window._CHRP){
+    if(window._CHRP.selectSystem) window._CHRP.selectSystem(0);
+    else if(window._CHRP.render) window._CHRP.render();
+  } else if(type==='chrp-scatter' && window._CHRP){
+    if(window._CHRP.selectSystem) window._CHRP.selectSystem(1);
+    else if(window._CHRP.render) window._CHRP.render();
+  } else if(type==='chrp-mix' && window._CHRP){
+    if(window._CHRP.selectSystem) window._CHRP.selectSystem(2);
+    else if(window._CHRP.render) window._CHRP.render();
+  } else if(type==='chrp-field' && window._CHRP){
+    if(window._CHRP.selectSystem) window._CHRP.selectSystem(3);
+    else if(window._CHRP.render) window._CHRP.render();
+  } else if(type==='chrp-prism' && window._CHRP){
+    if(window._CHRP.selectSystem) window._CHRP.selectSystem(4);
+    else if(window._CHRP.render) window._CHRP.render();
   }
 }
 
@@ -1235,6 +1344,7 @@ function openShowcase(){
   var panel = document.getElementById('showcase-panel');
   panel.classList.add('open');
   positionShowcasePanel();
+  if(window.bringToFront) window.bringToFront('showcase-panel');
   document.getElementById('showcase-catalog').style.display = 'block';
   document.getElementById('showcase-gallery').style.display = 'none';
 

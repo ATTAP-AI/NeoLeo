@@ -1367,6 +1367,7 @@ setTimeout(function(){
       if(_mpPos){_mpPanel.style.left=_mpPos.left+'px';_mpPanel.style.top=_mpPos.top+'px';}
       else{var tb=document.getElementById('tb');if(tb){var r=tb.getBoundingClientRect();_mpPanel.style.left=Math.max(4,r.left-308)+'px';_mpPanel.style.top='10px';}else{_mpPanel.style.left='50px';_mpPanel.style.top='40px';}}
       _mpPanel.classList.add('open');
+      if(window.bringToFront) window.bringToFront('mp-panel');
     });
   }
 },600);

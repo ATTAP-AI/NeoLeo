@@ -110,6 +110,7 @@ function openNat(){
   if(_natPos){panel.style.left=_natPos.left+'px';panel.style.top=_natPos.top+'px';}
   else{var tb=document.getElementById('tb');if(tb){var r=tb.getBoundingClientRect();panel.style.left=Math.max(4,r.left-298)+'px';panel.style.top='10px';}else{panel.style.left='50px';panel.style.top='40px';}}
   panel.classList.add('open');_natOpen=true;
+  if(window.bringToFront) window.bringToFront('nat-panel');
 }
 function closeNat(){panel.classList.remove('open');_natOpen=false;}
 

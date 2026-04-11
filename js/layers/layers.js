@@ -288,11 +288,10 @@ var layTool = document.getElementById('laytool');
 var layPanel = document.getElementById('layers-panel');
 
 function openLayersPanel(){
-  ['light-panel','atmo-panel','upload-panel','prompt-panel'].forEach(function(id){
-    document.getElementById(id).classList.remove('open');
-  });
-  positionPanel('layers-panel');
+  /* No longer auto-close other panels — all popups stay open */
+  if(!layPanel.classList.contains('open')) positionPanel('layers-panel');
   layPanel.classList.add('open');
+  if(window.bringToFront) window.bringToFront('layers-panel');
   document.querySelectorAll('.tbtn').forEach(function(b){
     b.classList.toggle('on', b.dataset.t === 'layers');
   });

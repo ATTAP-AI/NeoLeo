@@ -453,6 +453,7 @@ function openHumPanel(){
     else{hpEl.style.left='50px';hpEl.style.top='40px';}
   }
   hpEl.classList.add('open');
+  if(window.bringToFront) window.bringToFront('hum-panel');
   /* Fresh state on open */
   _humSnap=null;_humFullSnap=null;
   var to2=document.getElementById('hum-thumb-orig');if(to2)to2.getContext('2d').clearRect(0,0,to2.width,to2.height);

@@ -397,11 +397,13 @@
   <!-- GENERATE -->
   <div id="gen-sec">
     <div style="padding:4px 2px 10px;border-bottom:1px solid var(--brd);margin-bottom:10px;">
-      <div style="font-size:15px;font-weight:bold;letter-spacing:.22em;color:#E8F50A;text-transform:uppercase;line-height:1;">NeoLeo</div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:3px;">
-        <div style="font-size:11px;letter-spacing:.12em;color:#28E0D1;font-style:italic;">New Art Forms for a New Age</div>
-        <button id="showcase-btn" title="Open Feature Showcase" style="background:none;border:1px solid #E8F50A;color:#E8F50A;font-family:inherit;font-size:9px;padding:2px 8px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">★ SHOWCASE</button>
-        <button id="help-btn" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:9px;padding:2px 8px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? HELP</button>
+      <div style="display:flex;align-items:baseline;justify-content:flex-start;gap:10px;">
+        <div style="font-size:17px;font-weight:bold;letter-spacing:.28em;color:#E8F50A;text-transform:uppercase;line-height:1;">NeoLeo</div>
+        <div style="font-size:11px;letter-spacing:.08em;color:#28E0D1;font-style:italic;white-space:nowrap;">New Art Forms for a New Age</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+        <button id="showcase-btn" title="Open Feature Showcase" style="background:none;border:1px solid #E8F50A;color:#E8F50A;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">★ SHOWCASE</button>
+        <button id="help-btn" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? HELP</button>
       </div>
     </div>
     <div>
@@ -991,6 +993,35 @@
           <button class="fx-bb" style="flex:1;border-color:#4a3a1a;color:#b09060;" onclick="window._ORGF&&window._ORGF.randomise()">&#8635; Rand</button>
         </div>
         <div id="orgf-status" style="font-size:8px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+      </div>
+    </div>
+
+    <!-- ◆ CHROMATIC PHYSICS — Color as physical phenomenon -->
+    <div id="chrp-sec" style="border-top:1px solid #1a1a2a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="chrp-toggle" onclick="(function(){var b=document.getElementById('chrp-body');var t=document.getElementById('chrp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(106,140,204,0.07)':'none';t.style.borderColor=open?'#6a8ccc':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#6a8ccc;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#9672; Chromatic Physics</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="chrp-cycle-btn" class="cycle-btn" onclick="window._CHRP&&window._CHRP.cycle()">Cycle</button>
+      </div>
+      <div id="chrp-cycle-label" style="font-size:8px;color:#6a8ccc;padding:2px 10px 3px;background:rgba(106,140,204,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="chrp-cycle-name">--</span></div>
+      <div id="chrp-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a2a;padding-bottom:6px;">Color as a living, physical phenomenon. Spectral wavelengths, interference, pigment diffusion &mdash; colors that emerge from physics, not palettes.</div>
+        <div style="font-size:8px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div id="chrp-sys-list" style="margin-bottom:8px;"></div>
+        <div id="chrp-desc" style="display:none;font-size:8px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
+        <div style="font-size:8px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn" id="chrp-l1">Param 1</span><span class="pv" id="chrp-v1">--</span></div><input type="range" id="chrp-p1" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="chrp-l2">Param 2</span><span class="pv" id="chrp-v2">--</span></div><input type="range" id="chrp-p2" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="chrp-l3">Param 3</span><span class="pv" id="chrp-v3">--</span></div><input type="range" id="chrp-p3" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="chrp-l4">Param 4</span><span class="pv" id="chrp-v4">--</span></div><input type="range" id="chrp-p4" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="chrp-l5">Param 5</span><span class="pv" id="chrp-v5">--</span></div><input type="range" id="chrp-p5" min="0" max="100" value="50"></div>
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="chrp-render-btn" class="fx-bb" style="flex:2;border-color:#6a8ccc;color:#6a8ccc;" onclick="window._CHRP&&window._CHRP.render()">&#9672; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#2a2a4a;color:#5a7aaa;" onclick="window._CHRP&&window._CHRP.randomise()">&#8635; Rand</button>
+        </div>
+        <div id="chrp-status" style="font-size:8px;color:#5a7aaa;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
