@@ -1,4 +1,40 @@
 /* ══════════════════════════════════════════════════════════
+   RE-RENDER ON BACKGROUND CHANGE
+   When an engine image is already rendered, changing the background
+   color re-renders that same engine/seed onto the new background.
+   Debounced so dragging the color picker doesn't flood renders.
+   ══════════════════════════════════════════════════════════ */
+var _bgRenderTimer = null;
+function _reRenderOnBgChange(){
+  /* Only re-render if an engine has been rendered */
+  if(!window._engineSelected || !window.eng) return;
+  /* Don't re-render during showcase batch render */
+  if(window._showcaseBatchRunning) return;
+  if(_bgRenderTimer) clearTimeout(_bgRenderTimer);
+  _bgRenderTimer = setTimeout(function(){
+    var W = cv.width, H = cv.height;
+    if(W <= 0 || H <= 0) return;
+    var p = window.gpal ? window.gpal() : {bg: _canvasBg, c:['#ff4040']};
+    /* Fill new background */
+    ctx.fillStyle = p.bg;
+    ctx.fillRect(0, 0, W, H);
+    /* Re-seed with the locked/current seed */
+    var sd = window.lseed != null ? window.lseed : Date.now();
+    if(window.seed) window.seed(sd);
+    /* Re-render the engine */
+    try {
+      if(window.ENGINES && window.ENGINES[window.eng]){
+        window.ENGINES[window.eng](W, H, p);
+      }
+    } catch(e){ console.warn('BG re-render failed:', e.message); }
+    /* Re-apply lighting & atmosphere */
+    if(window.renderLighting) window.renderLighting();
+    if(window.renderAtmosphere) window.renderAtmosphere();
+    if(window.setI) window.setI('Re-rendered on new background: ' + (p.bg || _canvasBg));
+  }, 180);
+}
+
+/* ══════════════════════════════════════════════════════════
    CANVAS BACKGROUND COLOR
    ══════════════════════════════════════════════════════════ */
 (function(){
@@ -30,6 +66,8 @@ function applyBg(hex){
   presetRow.querySelectorAll('.cvbg-dot').forEach(d=>{
     d.classList.toggle('active', d.dataset.col===hex);
   });
+  /* Re-render current engine onto new background */
+  _reRenderOnBgChange();
 }
 
 /* Build preset dots */
@@ -168,6 +206,8 @@ swatch.classList.add('active');
     if(preInner)preInner.style.background=displayCol;
     /* Update ratio thumb active shape */
     if(window._syncThumbColor)window._syncThumbColor();
+    /* Re-render current engine onto new background */
+    _reRenderOnBgChange();
   }
 
   /* SV interaction */

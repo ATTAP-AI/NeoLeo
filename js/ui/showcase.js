@@ -228,6 +228,7 @@ function startBatchRender(){
   if(_renderQueue.length === 0){ updateProgress(1); return; }
 
   _rendering = true;
+  window._showcaseBatchRunning = true;
   _savedState = saveAppState();
 
   /* Override bg to white for clear thumbnails */
@@ -242,6 +243,7 @@ function renderNextItem(){
     restoreAppState(_savedState);
     _savedState = null;
     _rendering = false;
+    window._showcaseBatchRunning = false;
     updateProgress(1);
     return;
   }
@@ -680,6 +682,172 @@ function createCard(item, sec){
 /* ══════════════════════════════════════════════════════════
    APPLY SHOWCASE ITEM — render to the main canvas for the user
    ══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   HIGHLIGHT MAIN MENU — show which feature/engine/tool was used
+   ══════════════════════════════════════════════════════════ */
+function highlightMainMenu(item){
+  /* Helper: ensure a section is open */
+  function openSection(toggleId, bodyId){
+    var btn = document.getElementById(toggleId);
+    var body = document.getElementById(bodyId);
+    if(btn && body && !body.classList.contains('open')){
+      btn.click();
+    }
+  }
+
+  /* Helper: blink-highlight an element (same style & duration as help system) */
+  var _scHlTimer = null;
+  var _scHlInterval = null;
+  function flashHighlight(el){
+    if(!el) return;
+    /* Clear any previous showcase highlight */
+    if(_scHlTimer) clearTimeout(_scHlTimer);
+    if(_scHlInterval) clearInterval(_scHlInterval);
+    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    var origOutline = el.style.outline;
+    var origShadow = el.style.boxShadow;
+    var on = true;
+    function setOn(){ el.style.outline = '3px solid #E8F50A'; el.style.boxShadow = '0 0 18px 4px rgba(232,245,10,0.5)'; }
+    function setOff(){ el.style.outline = origOutline; el.style.boxShadow = origShadow; }
+    setOn();
+    _scHlInterval = setInterval(function(){
+      on = !on;
+      if(on) setOn(); else setOff();
+    }, 350);
+    _scHlTimer = setTimeout(function(){
+      clearInterval(_scHlInterval);
+      _scHlInterval = null;
+      setOff();
+    }, 3000);
+  }
+
+  var sec = item.sec;
+
+  /* ── Engines ── */
+  if(sec === 'engines' || (!item.experimental && !item.hh && !item.multipass && !item.humanize && !item.naturalize)){
+    openSection('eng-toggle', 'eng-body');
+
+    /* Find the engine button */
+    var engBtn = document.querySelector('.eng[data-e="' + item.engine + '"]');
+    if(engBtn){
+      /* If in the "More Engines" collapsed list, expand it */
+      var moreList = document.getElementById('more-engines-list');
+      var moreBtn = document.getElementById('more-engines-btn');
+      if(moreList && engBtn.closest('#more-engines-list') && moreList.style.display !== 'block'){
+        if(moreBtn) moreBtn.click();
+      }
+      /* Show current-engine label for engines in more-list */
+      var lbl = document.getElementById('eng-current-label');
+      var nm = document.getElementById('eng-current-name');
+      if(lbl && nm && engBtn.closest('#more-engines-list')){
+        lbl.style.display = 'block';
+        nm.textContent = engBtn.textContent.replace(/^\d+\s*[\u2014\-]\s*/, '');
+      }
+      flashHighlight(engBtn);
+    }
+  }
+
+  /* ── Lighting ── */
+  if(sec === 'lighting' || item.ls){
+    var ltool = document.getElementById('ltool');
+    if(ltool) flashHighlight(ltool);
+  }
+
+  /* ── Atmosphere ── */
+  if(sec === 'atmosphere' || item.as){
+    var atool = document.getElementById('atool');
+    if(atool) flashHighlight(atool);
+  }
+
+  /* ── Humanize ── */
+  if(sec === 'humanize' || item.humanize){
+    /* Humanize is applied via engine, highlight engine + the section concept */
+    openSection('eng-toggle', 'eng-body');
+    var hEngBtn = document.querySelector('.eng[data-e="' + item.engine + '"]');
+    if(hEngBtn) flashHighlight(hEngBtn);
+  }
+
+  /* ── Naturalize ── */
+  if(sec === 'naturalize' || item.naturalize){
+    var natToggle = document.getElementById('nat-toggle');
+    if(natToggle) flashHighlight(natToggle);
+  }
+
+  /* ── Happy Hallucinations ── */
+  if(sec === 'hh' || item.hh){
+    var hhBtn = document.getElementById('hh-btn');
+    if(hhBtn) flashHighlight(hhBtn);
+  }
+
+  /* ── Multi-Pass Blend ── */
+  if(sec === 'multipass' || item.multipass){
+    var mpBtn = document.getElementById('hh-multi-btn');
+    if(mpBtn) flashHighlight(mpBtn);
+  }
+
+  /* ── Experimental Tools ── */
+  if(sec === 'experimental' || item.experimental){
+    openSection('exp-toggle', 'exp-body');
+
+    /* Try to highlight the specific experimental sub-toggle */
+    var expType = item.experimental || '';
+    var subToggle = null;
+    if(expType.indexOf('morpho') !== -1 || expType.indexOf('phyto') !== -1 || expType.indexOf('phyll') !== -1){
+      /* Morphogenesis lives under intent sculpting area or has its own section */
+    }
+    if(expType.indexOf('topology') !== -1){
+      subToggle = document.querySelector('[id*="topo"]');
+    }
+    if(expType.indexOf('organic') !== -1 || expType.indexOf('radiolaria') !== -1){
+      subToggle = document.querySelector('[id*="orgf"]') || document.querySelector('[id*="organic"]');
+    }
+    if(expType.indexOf('probability') !== -1){
+      subToggle = document.querySelector('[id*="prob"]') || document.querySelector('[id*="pp"]');
+    }
+    if(expType.indexOf('memory') !== -1){
+      subToggle = document.querySelector('[id*="mbd"]') || document.querySelector('[id*="memory"]');
+    }
+    if(expType.indexOf('leo') !== -1){
+      subToggle = document.querySelector('[id*="leo"]');
+    }
+    /* Flash the exp-toggle header itself as fallback */
+    var expToggle = document.getElementById('exp-toggle');
+    if(expToggle) flashHighlight(expToggle);
+  }
+}
+
+/* ── Rendering notification popup ── */
+function showRenderingNotification(name){
+  hideRenderingNotification();
+  var n = document.createElement('div');
+  n.id = 'showcase-render-notify';
+  n.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;'
+    + 'background:rgba(6,6,6,0.88);border:1px solid rgba(129,55,73,0.6);border-radius:10px;'
+    + 'padding:18px 32px;color:#ffffff;font-family:sans-serif;font-size:14px;letter-spacing:.04em;'
+    + 'text-align:center;pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,0.5);'
+    + 'animation:sc-notify-in .25s ease-out;';
+  n.innerHTML = '<div style="margin-bottom:8px;font-size:18px;">⏳</div>'
+    + '<div style="font-weight:600;">Image Rendering\u2026</div>'
+    + '<div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:4px;">' + name + '</div>';
+  document.body.appendChild(n);
+
+  /* Inject animation keyframes if not already present */
+  if(!document.getElementById('sc-notify-style')){
+    var s = document.createElement('style');
+    s.id = 'sc-notify-style';
+    s.textContent = '@keyframes sc-notify-in{from{opacity:0;transform:translate(-50%,-50%) scale(0.9);}to{opacity:1;transform:translate(-50%,-50%) scale(1);}}'
+      + '@keyframes sc-notify-out{from{opacity:1;transform:translate(-50%,-50%) scale(1);}to{opacity:0;transform:translate(-50%,-50%) scale(0.95);}}';
+    document.head.appendChild(s);
+  }
+}
+
+function hideRenderingNotification(){
+  var n = document.getElementById('showcase-render-notify');
+  if(!n) return;
+  n.style.animation = 'sc-notify-out .2s ease-in forwards';
+  setTimeout(function(){ if(n.parentNode) n.parentNode.removeChild(n); }, 220);
+}
+
 function applyShowcaseItem(item){
   /* Panel stays open — do NOT close */
   var W = cv.width, H = cv.height;
@@ -752,6 +920,9 @@ function applyShowcaseItem(item){
 
   if(window.setI) window.setI('Showcase: rendering ' + item.name + ' (' + _renderMode + ')\u2026');
 
+  showRenderingNotification(item.name);
+  highlightMainMenu(item);
+
   /* ── Direct engine render — bypass generate() to avoid export popup ── */
   setTimeout(function(){
     var p = window.gpal ? window.gpal() : {bg:'#000000',c:['#ff4040']};
@@ -815,6 +986,7 @@ function doDirectRender(item, p){
 }
 
 function finishApply(item){
+  hideRenderingNotification();
   if(window.setI) window.setI('Showcase: ' + item.name + ' rendered \u2014 modify freely!');
   if(typeof window.updateGlobalUndoBtns === 'function') window.updateGlobalUndoBtns();
 }
