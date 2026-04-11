@@ -223,6 +223,27 @@ var SECTIONS = [
       '<dt>Ctrl/Cmd+Z</dt><dd>Undo</dd>' +
       '<dt>Ctrl/Cmd+Y</dt><dd>Redo</dd>' +
       '</dl>'
+  },
+  {
+    title: 'Showcase Gallery',
+    body: '<p>The '+L('Showcase','#showcase-btn','click:#showcase-btn')+' is a curated gallery of <strong>87 pre-configured artworks</strong> spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool \u2014 each thumbnail shows you what a particular engine or tool combination can produce.</p>' +
+      '<ul>' +
+      '<li><strong>8 Categories</strong> \u2014 Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, and Happy Hallucinations. Click a category tab to filter the gallery.</li>' +
+      '<li><strong>Click any thumbnail</strong> to instantly load that artwork\u2019s exact engine, palette, seed, and settings into the Image Creation Window. NeoLeo will generate a fresh render using those parameters.</li>' +
+      '<li><strong>Menu Highlighting</strong> \u2014 When you click a showcase thumbnail, the corresponding engine or tool in the main menu is automatically highlighted with a blinking yellow outline so you can see exactly which feature created that artwork.</li>' +
+      '<li><strong>Replace vs. Additive Mode</strong> \u2014 Toggle between replacing the current canvas entirely or layering the showcase artwork on top of your existing work.</li>' +
+      '<li><strong>My Gallery</strong> \u2014 Save your own favorite creations to a personal gallery within Showcase for quick recall.</li>' +
+      '</ul>' +
+      '<p>An <strong>"Image Rendering\u2026"</strong> notification appears in the center of the screen while the showcase artwork is being generated, so you know the system is working.</p>'
+  },
+  {
+    title: 'Background Color & Auto Re-Render',
+    body: '<p>The '+L('background color','#bg-toggle','open-section:bg-body')+' sets the base color behind your artwork. You can change it using the preset dots or the square color picker in the Background section of the right panel.</p>' +
+      '<ul>' +
+      '<li><strong>Auto Re-Render</strong> \u2014 When you change the background color while an engine image is displayed, NeoLeo automatically re-renders the current artwork onto the new background. This happens with a short debounce delay (180ms) so you can drag through colors smoothly without triggering excessive renders.</li>' +
+      '<li><strong>Lighting & Atmosphere preserved</strong> \u2014 After the re-render, any active lighting and atmosphere effects are automatically re-applied on top of the new background.</li>' +
+      '<li>The re-render uses the same seed and settings, so you see the exact same composition \u2014 just on a different background color.</li>' +
+      '</ul>'
   }
 ];
 
