@@ -238,6 +238,17 @@ var SECTIONS = [
       '</ul>'
   },
   {
+    title: 'Popup Panel Management',
+    body: '<p>NeoLeo\u2019s floating panels behave like windows on your desktop:</p>' +
+      '<ul>' +
+      '<li><strong>Multiple panels open at once</strong> \u2014 Opening a new panel never closes any already-open panel. Every panel stays open until you explicitly close it with its \u2715 button.</li>' +
+      '<li><strong>Click to front</strong> \u2014 Click anywhere on an open panel to bring it to the top of the stack, above all other panels.</li>' +
+      '<li><strong>New panels on top</strong> \u2014 Whenever you open a panel, it automatically appears above any currently visible panels.</li>' +
+      '<li><strong>Draggable</strong> \u2014 Grab any panel by its header bar to drag it to a new position. Your drag position is remembered if you close and reopen the panel.</li>' +
+      '</ul>' +
+      '<p>This applies to all floating panels: '+L('Lighting','#ltool','open-panel:light-panel')+', '+L('Atmosphere','#atool','open-panel:atmo-panel')+', '+L('Upload','#utool','open-panel:upload-panel')+', '+L('AI Prompt','#aitool','open-panel:prompt-panel')+', '+L('Layers','#laytool','click:#laytool')+', '+L('Showcase','#showcase-btn','click:#showcase-btn')+', Help, '+L('Experimental Tools','#exp-toggle','open-section:exp-body')+', and all tool panels ('+L('Humanize','.tbtn[data-t="humanize"]','click:.tbtn[data-t="humanize"]')+', '+L('Curves','.tbtn[data-t="curves"]','click:.tbtn[data-t="curves"]')+', '+L('Gradient','.tbtn[data-t="gradient"]','click:.tbtn[data-t="gradient"]')+', '+L('Texture','.tbtn[data-t="texturemap"]','click:.tbtn[data-t="texturemap"]')+', '+L('Brushes','.tbtn[data-t="brush"]','click:.tbtn[data-t="brush"]')+').</p>'
+  },
+  {
     title: 'Background Color & Auto Re-Render',
     body: '<p>The '+L('background color','#bg-toggle','open-section:bg-body')+' sets the base color behind your artwork. You can change it using the preset dots or the square color picker in the Background section of the right panel.</p>' +
       '<ul>' +
