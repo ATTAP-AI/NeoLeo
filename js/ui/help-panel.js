@@ -268,7 +268,7 @@ panel.id = 'help-panel';
 var hdr = document.createElement('div');
 hdr.id = 'help-hdr';
 hdr.innerHTML = '<div style="display:flex;align-items:baseline;"><span id="help-hdr-title">NeoLeo</span><span id="help-hdr-sub">Help Guide</span></div>' +
-  '<div id="help-hdr-right"><button id="help-search-btn">\u2315 Find</button><button id="help-close">Close</button></div>';
+  '<div id="help-hdr-right"><button id="help-close">Close</button></div>';
 panel.appendChild(hdr);
 
 var searchBar = document.createElement('div');
@@ -416,24 +416,12 @@ panel.addEventListener('click', function(e){
    SEARCH SYSTEM — find text within help content
    ══════════════════════════════════════════════════════════ */
 (function(){
-  var searchBtn = document.getElementById('help-search-btn');
   var bar = document.getElementById('help-search-bar');
   var input = document.getElementById('help-search-input');
   var goBtn = document.getElementById('help-search-go');
   var info = document.getElementById('help-search-info');
   var hits = [];
   var currentHit = -1;
-
-  searchBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    bar.classList.toggle('open');
-    if(bar.classList.contains('open')){
-      input.focus();
-      input.select();
-    } else {
-      clearHits();
-    }
-  });
 
   function clearHits(){
     hits.forEach(function(span){
@@ -572,7 +560,7 @@ panel.addEventListener('click', function(e){
 (function(){
   var drag = null;
   hdr.addEventListener('mousedown', function(e){
-    if(e.target.id === 'help-close' || e.target.id === 'help-search-btn') return;
+    if(e.target.id === 'help-close') return;
     e.preventDefault();
     hdr.style.cursor = 'grabbing';
     /* On first drag, switch from centered to absolute positioning */
