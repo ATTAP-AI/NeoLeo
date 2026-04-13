@@ -66,6 +66,7 @@
     'js/experimental/morphogenesis.js',
     'js/experimental/organic-forms.js',
     'js/experimental/chromatic-physics.js',
+    'js/experimental/three-d.js',
     'js/experimental/topology-engine.js',
     'js/experimental/leo-toolset.js',
 

@@ -996,6 +996,50 @@
       </div>
     </div>
 
+    <!-- ◆ 3D — Software 3D renderer on 2D canvas -->
+    <div id="td-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="td-toggle" onclick="(function(){var b=document.getElementById('td-body');var t=document.getElementById('td-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(255,160,60,0.07)':'none';t.style.borderColor=open?'#ffa03c':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#ffa03c;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#11042; 3D</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="td-cycle-btn" class="cycle-btn" onclick="window._TD&&window._TD.cycle()">Cycle</button>
+      </div>
+      <div id="td-cycle-label" style="font-size:8px;color:#ffa03c;padding:2px 10px 3px;background:rgba(255,160,60,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="td-cycle-name">--</span></div>
+      <div id="td-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Software 3D renderer &mdash; perspective projection, z-sorted painter&rsquo;s algorithm, Blinn-Phong shading, palette-driven materials. 3D objects drawn entirely on the 2D canvas.</div>
+        <div style="font-size:8px;color:#ffa03c;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
+        <div id="td-shape-list" style="margin-bottom:8px;"></div>
+        <div id="td-desc" style="display:none;font-size:8px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
+        <div style="font-size:8px;color:#ffa03c;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn">Resolution</span><span class="pv" id="td-resolution-v">30</span></div><input type="range" id="td-resolution" min="6" max="120" value="30"></div>
+        <div class="pm"><div class="pr"><span class="pn">Zoom</span><span class="pv" id="td-zoom-v">1.0&times;</span></div><input type="range" id="td-zoom" min="15" max="150" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Rotate X</span><span class="pv" id="td-rotx-v">15%</span></div><input type="range" id="td-rotx" min="0" max="100" value="15"></div>
+        <div class="pm"><div class="pr"><span class="pn">Rotate Y</span><span class="pv" id="td-roty-v">12%</span></div><input type="range" id="td-roty" min="0" max="100" value="12"></div>
+        <div class="pm"><div class="pr"><span class="pn">Rotate Z</span><span class="pv" id="td-rotz-v">0%</span></div><input type="range" id="td-rotz" min="0" max="100" value="0"></div>
+        <div class="pm"><div class="pr"><span class="pn">Light Angle</span><span class="pv" id="td-light-v">20%</span></div><input type="range" id="td-light" min="0" max="100" value="20"></div>
+        <div class="pm"><div class="pr"><span class="pn">Specular</span><span class="pv" id="td-specular-v">50%</span></div><input type="range" id="td-specular" min="0" max="100" value="50"></div>
+        <div class="pm"><div class="pr"><span class="pn">Wireframe</span><span class="pv" id="td-wireframe-v">0%</span></div><input type="range" id="td-wireframe" min="0" max="100" value="0"></div>
+        <div class="pm"><div class="pr"><span class="pn">Ambient</span><span class="pv" id="td-ambient-v">30%</span></div><input type="range" id="td-ambient" min="0" max="100" value="30"></div>
+        <!-- Object Mode -->
+        <div style="margin-top:10px;border-top:1px solid rgba(255,160,60,0.15);padding-top:8px;">
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#ffa03c;font-weight:600;margin-bottom:6px;">Object Mode</div>
+          <div style="display:flex;gap:4px;">
+            <button id="td-obj-btn" style="flex:2;padding:7px 12px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.4);color:#ffa03c;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.toggleObj()">ENABLE OBJECT MODE</button>
+            <button id="td-place-btn" style="flex:1;padding:7px 8px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.25);color:#cc9050;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.placeObj()">&#10003; PLACE</button>
+          </div>
+          <div style="font-size:7.5px;color:rgba(255,255,255,0.4);margin-top:4px;line-height:1.5;text-align:center;">Drag to move &middot; corners to resize &middot; circle to rotate &middot; Place to set</div>
+        </div>
+
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="td-render-btn" class="fx-bb" style="flex:2;border-color:#ffa03c;color:#ffa03c;" onclick="window._TD&&window._TD.render()">&#11042; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#3a2a1a;color:#cc9050;" onclick="window._TD&&window._TD.randomise()">&#8635; Rand</button>
+          <button id="td-anim-btn" class="fx-bb" style="flex:1;border-color:#3a2a1a;color:#ffa03c;" onclick="window._TD&&window._TD.toggleAnim()">&#9654; Animate</button>
+        </div>
+        <div id="td-status" style="font-size:8px;color:#cc9050;margin-top:5px;min-height:12px;font-style:italic;"></div>
+      </div>
+    </div>
+
     <!-- ◆ CHROMATIC PHYSICS — Color as physical phenomenon -->
     <div id="chrp-sec" style="border-top:1px solid #1a1a2a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">

@@ -33,7 +33,8 @@ var SECTIONS = [
   { id:'hh',         name:'Happy Hallucinations',      color:'#E8F50A' },
   { id:'multipass',  name:'Multi-Pass Blend',          color:'#ff44cc' },
   { id:'experimental',name:'Experimental Tools',       color:'#c060ff' },
-  { id:'chrp',        name:'Chromatic Physics',        color:'#6a8ccc' }
+  { id:'chrp',        name:'Chromatic Physics',        color:'#6a8ccc' },
+  { id:'td3d',        name:'3D Objects',               color:'#ffa03c' }
 ];
 
 var ITEMS = [
@@ -153,7 +154,15 @@ var ITEMS = [
   {id:'sc-chrp-scatter', sec:'chrp', name:'Light Scattering',       engine:'flowfield',      pal:'ember',   seed:4002, experimental:'chrp-scatter'},
   {id:'sc-chrp-mix',     sec:'chrp', name:'Subtractive Pigment',    engine:'watercolor',     pal:'earth',   seed:4003, experimental:'chrp-mix'},
   {id:'sc-chrp-field',   sec:'chrp', name:'Chromatic Fields',       engine:'curl_noise',     pal:'neon',    seed:4004, experimental:'chrp-field'},
-  {id:'sc-chrp-prism',   sec:'chrp', name:'Spectral Dispersion',    engine:'interference',   pal:'aurora',  seed:4005, experimental:'chrp-prism'}
+  {id:'sc-chrp-prism',   sec:'chrp', name:'Spectral Dispersion',    engine:'interference',   pal:'aurora',  seed:4005, experimental:'chrp-prism'},
+
+  /* ── 3D Objects (6) — own section ── */
+  {id:'sc-td-torus',     sec:'td3d', name:'Torus',              engine:'flowfield',   pal:'ember',   seed:5001, experimental:'td3d-torus'},
+  {id:'sc-td-torusknot', sec:'td3d', name:'Torus Knot',         engine:'curl_noise',  pal:'neon',    seed:5002, experimental:'td3d-torusknot'},
+  {id:'sc-td-icosa',     sec:'td3d', name:'Icosahedron',        engine:'voronoi',     pal:'aurora',  seed:5003, experimental:'td3d-icosa'},
+  {id:'sc-td-sphere',    sec:'td3d', name:'Sphere',             engine:'domain_warp', pal:'ocean',   seed:5004, experimental:'td3d-sphere'},
+  {id:'sc-td-mobius',    sec:'td3d', name:'Möbius Strip',       engine:'interference',pal:'ghost',   seed:5005, experimental:'td3d-mobius'},
+  {id:'sc-td-superell',  sec:'td3d', name:'Superellipsoid',     engine:'attractor',   pal:'ember',   seed:5006, experimental:'td3d-superell'}
 ];
 
 /* ── State ── */
@@ -395,6 +404,22 @@ function renderSingleItem(item, callback){
       window._TOPO.renderDirect(ctx, W, H, topoShape, topoSliders);
     } catch(e){
       console.warn('Showcase: Topology ' + item.experimental + ' failed:', e.message);
+    }
+  }
+
+  /* 3D Objects */
+  if(item.experimental && item.experimental.indexOf('td3d-') === 0 && window._TD && window._TD.renderDirect){
+    var td3dMap = {'td3d-sphere':0,'td3d-cube':1,'td3d-cylinder':2,'td3d-cone':3,'td3d-torus':4,
+                   'td3d-icosa':5,'td3d-octa':6,'td3d-capsule':7,'td3d-torusknot':8,
+                   'td3d-superell':9,'td3d-spring':10,'td3d-mobius':11};
+    var td3dIdx = td3dMap[item.experimental];
+    if(td3dIdx !== undefined){
+      var tdSliders = {resolution:60,zoom:55,rotx:15,roty:12,rotz:0,light:25,specular:50,wireframe:0,ambient:30};
+      try {
+        window._TD.renderDirect(ctx, W, H, td3dIdx, tdSliders);
+      } catch(e){
+        console.warn('Showcase: 3D ' + item.experimental + ' failed:', e.message);
+      }
     }
   }
 
@@ -1174,6 +1199,23 @@ function triggerExperimental(type){
   } else if(type==='chrp-prism' && window._CHRP){
     if(window._CHRP.selectSystem) window._CHRP.selectSystem(4);
     else if(window._CHRP.render) window._CHRP.render();
+  /* ── 3D Objects ── */
+  } else if(type.indexOf('td3d-') === 0 && window._TD){
+    var td3dTrigMap = {'td3d-sphere':0,'td3d-cube':1,'td3d-cylinder':2,'td3d-cone':3,'td3d-torus':4,
+                       'td3d-icosa':5,'td3d-octa':6,'td3d-capsule':7,'td3d-torusknot':8,
+                       'td3d-superell':9,'td3d-spring':10,'td3d-mobius':11};
+    var tdIdx = td3dTrigMap[type];
+    if(tdIdx !== undefined && window._TD.selectShape) window._TD.selectShape(tdIdx);
+    /* Set high-res sliders for ICW render */
+    setTopoSlider('td-resolution', 80);
+    setTopoSlider('td-zoom', 55);
+    setTopoSlider('td-rotx', 15);
+    setTopoSlider('td-roty', 12);
+    setTopoSlider('td-light', 25);
+    setTopoSlider('td-specular', 50);
+    setTopoSlider('td-wireframe', 0);
+    setTopoSlider('td-ambient', 30);
+    if(window._TD.render) window._TD.render();
   }
 }
 

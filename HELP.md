@@ -164,6 +164,8 @@ These are cutting-edge creative tools found only in NeoLeo. Open the Experimenta
   - **Prism Dispersion** — White light splitting into spectral rainbows as it passes through a glass prism, following Snell's law of refraction.
   
   Each system produces colors that arise from actual physics equations rather than artistic choice, creating effects impossible to achieve with conventional color pickers.
+- **3D** — Software 3D renderer that draws three-dimensional objects entirely on the 2D canvas. Twelve shapes are available: Sphere, Cube, Cylinder, Cone, Torus, Icosahedron, Octahedron, Capsule, Torus Knot, Superellipsoid, Spring, and Möbius Strip. Uses perspective projection, back-to-front painter's algorithm sorting, and Blinn-Phong shading with palette-driven materials. Nine sliders control resolution, zoom, rotation on three axes, light angle, specular intensity, wireframe overlay, and ambient light.
+  - **Object Mode** — Captures the current 3D render and lets you move, resize, and rotate it interactively on the canvas. Drag to reposition, use corner handles to resize, and the rotation handle to spin the object. Click **Place** to composite the object at its new location onto the Image Creation Window. The Animate button spins the shape continuously.
 - **Modality Cycler** — Found within Intent Sculpting, the Cycle button steps through eight named force-field modalities (such as Tension Web, Fragile Emergence, and Pure Symmetry), each emphasizing a different aesthetic principle to discover unexpected combinations.
 
 Use the **Connect** button to blend experimental tool output on top of your engine generation.
@@ -186,6 +188,7 @@ Here is every Cycle button in NeoLeo:
 - **Morphogenesis Cycle** — Tours **5 biological growth systems**: Reaction-Diffusion (Turing patterns like animal markings), Phylogenetic (evolutionary branching), Branching (tree-like growth), Chladni (vibration patterns on a surface), and Voronoi (cell-like territory maps). Nature's own design principles, one click at a time.
 - **Topology Engine Cycle** — Steps through **mathematical surfaces** — toruses, Klein bottles, spheres, and other shapes from the field of topology, each one rendered as a unique piece of three-dimensional art.
 - **Organic Forms Cycle** — Tours **5 sculptural form systems**: Metaballs (merging blobs), Superformula (Gielis parametric shapes), Noise Blobs (amoeba silhouettes), Lava Lamp (smooth-union fluids), and Radiolaria (Haeckel-inspired microscopic forms).
+- **3D Cycle** — Steps through all **12 three-dimensional shapes**: Sphere, Cube, Cylinder, Cone, Torus, Icosahedron, Octahedron, Capsule, Torus Knot, Superellipsoid, Spring, and Möbius Strip. Each is rendered with Blinn-Phong shading and palette-driven materials.
 - **Chromatic Physics Cycle** — Tours **5 optical systems**: Thin-Film Interference (soap-bubble iridescence), Rayleigh Scattering (sky and sunset physics), Subtractive Mixing (pigment glazes), Electromagnetic Field (oscillating field vectors), and Prism Dispersion (spectral rainbows). Each one demonstrates a different way that real physics produces color.
 
 The Cycle buttons are designed for playful exploration. You do not need to understand the mathematics behind any of these — just click, look, and follow your eye to what inspires you.
@@ -309,7 +312,7 @@ The AI only changes settings and parameters. It does not generate images, access
 
 The **Showcase** is a curated gallery of **92 pre-configured artworks** spanning every engine, tool, and style in NeoLeo. It serves as both inspiration and a learning tool — each thumbnail shows you what a particular engine or tool combination can produce.
 
-- **9 Categories** — Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, Chromatic Physics, and Happy Hallucinations. Click a category tab to filter the gallery.
+- **10 Categories** — Artworks are organized by type: Flow & Motion, Nature & Growth, Geometry & Pattern, Fractals & Math, Landscape & Terrain, Systems & Simulation, Experimental, Chromatic Physics, 3D Objects, and Happy Hallucinations. Click a category tab to filter the gallery.
 - **Instant Preview** — Each thumbnail is a pre-rendered 400×400 snapshot cached during batch rendering. Clicking a thumbnail instantly displays the cached preview at full resolution in the Image Creation Window while the engine re-renders in the background for maximum quality. This gives you immediate visual feedback with no waiting.
 - **Click any thumbnail** to load that artwork's exact engine, palette, seed, and settings into the Image Creation Window.
 - **Menu Highlighting** — When you click a showcase thumbnail, the corresponding engine or tool in the main menu is automatically highlighted with a blinking yellow outline so you can see exactly which feature created that artwork.
