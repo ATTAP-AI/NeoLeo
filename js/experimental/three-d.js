@@ -71,7 +71,7 @@ var SHAPES=[
 ];
 
 function genSphere(res){
-  var verts=[],faces=[],norms=[];
+  var verts=[],faces=[],norms=[],uvs=[];
   for(var i=0;i<=res;i++){
     var phi=PI*i/res;
     for(var j=0;j<=res;j++){
@@ -79,17 +79,18 @@ function genSphere(res){
       var x=sin(phi)*cos(theta),y=cos(phi),z=sin(phi)*sin(theta);
       verts.push([x,y,z]);
       norms.push([x,y,z]);
+      uvs.push([j/res,i/res]);
     }
   }
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genCube(res){
-  var verts=[],faces=[],norms=[];
+  var verts=[],faces=[],norms=[],uvs=[];
   var dirs=[[[1,0,0],[0,1,0],[0,0,1]],[[-1,0,0],[0,1,0],[0,0,-1]],
             [[0,1,0],[1,0,0],[0,0,1]],[[0,-1,0],[1,0,0],[0,0,-1]],
             [[0,0,1],[1,0,0],[0,1,0]],[[0,0,-1],[-1,0,0],[0,1,0]]];
@@ -100,17 +101,18 @@ function genCube(res){
       var u=i/r*2-1,v2=j/r*2-1;
       verts.push([norm[0]+right[0]*u+up[0]*v2, norm[1]+right[1]*u+up[1]*v2, norm[2]+right[2]*u+up[2]*v2]);
       norms.push(norm.slice());
+      uvs.push([i/r,j/r]);
     }
     for(var i=0;i<r;i++)for(var j=0;j<r;j++){
       var a=base+i*(r+1)+j,b=a+1,c=a+r+1,d2=c+1;
       faces.push([a,c,d2,b]);
     }
   });
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genCylinder(res){
-  var verts=[],faces=[],norms=[],h=1.6;
+  var verts=[],faces=[],norms=[],uvs=[],h=1.6;
   for(var i=0;i<=res;i++){
     var v2=i/res,y=v2*h-h/2;
     for(var j=0;j<=res;j++){
@@ -118,27 +120,27 @@ function genCylinder(res){
       var x=cos(theta),z=sin(theta);
       verts.push([x,y,z]);
       norms.push([x,0,z]);
+      uvs.push([u,v2]);
     }
   }
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  // Caps
-  var topC=verts.length;verts.push([0,h/2,0]);norms.push([0,1,0]);
-  var botC=verts.length;verts.push([0,-h/2,0]);norms.push([0,-1,0]);
+  var topC=verts.length;verts.push([0,h/2,0]);norms.push([0,1,0]);uvs.push([0.5,0.5]);
+  var botC=verts.length;verts.push([0,-h/2,0]);norms.push([0,-1,0]);uvs.push([0.5,0.5]);
   for(var j=0;j<res;j++){
     var a=res*(res+1)+j,b=a+1;
     faces.push([topC,a,b,topC]);
     var c=j,d2=j+1;
     faces.push([botC,d2,c,botC]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genCone(res){
-  var verts=[],faces=[],norms=[],h=2;
-  var apex=verts.length;verts.push([0,h/2,0]);norms.push([0,1,0]);
+  var verts=[],faces=[],norms=[],uvs=[],h=2;
+  var apex=verts.length;verts.push([0,h/2,0]);norms.push([0,1,0]);uvs.push([0.5,0]);
   for(var i=0;i<=res;i++){
     var v2=i/res,y=h/2-v2*h,r=v2;
     for(var j=0;j<=res;j++){
@@ -147,21 +149,19 @@ function genCone(res){
       verts.push([x,y,z]);
       var sl=1/sqrt(1+h*h/(1+0.01));
       norms.push(v3norm([cos(theta)*h,1,sin(theta)*h]));
+      uvs.push([j/res,v2]);
     }
   }
-  // Side faces
-  for(var j=0;j<res;j++){
-    faces.push([apex,1+j,1+j+1,apex]);
-  }
+  for(var j=0;j<res;j++){faces.push([apex,1+j,1+j+1,apex]);}
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=1+i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genTorus(res){
-  var verts=[],faces=[],norms=[],R=0.7,r=0.35;
+  var verts=[],faces=[],norms=[],uvs=[],R=0.7,r=0.35;
   for(var i=0;i<=res;i++){
     var phi=TAU*i/res;
     for(var j=0;j<=res;j++){
@@ -169,84 +169,84 @@ function genTorus(res){
       var x=(R+r*cos(theta))*cos(phi),y=r*sin(theta),z=(R+r*cos(theta))*sin(phi);
       verts.push([x,y,z]);
       norms.push(v3norm([cos(theta)*cos(phi),sin(theta),cos(theta)*sin(phi)]));
+      uvs.push([i/res,j/res]);
     }
   }
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genIcosa(){
-  var t=(1+sqrt(5))/2,verts=[],norms=[],faces=[];
+  var t=(1+sqrt(5))/2,verts=[],norms=[],faces=[],uvs=[];
   var iv=[[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]];
-  iv.forEach(function(v){var n=v3norm(v);verts.push(n);norms.push(n);});
+  iv.forEach(function(v){var n=v3norm(v);verts.push(n);norms.push(n);uvs.push([0.5+Math.atan2(n[2],n[0])/TAU,0.5-Math.asin(clamp(n[1],-1,1))/PI]);});
   var fi=[[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],
           [3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
-  // Subdivide once for smoother
   function midpoint(a,b){return v3norm(v3mul(v3add(verts[a],verts[b]),0.5));}
   var cache={};
-  function getMid(a,b){var key=min(a,b)+'-'+max(a,b);if(cache[key]!==undefined)return cache[key];var m=midpoint(a,b);var idx=verts.length;verts.push(m);norms.push(m);cache[key]=idx;return idx;}
+  function getMid(a,b){var key=min(a,b)+'-'+max(a,b);if(cache[key]!==undefined)return cache[key];var m=midpoint(a,b);var idx=verts.length;verts.push(m);norms.push(m);uvs.push([0.5+Math.atan2(m[2],m[0])/TAU,0.5-Math.asin(clamp(m[1],-1,1))/PI]);cache[key]=idx;return idx;}
   var nf=[];
   fi.forEach(function(f){
     var a=getMid(f[0],f[1]),b=getMid(f[1],f[2]),c=getMid(f[2],f[0]);
     nf.push([f[0],a,c]);nf.push([f[1],b,a]);nf.push([f[2],c,b]);nf.push([a,b,c]);
   });
   nf.forEach(function(f){faces.push([f[0],f[1],f[2],f[2]]);});
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genOcta(){
   var verts=[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]];
   var norms=verts.map(function(v){return v.slice();});
+  var uvs=verts.map(function(v){return[0.5+Math.atan2(v[2],v[0])/TAU,0.5-Math.asin(clamp(v[1],-1,1))/PI];});
   var fi=[[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,4,2],[1,3,4],[1,5,3],[1,2,5]];
   var faces=fi.map(function(f){return[f[0],f[1],f[2],f[2]];});
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genCapsule(res){
-  var verts=[],faces=[],norms=[],h=0.8,r=0.6;
-  // Top hemisphere
+  var verts=[],faces=[],norms=[],uvs=[],h=0.8,r=0.6;
   var halfRes=floor(res/2);
-  for(var i=0;i<=halfRes;i++){
+  var totalRows=halfRes+1+res+1+halfRes+1;
+  var row=0;
+  for(var i=0;i<=halfRes;i++,row++){
     var phi=PI*0.5*i/halfRes;
     for(var j=0;j<=res;j++){
       var theta=TAU*j/res;
-      var x=r*sin(phi)*cos(theta),y=r*cos(phi)+h,z=r*sin(phi)*sin(theta);
-      var nx=sin(phi)*cos(theta),ny=cos(phi),nz=sin(phi)*sin(theta);
-      verts.push([x,y,z]);norms.push([nx,ny,nz]);
+      verts.push([r*sin(phi)*cos(theta),r*cos(phi)+h,r*sin(phi)*sin(theta)]);
+      norms.push([sin(phi)*cos(theta),cos(phi),sin(phi)*sin(theta)]);
+      uvs.push([j/res,row/(totalRows-1)]);
     }
   }
-  // Cylinder
-  for(var i=0;i<=res;i++){
+  for(var i=0;i<=res;i++,row++){
     var v2=i/res,y=h-v2*h*2;
     for(var j=0;j<=res;j++){
       var theta=TAU*j/res;
       verts.push([r*cos(theta),y,r*sin(theta)]);
       norms.push([cos(theta),0,sin(theta)]);
+      uvs.push([j/res,row/(totalRows-1)]);
     }
   }
-  // Bottom hemisphere
-  var botStart=verts.length;
-  for(var i=0;i<=halfRes;i++){
+  for(var i=0;i<=halfRes;i++,row++){
     var phi=PI*0.5+PI*0.5*i/halfRes;
     for(var j=0;j<=res;j++){
       var theta=TAU*j/res;
-      var x=r*sin(phi)*cos(theta),y=r*cos(phi)-h,z=r*sin(phi)*sin(theta);
-      verts.push([x,y,z]);norms.push(v3norm([sin(phi)*cos(theta),cos(phi),sin(phi)*sin(theta)]));
+      verts.push([r*sin(phi)*cos(theta),r*cos(phi)-h,r*sin(phi)*sin(theta)]);
+      norms.push(v3norm([sin(phi)*cos(theta),cos(phi),sin(phi)*sin(theta)]));
+      uvs.push([j/res,row/(totalRows-1)]);
     }
   }
-  var totalRows=halfRes+1+res+1+halfRes+1;
   for(var i=0;i<totalRows-1;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     if(c<verts.length&&d<verts.length)faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genTorusKnot(res){
-  var verts=[],faces=[],norms=[],p=2,q=3,R=0.6,r=0.15;
+  var verts=[],faces=[],norms=[],uvs=[],p=2,q=3,R=0.6,r=0.15;
   var segs=res*3,tubSegs=max(8,floor(res/3));
   // Compute spine
   var spine=[];
@@ -267,19 +267,19 @@ function genTorusKnot(res){
       var cx2=r*cos(theta),cy2=r*sin(theta);
       var pt=v3add(spine[i],v3add(v3mul(N,cx2),v3mul(B,cy2)));
       var nm=v3norm(v3add(v3mul(N,cos(theta)),v3mul(B,sin(theta))));
-      verts.push(pt);norms.push(nm);
+      verts.push(pt);norms.push(nm);uvs.push([i/segs,j/tubSegs]);
     }
   }
   for(var i=0;i<segs;i++)for(var j=0;j<tubSegs;j++){
     var a=i*(tubSegs+1)+j,b=a+1,c=a+tubSegs+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genSuperEllipsoid(res){
-  var verts=[],faces=[],norms=[];
-  var e1=0.3,e2=0.3; // squareness params — adjustable via deform slider later
+  var verts=[],faces=[],norms=[],uvs=[];
+  var e1=0.3,e2=0.3;
   function spow(v,p){return Math.sign(v)*Math.pow(abs(v),p);}
   for(var i=0;i<=res;i++){
     var phi=-PI/2+PI*i/res;
@@ -292,17 +292,18 @@ function genSuperEllipsoid(res){
       norms.push(v3norm([spow(cos(phi),2-e1)*spow(cos(theta),2-e2),
                          spow(sin(phi),2-e1),
                          spow(cos(phi),2-e1)*spow(sin(theta),2-e2)]));
+      uvs.push([j/res,i/res]);
     }
   }
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genSpring(res){
-  var verts=[],faces=[],norms=[];
+  var verts=[],faces=[],norms=[],uvs=[];
   var coils=3,R=0.5,r=0.12,h=2;
   var segs=res*coils,tubSegs=max(8,floor(res/3));
   var spine=[];
@@ -320,18 +321,18 @@ function genSpring(res){
       var theta=TAU*j/tubSegs;
       var pt=v3add(spine[min(i,segs)],v3add(v3mul(N,r*cos(theta)),v3mul(B,r*sin(theta))));
       var nm=v3norm(v3add(v3mul(N,cos(theta)),v3mul(B,sin(theta))));
-      verts.push(pt);norms.push(nm);
+      verts.push(pt);norms.push(nm);uvs.push([i/segs,j/tubSegs]);
     }
   }
   for(var i=0;i<segs;i++)for(var j=0;j<tubSegs;j++){
     var a=i*(tubSegs+1)+j,b=a+1,c=a+tubSegs+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 function genMobius(res){
-  var verts=[],faces=[],norms=[],R=0.7,w=0.35;
+  var verts=[],faces=[],norms=[],uvs=[],R=0.7,w=0.35;
   for(var i=0;i<=res;i++){
     var u=TAU*i/res;
     for(var j=0;j<=res;j++){
@@ -348,13 +349,14 @@ function genMobius(res){
       var px3=(R+w*v3*cos(halfU))*cos(u),py3=(R+w*v3*cos(halfU))*sin(u),pz3=w*v3*sin(halfU);
       var dPdu=[px2-x,pz2-z,py2-y],dPdv=[px3-x,pz3-z,py3-y];
       norms.push(v3norm(v3cross(dPdu,dPdv)));
+      uvs.push([i/res,j/res]);
     }
   }
   for(var i=0;i<res;i++)for(var j=0;j<res;j++){
     var a=i*(res+1)+j,b=a+1,c=a+res+1,d=c+1;
     faces.push([a,c,d,b]);
   }
-  return{v:verts,f:faces,n:norms};
+  return{v:verts,f:faces,n:norms,uv:uvs};
 }
 
 /* ── State ── */
@@ -384,7 +386,13 @@ function doRender(targetCtx, targetW, targetH, clearBg){
 
   // Generate mesh
   var mesh=SHAPES[S.shapeIdx].fn(resolution);
-  var verts=mesh.v,faces=mesh.f,normals=mesh.n;
+  var verts=mesh.v,faces=mesh.f,normals=mesh.n,meshUVs=mesh.uv||null;
+
+  // Check for active texture mapping
+  var texActive=window._TEX&&window._TEX.getActive&&window._TEX.getActive()&&window._TEX.sampleTexture;
+  var texBump=window._TEX&&window._TEX.getBumpNormal;
+  var bumpStr=0;
+  if(texActive){var bs=document.getElementById('tex-bump-str');bumpStr=bs?(+bs.value/100):0.6;}
 
   // Build model matrix
   var modelMat=m4mul(m4rotZ(rotZ2),m4mul(m4rotY(rotY2),m4rotX(rotX2)));
@@ -452,18 +460,37 @@ function doRender(targetCtx, targetW, targetH, clearBg){
     var toView=v3norm(v3sub([0,0,camZ],fc));
     if(v3dot(fn2,toView)<-0.05)continue;
 
+    // Texture UV — average face UVs
+    var faceU=0,faceV=0,hasUV=false;
+    if(texActive&&meshUVs){
+      var nv=isQuad?4:3;
+      for(var vi=0;vi<nv;vi++){var uvi=meshUVs[f[vi]];if(uvi){faceU+=uvi[0];faceV+=uvi[1];}}
+      faceU/=nv;faceV/=nv;hasUV=true;
+    }
+
+    // Bump-perturbed normal for texture mapping
+    var shadingN=fn2;
+    if(texActive&&hasUV&&texBump&&bumpStr>0){
+      shadingN=v3norm(window._TEX.getBumpNormal(faceU,faceV,fn2,bumpStr));
+    }
+
     // Phong shading
-    var NdotL=clamp(v3dot(fn2,lightDir),0,1);
+    var NdotL=clamp(v3dot(shadingN,lightDir),0,1);
     var diffuse=NdotL*0.7;
-    // Specular (Blinn-Phong)
     var halfVec=v3norm(v3add(lightDir,viewDir));
-    var NdotH=clamp(v3dot(fn2,halfVec),0,1);
+    var NdotH=clamp(v3dot(shadingN,halfVec),0,1);
     var spec=Math.pow(NdotH,specPow)*0.5;
 
     var light2=ambient+diffuse;
 
-    // Color from palette (cycle based on face index)
-    var baseCol=cols[fIdx%cols.length];
+    // Color: texture sample or palette
+    var baseCol;
+    if(texActive&&hasUV){
+      var ts=window._TEX.sampleTexture(faceU,faceV);
+      baseCol=ts?[ts.r,ts.g,ts.b]:cols[fIdx%cols.length];
+    } else {
+      baseCol=cols[fIdx%cols.length];
+    }
     var r2=clamp(baseCol[0]*light2+spec*255,0,255);
     var g=clamp(baseCol[1]*light2+spec*255,0,255);
     var b=clamp(baseCol[2]*light2+spec*255,0,255);

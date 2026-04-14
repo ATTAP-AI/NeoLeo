@@ -34,7 +34,8 @@ var SECTIONS = [
   { id:'multipass',  name:'Multi-Pass Blend',          color:'#ff44cc' },
   { id:'experimental',name:'Experimental Tools',       color:'#c060ff' },
   { id:'chrp',        name:'Chromatic Physics',        color:'#6a8ccc' },
-  { id:'td3d',        name:'3D Objects',               color:'#ffa03c' }
+  { id:'td3d',        name:'3D Objects',               color:'#ffa03c' },
+  { id:'tex',         name:'Textures',                 color:'#c09060' }
 ];
 
 var ITEMS = [
@@ -162,7 +163,29 @@ var ITEMS = [
   {id:'sc-td-icosa',     sec:'td3d', name:'Icosahedron',        engine:'voronoi',     pal:'aurora',  seed:5003, experimental:'td3d-icosa'},
   {id:'sc-td-sphere',    sec:'td3d', name:'Sphere',             engine:'domain_warp', pal:'ocean',   seed:5004, experimental:'td3d-sphere'},
   {id:'sc-td-mobius',    sec:'td3d', name:'Möbius Strip',       engine:'interference',pal:'ghost',   seed:5005, experimental:'td3d-mobius'},
-  {id:'sc-td-superell',  sec:'td3d', name:'Superellipsoid',     engine:'attractor',   pal:'ember',   seed:5006, experimental:'td3d-superell'}
+  {id:'sc-td-superell',  sec:'td3d', name:'Superellipsoid',     engine:'attractor',   pal:'ember',   seed:5006, experimental:'td3d-superell'},
+
+  /* ── Textures (16) — own section, all 4 families ── */
+  /* Stone & Mineral */
+  {id:'sc-tex-marble',    sec:'tex', name:'Marble',          engine:'domain_warp',  pal:'ghost',   seed:6001, experimental:'tex-0'},
+  {id:'sc-tex-granite',   sec:'tex', name:'Granite',         engine:'voronoi',      pal:'earth',   seed:6002, experimental:'tex-1'},
+  {id:'sc-tex-sandstone', sec:'tex', name:'Sandstone',       engine:'contour_map',  pal:'earth',   seed:6003, experimental:'tex-2'},
+  {id:'sc-tex-obsidian',  sec:'tex', name:'Obsidian',        engine:'domain_warp',  pal:'void',    seed:6004, experimental:'tex-3'},
+  /* Organic & Natural */
+  {id:'sc-tex-wood',      sec:'tex', name:'Wood Grain',      engine:'marble_wood',  pal:'earth',   seed:6005, experimental:'tex-4'},
+  {id:'sc-tex-bark',      sec:'tex', name:'Bark',            engine:'growth',       pal:'earth',   seed:6006, experimental:'tex-5'},
+  {id:'sc-tex-leather',   sec:'tex', name:'Leather',         engine:'voronoi',      pal:'rust',    seed:6007, experimental:'tex-6'},
+  {id:'sc-tex-scales',    sec:'tex', name:'Scales',          engine:'voronoi',      pal:'aurora',  seed:6008, experimental:'tex-7'},
+  /* Fabric & Weave */
+  {id:'sc-tex-linen',     sec:'tex', name:'Linen',           engine:'truchet',      pal:'ghost',   seed:6009, experimental:'tex-8'},
+  {id:'sc-tex-silk',      sec:'tex', name:'Silk',            engine:'flowfield',    pal:'neon',    seed:6010, experimental:'tex-9'},
+  {id:'sc-tex-tweed',     sec:'tex', name:'Tweed',           engine:'truchet',      pal:'earth',   seed:6011, experimental:'tex-10'},
+  {id:'sc-tex-chainmail', sec:'tex', name:'Chain Mail',      engine:'spirograph',   pal:'ghost',   seed:6012, experimental:'tex-11'},
+  /* Industrial & Engineered */
+  {id:'sc-tex-brushed',   sec:'tex', name:'Brushed Metal',   engine:'flowfield',    pal:'ghost',   seed:6013, experimental:'tex-12'},
+  {id:'sc-tex-carbon',    sec:'tex', name:'Carbon Fiber',    engine:'truchet',      pal:'void',    seed:6014, experimental:'tex-13'},
+  {id:'sc-tex-circuit',   sec:'tex', name:'Circuit Board',   engine:'force_graph',  pal:'botanic', seed:6015, experimental:'tex-14'},
+  {id:'sc-tex-corrugated',sec:'tex', name:'Corrugated',      engine:'chladni',      pal:'rust',    seed:6016, experimental:'tex-15'}
 ];
 
 /* ── State ── */
@@ -419,6 +442,19 @@ function renderSingleItem(item, callback){
         window._TD.renderDirect(ctx, W, H, td3dIdx, tdSliders);
       } catch(e){
         console.warn('Showcase: 3D ' + item.experimental + ' failed:', e.message);
+      }
+    }
+  }
+
+  /* Textures */
+  if(item.experimental && item.experimental.indexOf('tex-') === 0 && window._TEX && window._TEX.renderDirect){
+    var texIdxStr = item.experimental.substring(4);
+    var texIdx = parseInt(texIdxStr, 10);
+    if(!isNaN(texIdx)){
+      try {
+        window._TEX.renderDirect(ctx, W, H, texIdx, [0.5,0.5,0.5,0.5,0.5]);
+      } catch(e){
+        console.warn('Showcase: Texture ' + item.experimental + ' failed:', e.message);
       }
     }
   }
@@ -1216,6 +1252,11 @@ function triggerExperimental(type){
     setTopoSlider('td-wireframe', 0);
     setTopoSlider('td-ambient', 30);
     if(window._TD.render) window._TD.render();
+  /* ── Textures ── */
+  } else if(type.indexOf('tex-') === 0 && window._TEX){
+    var texIdx = parseInt(type.substring(4), 10);
+    if(!isNaN(texIdx) && window._TEX.selectTexture) window._TEX.selectTexture(texIdx);
+    else if(window._TEX.render) window._TEX.render();
   }
 }
 

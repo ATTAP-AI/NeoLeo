@@ -227,7 +227,8 @@ var TEX_META=[
 ];
 
 var tpEl=null,tpOpen=false,tpUserClosed=false,tpPos=null,tpSelCard=null;
-var tpActiveType=null,tpColor='#E8F50A',tpScale=50,tpOpacity=90,tpDensity=100,_lastTexSnap=null;
+var tpActiveType=null,tpColor='#E8F50A',tpScale=50,tpOpacity=90,tpDensity=100,tpSize=100,tpRotation=0,_lastTexSnap=null;
+var tpAdditive=false;
 
 function buildTexPicker(){
   if(tpEl)return;
@@ -273,8 +274,11 @@ function buildTexPicker(){
     '  font-weight:600;line-height:1.4;letter-spacing:.04em;}',
     '.tp-card-desc{font-size:7px;color:rgba(255,255,255,0.35);',
     '  line-height:1.4;margin-top:2px;}',
+    '#tp-controls input[type=range]{height:20px;cursor:pointer;}',
+    '#tp-controls input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:rgba(255,255,255,0.15);}',
     '#tp-controls input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;',
-    '  width:12px;height:12px;border-radius:50%;background:#E8F50A;cursor:pointer;border:none;}',
+    '  width:18px;height:18px;border-radius:50%;background:#E8F50A;cursor:pointer;border:2px solid rgba(0,0,0,0.3);margin-top:-7px;box-shadow:0 1px 4px rgba(0,0,0,0.4);}',
+    '#tp-controls input[type=range]::-webkit-slider-thumb:hover{background:#f0ff3a;transform:scale(1.15);}',
     '#tp-controls input[type=color]{-webkit-appearance:none;padding:0;}',
     '#tp-controls input[type=color]::-webkit-color-swatch-wrapper{padding:2px;}',
     '#tp-controls input[type=color]::-webkit-color-swatch{border:none;border-radius:2px;}',
@@ -306,22 +310,41 @@ function buildTexPicker(){
     /* Scale slider */
     '  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">',
     '    <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;min-width:36px;line-height:1.5;">Scale</span>',
-    '    <input type="range" id="tp-scale" min="10" max="100" value="50" style="flex:1;height:3px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,0.12);outline:none;cursor:pointer;border-radius:2px;">',
+    '    <input type="range" id="tp-scale" min="10" max="100" value="50" style="flex:1;-webkit-appearance:none;appearance:none;background:transparent;outline:none;cursor:pointer;">',
     '    <span id="tp-scale-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">50%</span>',
     '  </div>',
 
     /* Opacity slider */
     '  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">',
     '    <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;min-width:36px;line-height:1.5;">Opacity</span>',
-    '    <input type="range" id="tp-opacity" min="5" max="100" value="90" style="flex:1;height:3px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,0.12);outline:none;cursor:pointer;border-radius:2px;">',
+    '    <input type="range" id="tp-opacity" min="5" max="100" value="90" style="flex:1;-webkit-appearance:none;appearance:none;background:transparent;outline:none;cursor:pointer;">',
     '    <span id="tp-opacity-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">90%</span>',
     '  </div>',
 
     /* Density slider */
-    '  <div style="display:flex;align-items:center;gap:8px;">',
+    '  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">',
     '    <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;min-width:36px;line-height:1.5;">Density</span>',
-    '    <input type="range" id="tp-density" min="10" max="200" value="100" style="flex:1;height:3px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,0.12);outline:none;cursor:pointer;border-radius:2px;">',
+    '    <input type="range" id="tp-density" min="10" max="200" value="100" style="flex:1;-webkit-appearance:none;appearance:none;background:transparent;outline:none;cursor:pointer;">',
     '    <span id="tp-density-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">100%</span>',
+    '  </div>',
+
+    /* Size slider */
+    '  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">',
+    '    <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;min-width:36px;line-height:1.5;">Size</span>',
+    '    <input type="range" id="tp-size" min="25" max="400" value="100" style="flex:1;-webkit-appearance:none;appearance:none;background:transparent;outline:none;cursor:pointer;">',
+    '    <span id="tp-size-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">100%</span>',
+    '  </div>',
+
+    /* Rotation slider */
+    '  <div style="display:flex;align-items:center;gap:8px;">',
+    '    <span style="font-size:8px;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;min-width:36px;line-height:1.5;">Rotate</span>',
+    '    <input type="range" id="tp-rotation" min="0" max="360" value="0" style="flex:1;-webkit-appearance:none;appearance:none;background:transparent;outline:none;cursor:pointer;">',
+    '    <span id="tp-rotation-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">0\u00b0</span>',
+    '  </div>',
+
+    /* Additive toggle */
+    '  <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">',
+    '    <button id="tp-additive-btn" style="flex:1;padding:5px 10px;font-family:inherit;font-size:8px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:none;color:rgba(255,255,255,0.5);transition:all .15s;">Additive: Off</button>',
     '  </div>',
 
     '</div>',
@@ -445,6 +468,40 @@ function buildTexPicker(){
     if(tpActiveType)liveReapply();
   });
 
+  /* Size slider */
+  var tpSizeIn=document.getElementById('tp-size');
+  var tpSizeV=document.getElementById('tp-size-v');
+  if(tpSizeIn){
+    tpSizeIn.addEventListener('input',function(){
+      tpSize=parseInt(tpSizeIn.value);
+      if(tpSizeV)tpSizeV.textContent=tpSize+'%';
+      if(tpActiveType)liveReapply();
+    });
+  }
+
+  /* Rotation slider */
+  var tpRotIn=document.getElementById('tp-rotation');
+  var tpRotV=document.getElementById('tp-rotation-v');
+  if(tpRotIn){
+    tpRotIn.addEventListener('input',function(){
+      tpRotation=parseInt(tpRotIn.value);
+      if(tpRotV)tpRotV.textContent=tpRotation+'\u00b0';
+      if(tpActiveType)liveReapply();
+    });
+  }
+
+  /* Additive toggle */
+  var tpAddBtn=document.getElementById('tp-additive-btn');
+  if(tpAddBtn){
+    tpAddBtn.addEventListener('click',function(){
+      tpAdditive=!tpAdditive;
+      tpAddBtn.textContent='Additive: '+(tpAdditive?'On':'Off');
+      tpAddBtn.style.background=tpAdditive?'rgba(232,245,10,0.15)':'none';
+      tpAddBtn.style.borderColor=tpAdditive?'rgba(232,245,10,0.5)':'rgba(255,255,255,0.2)';
+      tpAddBtn.style.color=tpAdditive?'#ffffff':'rgba(255,255,255,0.5)';
+    });
+  }
+
   /* ── Refresh all thumbnails with current color/scale ── */
   function refreshThumbnails(){
     var cards=grid.querySelectorAll('.tp-card');
@@ -475,10 +532,24 @@ function buildTexPicker(){
     var op=tpOpacity/100;
     var densityMul=tpDensity/100;
     if(window._genTexture){
-      var tile=window._genTexture(tpActiveType,W,H,tpColor,tpScale);
+      var sizeMul=(tpSize||100)/100;
+      var rad=(tpRotation||0)*Math.PI/180;
+      var diag=rad?Math.sqrt(W*W+H*H):Math.max(W,H);
+      var drawW=rad?diag:W, drawH=rad?diag:H;
+      var genW=Math.max(1,Math.round(drawW/sizeMul));
+      var genH=Math.max(1,Math.round(drawH/sizeMul));
+      var tile=window._genTexture(tpActiveType,genW,genH,tpColor,tpScale);
       tctx2.save();
       tctx2.globalAlpha=op*densityMul;
-      tctx2.drawImage(tile,0,0);
+      tctx2.imageSmoothingEnabled=true;
+      tctx2.imageSmoothingQuality='high';
+      if(rad){
+        tctx2.translate(W/2,H/2);
+        tctx2.rotate(rad);
+        tctx2.drawImage(tile,-drawW/2,-drawH/2,drawW,drawH);
+      } else {
+        tctx2.drawImage(tile,0,0,W,H);
+      }
       tctx2.restore();
     }
   }
@@ -500,20 +571,42 @@ function applyTextureToCanvas(type){
   /* Push undo */
   if(window.genUndoPush)window.genUndoPush();
 
+  /* In discrete mode, clear canvas first so only one texture shows */
+  if(!tpAdditive){
+    var bg=typeof gpal==='function'&&gpal()&&gpal().bg?gpal().bg:'#0a0a12';
+    tctx.fillStyle=bg;
+    tctx.fillRect(0,0,W,H);
+  }
+
   /* Save pre-texture snapshot for live slider adjustment */
   _lastTexSnap=tctx.getImageData(0,0,W,H);
 
-  /* Generate and apply texture */
+  /* Generate and apply texture with size scaling + rotation */
   if(window._genTexture){
-    var tile=window._genTexture(type,W,H,col,scale);
+    var sizeMul=(tpSize||100)/100;
+    var rad=(tpRotation||0)*Math.PI/180;
+    /* When rotated, generate oversized to avoid corner gaps */
+    var diag=rad?Math.sqrt(W*W+H*H):Math.max(W,H);
+    var drawW=rad?diag:W, drawH=rad?diag:H;
+    var genW=Math.max(1,Math.round(drawW/sizeMul));
+    var genH=Math.max(1,Math.round(drawH/sizeMul));
+    var tile=window._genTexture(type,genW,genH,col,scale);
     tctx.save();
     tctx.globalAlpha=op*densityMul;
-    tctx.drawImage(tile,0,0);
+    tctx.imageSmoothingEnabled=true;
+    tctx.imageSmoothingQuality='high';
+    if(rad){
+      tctx.translate(W/2,H/2);
+      tctx.rotate(rad);
+      tctx.drawImage(tile,-drawW/2,-drawH/2,drawW,drawH);
+    } else {
+      tctx.drawImage(tile,0,0,W,H);
+    }
     tctx.restore();
   }
 
   var si=document.getElementById('si');
-  if(si)si.textContent='Texture applied: '+type;
+  if(si)si.textContent='Texture '+(tpAdditive?'layered':'applied')+': '+type;
   if(typeof updateGlobalUndoBtns==='function')updateGlobalUndoBtns();
 }
 
