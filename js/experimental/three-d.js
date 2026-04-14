@@ -374,7 +374,7 @@ function doRender(targetCtx, targetW, targetH, clearBg){
     if(window._saveU)window._saveU();
   }
 
-  var resolution=clamp(Math.round(sv('td-resolution')),6,200);
+  var resolution=clamp(Math.round(sv('td-resolution')),6,1000);
   var zoom=sv('td-zoom')/50;
   var rotX2=sv('td-rotx')/100*TAU;
   var rotY2=sv('td-roty')/100*TAU;

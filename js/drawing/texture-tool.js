@@ -228,7 +228,7 @@ var TEX_META=[
 
 var tpEl=null,tpOpen=false,tpUserClosed=false,tpPos=null,tpSelCard=null;
 var tpActiveType=null,tpColor='#E8F50A',tpScale=50,tpOpacity=90,tpDensity=100,tpSize=100,tpRotation=0,_lastTexSnap=null;
-var tpAdditive=false;
+var tpAdditive=false,tpPaintMode=false;
 
 function buildTexPicker(){
   if(tpEl)return;
@@ -342,9 +342,10 @@ function buildTexPicker(){
     '    <span id="tp-rotation-v" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">0\u00b0</span>',
     '  </div>',
 
-    /* Additive toggle */
-    '  <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">',
-    '    <button id="tp-additive-btn" style="flex:1;padding:5px 10px;font-family:inherit;font-size:8px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:none;color:rgba(255,255,255,0.5);transition:all .15s;">Additive: Off</button>',
+    /* Mode + Additive toggles */
+    '  <div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);">',
+    '    <button id="tp-mode-btn" style="flex:1;padding:5px 8px;font-family:inherit;font-size:8px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;border:1px solid rgba(232,245,10,0.4);background:rgba(232,245,10,0.1);color:#ffffff;transition:all .15s;">\u25A3 Full Canvas</button>',
+    '    <button id="tp-additive-btn" style="flex:1;padding:5px 8px;font-family:inherit;font-size:8px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;border:1px solid rgba(255,255,255,0.2);background:none;color:rgba(255,255,255,0.5);transition:all .15s;">Additive: Off</button>',
     '  </div>',
 
     '</div>',
@@ -382,13 +383,20 @@ function buildTexPicker(){
     info.innerHTML='<div class="tp-card-name">'+tex.name+'</div><div class="tp-card-desc">'+tex.desc+'</div>';
     card.appendChild(info);
 
-    /* Click -> set type + render full canvas */
+    /* Click -> set type; in full canvas mode also render immediately */
     card.addEventListener('click',function(){
       if(window._setTexType)window._setTexType(tex.id);
       if(tpSelCard)tpSelCard.classList.remove('sel');
       card.classList.add('sel');tpSelCard=card;
       tpActiveType=tex.id;
-      applyTextureToCanvas(tex.id);
+      if(tpPaintMode){
+        /* Paint mode: just select, user paints by dragging on canvas */
+        var si=document.getElementById('si');
+        if(si) si.textContent='Texture selected: '+tex.name+' \u2014 click & drag on canvas to paint';
+      } else {
+        /* Full canvas mode: apply immediately */
+        applyTextureToCanvas(tex.id);
+      }
     });
 
     grid.appendChild(card);
@@ -487,6 +495,19 @@ function buildTexPicker(){
       tpRotation=parseInt(tpRotIn.value);
       if(tpRotV)tpRotV.textContent=tpRotation+'\u00b0';
       if(tpActiveType)liveReapply();
+    });
+  }
+
+  /* Mode toggle: Full Canvas vs Paint Brush */
+  var tpModeBtn=document.getElementById('tp-mode-btn');
+  if(tpModeBtn){
+    tpModeBtn.addEventListener('click',function(){
+      tpPaintMode=!tpPaintMode;
+      tpModeBtn.textContent=tpPaintMode?'\u270E Paint Brush':'\u25A3 Full Canvas';
+      tpModeBtn.style.borderColor=tpPaintMode?'rgba(160,200,255,0.4)':'rgba(232,245,10,0.4)';
+      tpModeBtn.style.background=tpPaintMode?'rgba(160,200,255,0.1)':'rgba(232,245,10,0.1)';
+      var si=document.getElementById('si');
+      if(si) si.textContent='Texture mode: '+(tpPaintMode?'Paint Brush \u2014 click & drag on canvas':'Full Canvas \u2014 click thumbnail to apply');
     });
   }
 
