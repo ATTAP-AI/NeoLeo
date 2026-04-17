@@ -70,6 +70,7 @@
     'js/experimental/three-d.js',
     'js/experimental/topology-engine.js',
     'js/experimental/leo-toolset.js',
+    'js/experimental/motion.js',
 
     // ── Export (depends on core + FX) ──
     'js/export/export.js',

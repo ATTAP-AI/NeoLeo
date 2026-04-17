@@ -1110,6 +1110,74 @@
       </div>
     </div>
 
+    <!-- ≋ MOTION — Kinetic Energy & Movement -->
+    <div id="motn-sec" style="border-top:1px solid #2a0a0a;margin-top:8px;padding-top:8px;">
+      <div style="display:flex;align-items:stretch;gap:0;">
+        <button id="motn-toggle" onclick="(function(){var b=document.getElementById('motn-body');var t=document.getElementById('motn-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(224,96,64,0.07)':'none';t.style.borderColor=open?'#e06040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#e06040;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+          <span>&#8779; Motion</span>
+          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        </button>
+        <button id="motn-cycle-btn" class="cycle-btn" onclick="window._MOTN&&window._MOTN.cycle()">Cycle</button>
+      </div>
+      <div id="motn-cycle-label" style="font-size:8px;color:#e06040;padding:2px 10px 3px;background:rgba(224,96,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="motn-cycle-name">--</span></div>
+      <div id="motn-body" style="display:none;padding-top:8px;">
+        <div style="font-size:8px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a0a0a;padding-bottom:6px;">Kinetic energy frozen in a still image. Flow fields, speed lines, spiral vortices, stroboscopic trails, and shockwaves &mdash; all from pure mathematics.</div>
+
+        <!-- System list — all 5 displayed, click to select -->
+        <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div id="motn-sys-list" style="margin-bottom:8px;"></div>
+
+        <!-- Description line -->
+        <div id="motn-desc" style="display:none;"></div>
+
+        <!-- Parameter sliders -->
+        <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div class="pm"><div class="pr"><span class="pn" id="motn-l1">Param 1</span><span class="pv" id="motn-v1">--</span></div><input type="range" id="motn-p1" min="0" max="100" value="55"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="motn-l2">Param 2</span><span class="pv" id="motn-v2">--</span></div><input type="range" id="motn-p2" min="0" max="100" value="40"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="motn-l3">Param 3</span><span class="pv" id="motn-v3">--</span></div><input type="range" id="motn-p3" min="0" max="100" value="60"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="motn-l4">Param 4</span><span class="pv" id="motn-v4">--</span></div><input type="range" id="motn-p4" min="0" max="100" value="30"></div>
+        <div class="pm"><div class="pr"><span class="pn" id="motn-l5">Param 5</span><span class="pv" id="motn-v5">--</span></div><input type="range" id="motn-p5" min="0" max="100" value="25"></div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:4px;margin-top:8px;">
+          <button id="motn-render-btn" class="fx-bb" style="flex:2;border-color:#e06040;color:#e06040;" onclick="window._MOTN&&window._MOTN.render()">&#8779; Generate</button>
+          <button class="fx-bb" style="flex:1;border-color:#4a2020;color:#c08060;" onclick="window._MOTN&&window._MOTN.randomise()">&#8635; Rand</button>
+        </div>
+        <div id="motn-status" style="font-size:8px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+
+        <!-- ANIMATE & RECORD -->
+        <div style="border-top:1px solid #2a0a0a;margin-top:10px;padding-top:8px;">
+          <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:6px;">&#9654; ANIMATE &amp; RECORD</div>
+          <div style="font-size:8px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.5;">Animates the current motion system and records it as a downloadable video.</div>
+
+          <!-- Duration selector -->
+          <div class="pm" style="margin-bottom:6px;">
+            <div class="pr">
+              <span class="pn">Duration</span>
+              <span class="pv" id="motn-dur-val">5s</span>
+            </div>
+            <input type="range" id="motn-dur" min="1" max="10" value="5"
+              oninput="document.getElementById('motn-dur-val').textContent=this.value+'s'">
+          </div>
+
+          <!-- Record button -->
+          <button id="motn-rec-btn" class="fx-bb" style="width:100%;border-color:#60c080;color:#60c080;font-size:9px;letter-spacing:.1em;"
+            onclick="window._MOTN&&window._MOTN.toggleRecord()">&#9654; Record</button>
+
+          <!-- Progress bar -->
+          <div id="motn-rec-bar" style="display:none;margin-top:6px;height:4px;background:#1a0a0a;border-radius:2px;overflow:hidden;">
+            <div id="motn-rec-fill" style="height:100%;width:0%;background:#e06040;transition:width .1s linear;border-radius:2px;"></div>
+          </div>
+
+          <!-- Status + download -->
+          <div id="motn-rec-status" style="font-size:8px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+          <div id="motn-rec-link" style="display:none;margin-top:5px;">
+            <a id="motn-dl-link" href="#" style="font-size:8px;color:#60c080;letter-spacing:.08em;text-decoration:none;border:1px solid #60c080;padding:3px 8px;display:inline-block;border-radius:2px;">&#8595; Download Video</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ◆ LEO TOOLSET — Renaissance ink-and-vellum primitives -->
     <div id="leo-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
@@ -1282,6 +1350,6 @@
   </div>
 </div>
 
-<script src="js/main.js?v=6"></script>
+<script src="js/main.js?v=7"></script>
 </body>
 </html>
