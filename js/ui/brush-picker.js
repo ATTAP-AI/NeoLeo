@@ -607,19 +607,21 @@ function closeBrushPicker(){
 (function(){
   var head=document.getElementById('bp-box-head');
   if(!head)return;
-  head.addEventListener('mousedown',function(e){
+  head.style.touchAction='none';
+  head.addEventListener('pointerdown',function(e){
     if(e.target.id==='bp-close'||e.target.closest('#bp-close'))return;
     e.preventDefault();head.style.cursor='grabbing';
     var r=bpBox.getBoundingClientRect();
     var drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top};
+    try{head.setPointerCapture(e.pointerId);}catch(_){}
     function mv(ev){
       var nl=Math.max(0,Math.min(window.innerWidth-60,drag.ol+(ev.clientX-drag.sx)));
       var nt=Math.max(0,Math.min(window.innerHeight-40,drag.ot+(ev.clientY-drag.sy)));
       bpBox.style.left=nl+'px';bpBox.style.top=nt+'px';
       _bpPos={left:nl,top:nt};
     }
-    function up(){head.style.cursor='grab';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    function up(){head.style.cursor='grab';document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);}
+    document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);
   });
 })();
 

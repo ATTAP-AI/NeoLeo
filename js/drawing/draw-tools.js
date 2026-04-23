@@ -17,6 +17,17 @@ const PS_TOOLS=['eraser','eyedropper','clone','heal','dodge','burn','blur','shar
    and tilt are available on PointerEvent as e.pressure (0..1), e.tiltX/Y.
    e.pointerType is 'mouse' | 'touch' | 'pen'. Legacy e.touches fallbacks
    are kept so helpers still work if called from a synthetic MouseEvent. */
+
+/* Map PointerEvent to a stroke-width multiplier (0.35..1.0) for pens,
+   or a flat 1.0 for mouse/touch. This way mouse users keep full brush size
+   (mice report pressure=0.5 when button-down, which would otherwise halve
+   the brush). Apple Pencil e.pressure is real and scaled to feel good
+   without letting light taps produce invisible hairlines. */
+function pressureMul(e){
+  if(!e||e.pointerType!=='pen')return 1;
+  var p=typeof e.pressure==='number'?e.pressure:0.5;
+  return 0.35+0.65*Math.max(0,Math.min(1,p));
+}
 function getCanvasPos(e){
   const r=dv.getBoundingClientRect();
   if(!r.width||!r.height)return null;
@@ -48,7 +59,7 @@ document.addEventListener('pointerdown',e=>{
   const pos=getCanvasPos(e);if(!pos)return;
   const[x,y]=pos;
   saveU();setDs();
-  isDown=true;lastX=x;lastY=y;pts=[[x,y]];
+  isDown=true;lastX=x;lastY=y;pts=[[x,y,pressureMul(e)]];
   _lastStroke=null; /* new stroke begins, clear live-edit target */
   saveSnap(); /* always save snap so we can redraw full path each frame */
   /* Capture layer pre-stroke state NOW (before any drawing touches the layer) */
@@ -83,13 +94,23 @@ document.addEventListener('pointermove',e=>{
   if(!isDown)return;
   if(PS_TOOLS.includes(curTool))return; /* Handled by PS tools handler */
   if(curTool==='brush'||curTool==='pencil'){
-    pts.push([x,y]);
+    /* Coalesced events: iPadOS delivers Apple Pencil at 120Hz as multiple
+       sub-frame points per pointermove. Capturing them all gives far
+       smoother curves without costing extra frames. Falls back to the
+       single event on browsers that lack the API. */
+    var evs=(typeof e.getCoalescedEvents==='function')?e.getCoalescedEvents():null;
+    if(!evs||!evs.length)evs=[e];
+    for(var ei=0;ei<evs.length;ei++){
+      var ce=evs[ei];
+      var cpos=getCanvasPos(ce);if(!cpos)continue;
+      pts.push([cpos[0],cpos[1],pressureMul(ce)]);
+      lastX=cpos[0];lastY=cpos[1];
+    }
     restSnap();
     var _actx=window._getActiveLayerCtx?window._getActiveLayerCtx():dctx;
     applyBrushStroke(_actx,pts,window.brushType||'round_hard',window.drawCol||'#ff4040',window.brushSz||10,window.brushHd||0.7,window.brushOp||0.9);
     if(window._layersCompositeFn)window._layersCompositeFn();
     if(window._layersUpdateThumbs)window._layersUpdateThumbs();
-    lastX=x;lastY=y;
   } else if(curTool==='shape'){
     pts.push([x,y]);
     restSnap();setDs();

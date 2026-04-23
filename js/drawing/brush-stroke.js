@@ -46,20 +46,41 @@ function applyBrushStroke(ctx2,pts,type,col,sz,hd,op){
   if(type==='round_soft'||type==='round_hard'||(!type)){
     /* True soft/hard round brush: stamp radial gradient circles along path */
     /* For hard brushes (hd=1): sharp edge. For soft (hd=0): full feather. */
+    /* Points may carry a pressure multiplier in pts[i][2] (0.35..1.0).
+       Absent = 1.0 (full size), matching pre-pressure behavior. */
     if(hd>=0.98){
-      /* Hard edge -- single continuous stroke is most efficient */
+      /* Hard edge. When any point varies in pressure, draw segment-by-segment
+         so lineWidth can taper with Apple Pencil. Otherwise use the faster
+         single continuous stroke. */
       ctx2.globalAlpha=op;
-      ctx2.lineWidth=sz;ctx2.lineCap='round';ctx2.lineJoin='round';
+      ctx2.lineCap='round';ctx2.lineJoin='round';
       ctx2.strokeStyle=col;
       ctx2.shadowBlur=0;
-      buildBezierPath(ctx2,pts);ctx2.stroke();
+      var varPress=false;
+      for(var vpi=0;vpi<pts.length;vpi++){if(pts[vpi][2]!=null&&pts[vpi][2]<0.999){varPress=true;break;}}
+      if(!varPress){
+        ctx2.lineWidth=sz;
+        buildBezierPath(ctx2,pts);ctx2.stroke();
+      } else {
+        for(var hi=1;hi<pts.length;hi++){
+          var hp0=pts[hi-1],hp1=pts[hi];
+          var hpAvg=((hp0[2]==null?1:hp0[2])+(hp1[2]==null?1:hp1[2]))*0.5;
+          ctx2.lineWidth=Math.max(0.5,sz*hpAvg);
+          ctx2.beginPath();
+          ctx2.moveTo(hp0[0],hp0[1]);
+          ctx2.lineTo(hp1[0],hp1[1]);
+          ctx2.stroke();
+        }
+      }
     } else {
-      /* Soft edge -- stamp radial gradients along path */
+      /* Soft edge -- stamp radial gradients along path. Stamp radius scales
+         by interpolated pressure so Pencil strokes taper naturally. */
       var spacing=Math.max(1,sz*0.25);
       var pathPts=bezierToPoints(pts,spacing);
       for(var si=0;si<pathPts.length;si++){
         var px=pathPts[si][0],py=pathPts[si][1];
-        var rad=sz/2;
+        var pm=pathPts[si][2]==null?1:pathPts[si][2];
+        var rad=Math.max(0.5,(sz/2)*pm);
         var innerStop=hd*0.85; /* inner solid core */
         var grd=ctx2.createRadialGradient(px,py,innerStop*rad,px,py,rad);
         grd.addColorStop(0,'rgba('+r+','+g+','+b+','+op.toFixed(3)+')');
@@ -405,7 +426,8 @@ function applyBrushStroke(ctx2,pts,type,col,sz,hd,op){
   ctx2.restore();
 }
 
-/* Convert bezier path pts[] to evenly-spaced points for stamp rendering */
+/* Convert bezier path pts[] to evenly-spaced points for stamp rendering.
+   Preserves/interpolates pts[i][2] (pressure multiplier) if present. */
 function bezierToPoints(pts,spacing){
   if(pts.length<2)return pts;
   var result=[pts[0]];
@@ -413,11 +435,16 @@ function bezierToPoints(pts,spacing){
   for(var i=1;i<pts.length;i++){
     var dx=pts[i][0]-pts[i-1][0],dy=pts[i][1]-pts[i-1][1];
     var dist=Math.sqrt(dx*dx+dy*dy);
+    var p0=pts[i-1][2],p1=pts[i][2];
     acc+=dist;
     while(acc>=spacing){
       acc-=spacing;
       var t=1-(acc/dist);
-      result.push([pts[i-1][0]+dx*t,pts[i-1][1]+dy*t]);
+      var stamp=[pts[i-1][0]+dx*t,pts[i-1][1]+dy*t];
+      if(p0!=null||p1!=null){
+        stamp.push((p0==null?1:p0)*(1-t)+(p1==null?1:p1)*t);
+      }
+      result.push(stamp);
     }
   }
   return result;

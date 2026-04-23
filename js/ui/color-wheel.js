@@ -106,9 +106,16 @@ function handleWheelPointer(e){
   placeCursor(cwH,cwS);
   updateCwPreview();
 }
-cwCanvas.addEventListener('mousedown',e=>{cwDragging=true;handleWheelPointer(e);});
-document.addEventListener('mousemove',e=>{if(cwDragging)handleWheelPointer(e);});
-document.addEventListener('mouseup',()=>{cwDragging=false;});
+/* Pointer events so the wheel works with mouse, touch, and Apple Pencil. */
+cwCanvas.style.touchAction='none';
+cwCanvas.addEventListener('pointerdown',e=>{
+  cwDragging=true;
+  try{cwCanvas.setPointerCapture(e.pointerId);}catch(_){}
+  handleWheelPointer(e);
+});
+document.addEventListener('pointermove',e=>{if(cwDragging)handleWheelPointer(e);});
+document.addEventListener('pointerup',()=>{cwDragging=false;});
+document.addEventListener('pointercancel',()=>{cwDragging=false;});
 
 cwLight.addEventListener('input',function(){
   cwL=this.value/100;

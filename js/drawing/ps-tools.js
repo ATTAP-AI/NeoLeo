@@ -280,7 +280,11 @@ document.addEventListener('click',function(e){
 },{capture:false});
 
 /* ── Alt+click for clone source ── */
-document.addEventListener('mousedown',function(e){
+/* Pointer events (mouse / touch / pen unified). Note: altKey is only
+   available with a hardware keyboard on iPad, so alt-click clone-source
+   set is desktop-only. Touch users can still paint with the clone tool
+   after a desktop sets the source. */
+document.addEventListener('pointerdown',function(e){
   if(curTool==='clone'&&e.altKey&&onCanvas(e)){
     e.preventDefault();e.stopPropagation();
     var pos=getCanvasPos(e);if(!pos)return;
@@ -328,8 +332,8 @@ document.addEventListener('mousedown',function(e){
   }
 },{capture:true,passive:false});
 
-/* ── mousemove for new tools ── */
-document.addEventListener('mousemove',function(e){
+/* ── pointermove for new tools (mouse/touch/pen) ── */
+document.addEventListener('pointermove',function(e){
   if(!isDown)return;
   var pos=getCanvasPos(e);if(!pos)return;
   var x=pos[0],y=pos[1];
@@ -390,8 +394,8 @@ document.addEventListener('mousemove',function(e){
   }
 },{capture:false,passive:true});
 
-/* ── mouseup for new tools ── */
-document.addEventListener('mouseup',function(e){
+/* ── pointerup for new tools (mouse/touch/pen) ── */
+document.addEventListener('pointerup',function(e){
   if(!isDown)return;
   var pos=getCanvasPos(e);
   var x=pos?pos[0]:lastX, y=pos?pos[1]:lastY;
@@ -633,11 +637,12 @@ document.addEventListener('mouseup',function(e){
   /* ── Drag the info popup ── */
   var _ptiDrag=null,_ptiPos=null,_ptiClosed={};
   var ptiHead=document.getElementById('pti-head');
-  ptiHead.addEventListener('mousedown',function(e){
+  ptiHead.addEventListener('pointerdown',function(e){
     if(e.target.id==='pti-close')return;
     e.preventDefault();ptiHead.style.cursor='grabbing';
     var r2=tipPanel.getBoundingClientRect();
-    _ptiDrag={sx:e.clientX,sy:e.clientY,ol:r2.left,ot:r2.top};
+    _ptiDrag={sx:e.clientX,sy:e.clientY,ol:r2.left,ot:r2.top,pid:e.pointerId};
+    try{ptiHead.setPointerCapture(e.pointerId);}catch(_){}
     function mv(ev){
       if(!_ptiDrag)return;
       var nl=Math.max(0,_ptiDrag.ol+(ev.clientX-_ptiDrag.sx));
@@ -645,8 +650,8 @@ document.addEventListener('mouseup',function(e){
       tipPanel.style.left=nl+'px';tipPanel.style.top=nt+'px';
       _ptiPos={left:nl,top:nt};
     }
-    function up(){_ptiDrag=null;ptiHead.style.cursor='grab';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    function up(){_ptiDrag=null;ptiHead.style.cursor='grab';document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',up);}
+    document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);
   });
 
   /* ── Close button ── */
