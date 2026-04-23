@@ -12,7 +12,11 @@
 const POLY=['triangle','polygon'],CLICK=['fill','creplace'];
 const PS_TOOLS=['eraser','eyedropper','clone','heal','dodge','burn','blur','sharpen','smudge','sponge','gradient','texturemap','humanize','curves'];
 
-/* ── Drawing events on document so pointer-events on dv never block us ── */
+/* ── Drawing events on document so pointer-events on dv never block us ──
+   Uses Pointer Events (unified mouse / touch / pen). Apple Pencil pressure
+   and tilt are available on PointerEvent as e.pressure (0..1), e.tiltX/Y.
+   e.pointerType is 'mouse' | 'touch' | 'pen'. Legacy e.touches fallbacks
+   are kept so helpers still work if called from a synthetic MouseEvent. */
 function getCanvasPos(e){
   const r=dv.getBoundingClientRect();
   if(!r.width||!r.height)return null;
@@ -28,7 +32,7 @@ function onCanvas(e){
   return src.clientX>=r.left&&src.clientX<=r.right&&src.clientY>=r.top&&src.clientY<=r.bottom;
 }
 
-document.addEventListener('mousedown',e=>{
+document.addEventListener('pointerdown',e=>{
   /* Skip if click is inside a UI overlay (brush picker, modals, panel) */
   if(e.target.closest&&(e.target.closest('#bp-modal')||e.target.closest('#panel')||e.target.closest('.modal')))return;
   if(!curTool||!onCanvas(e))return;
@@ -58,7 +62,7 @@ document.addEventListener('mousedown',e=>{
   setI(curTool+' active');
 },{passive:false});
 
-document.addEventListener('mousemove',e=>{
+document.addEventListener('pointermove',e=>{
   if(!curTool)return;
   if(window._OM&&window._OM.isOn()&&window._OM_cooldown){isDown=false;return;}
   const pos=getCanvasPos(e);if(!pos)return;
@@ -120,7 +124,7 @@ document.addEventListener('mousemove',e=>{
   }
 });
 
-document.addEventListener('mouseup',()=>{
+document.addEventListener('pointerup',()=>{
   if(!isDown)return;
   if(PS_TOOLS.includes(curTool))return; /* Handled by PS tools handler */
   isDown=false;
@@ -193,6 +197,14 @@ document.addEventListener('mouseleave',e=>{
     dctx.stroke();dctx.shadowBlur=0;
   }
   snap=null;pts=[];
+});
+
+/* pointercancel fires when the OS steals the pointer (palm rejection, gesture
+   takeover, incoming call on iPad). Commit whatever we have so the stroke
+   doesn't dangle -- delegate to the pointerup path via a synthetic dispatch. */
+document.addEventListener('pointercancel',()=>{
+  if(!isDown)return;
+  document.dispatchEvent(new PointerEvent('pointerup',{bubbles:true}));
 });
 
 document.addEventListener('click',e=>{
