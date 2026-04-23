@@ -213,8 +213,8 @@ function spawnMark(actx,node,W,H,r0,g0,b0,baseOp,maxLen){
 }
 if(window._intentState){window._intentState.spawnMark=spawnMark;window._intentState.rseed=rseed;}
 
-/* ── Canvas click to place node ── */
-document.addEventListener('mousedown',function(e){
+/* ── Canvas click to place node (pointer events: mouse/touch/pen) ── */
+document.addEventListener('pointerdown',function(e){
   if(!active)return;
   var pos=window._getCanvasPos?window._getCanvasPos(e):null;
   if(!pos)return;
@@ -324,12 +324,14 @@ function _regenIntent(){
   });
   document.getElementById('exp-panel-close').addEventListener('click',closeExpPanel);
 
-  /* Drag header */
-  hdr.addEventListener('mousedown',function(e){
+  /* Drag header (pointer events: mouse/touch/pen) */
+  hdr.style.touchAction='none';
+  hdr.addEventListener('pointerdown',function(e){
     if(e.target.id==='exp-panel-close'||e.target.closest('#exp-panel-close'))return;
     e.preventDefault();
     if(window.bringToFront) window.bringToFront('exp-body');
     hdr.style.cursor='grabbing';
+    try{hdr.setPointerCapture(e.pointerId);}catch(_){}
     var r=body.getBoundingClientRect();
     var drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top};
     function mv(ev){
@@ -338,8 +340,15 @@ function _regenIntent(){
       body.style.left=nl+'px';body.style.top=nt+'px';
       _expPos={left:nl,top:nt};
     }
-    function up(){hdr.style.cursor='grab';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    function up(){
+      hdr.style.cursor='grab';
+      hdr.removeEventListener('pointermove',mv);
+      hdr.removeEventListener('pointerup',up);
+      hdr.removeEventListener('pointercancel',up);
+    }
+    hdr.addEventListener('pointermove',mv);
+    hdr.addEventListener('pointerup',up);
+    hdr.addEventListener('pointercancel',up);
   });
 
   /* Save/Reset — collect all sliders inside exp-body */

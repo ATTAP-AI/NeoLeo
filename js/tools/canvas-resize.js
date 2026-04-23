@@ -122,10 +122,11 @@ function commitResize(commitW,commitH){
   return{w:aW,h:aH};
 }
 
-/* ── Wire all 8 handles ── */
+/* ── Wire all 8 handles (pointer events for mouse/touch/pen) ── */
 function wireHandles(){
   document.querySelectorAll('.cv-rh').forEach(function(grip){
-    grip.addEventListener('mousedown',function(e){
+    grip.style.touchAction='none';
+    grip.addEventListener('pointerdown',function(e){
       e.preventDefault();e.stopPropagation();
 
       var dv=document.getElementById('dv');if(!dv)return;
@@ -133,8 +134,9 @@ function wireHandles(){
       var startW=dv.width, startH=dv.height;
       var aspect=startW/startH;
       var startX=e.clientX, startY=e.clientY;
+      try{grip.setPointerCapture(e.pointerId);}catch(_){}
 
-      /* Fixed pixel-per-display-pixel ratio captured at mousedown */
+      /* Fixed pixel-per-display-pixel ratio captured at pointerdown */
       var wrap=document.getElementById('cvwrap');
       var wR=wrap?wrap.getBoundingClientRect():{width:startW,height:startH};
       var ppX=startW/(wR.width||startW);
@@ -176,19 +178,21 @@ function wireHandles(){
       }
 
       function up(){
-        document.removeEventListener('mousemove',mv);
-        document.removeEventListener('mouseup',up);
+        grip.removeEventListener('pointermove',mv);
+        grip.removeEventListener('pointerup',up);
+        grip.removeEventListener('pointercancel',up);
         grip.style.background='#97c3b0';
         if(hint)hint.style.display='none';
         /* Always commit the proportional size if shift was used,
-           regardless of whether shift was still held at mouseup */
+           regardless of whether shift was still held at pointerup */
         var cW=shiftUsed?shiftW:finalW;
         var cH=shiftUsed?shiftH:finalH;
         commitResize(cW,cH);
       }
 
-      document.addEventListener('mousemove',mv);
-      document.addEventListener('mouseup',up);
+      grip.addEventListener('pointermove',mv);
+      grip.addEventListener('pointerup',up);
+      grip.addEventListener('pointercancel',up);
     });
   });
 }

@@ -409,11 +409,13 @@ function buildTexPicker(){
     closeTexPicker();
   });
 
-  /* Drag header */
+  /* Drag header (pointer events: mouse/touch/pen) */
   var head=document.getElementById('tp-head');
-  head.addEventListener('mousedown',function(e){
+  head.style.touchAction='none';
+  head.addEventListener('pointerdown',function(e){
     if(e.target.id==='tp-close'||e.target.closest('#tp-close'))return;
     e.preventDefault();head.style.cursor='grabbing';
+    try{head.setPointerCapture(e.pointerId);}catch(_){}
     var r=tpEl.getBoundingClientRect();
     var drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top};
     function mv(ev){
@@ -422,8 +424,15 @@ function buildTexPicker(){
       tpEl.style.left=nl+'px';tpEl.style.top=nt+'px';
       tpPos={left:nl,top:nt};
     }
-    function up(){head.style.cursor='grab';document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);}
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    function up(){
+      head.style.cursor='grab';
+      head.removeEventListener('pointermove',mv);
+      head.removeEventListener('pointerup',up);
+      head.removeEventListener('pointercancel',up);
+    }
+    head.addEventListener('pointermove',mv);
+    head.addEventListener('pointerup',up);
+    head.addEventListener('pointercancel',up);
   });
 
   /* ── Wire panel controls ── */

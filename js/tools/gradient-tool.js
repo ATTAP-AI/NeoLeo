@@ -233,17 +233,19 @@ function rebuildOverlaySVG(){
       dot.setAttribute('fill','rgba(255,255,255,0.9)');
       dot.style.pointerEvents='none';
       svg.appendChild(dot);
-      /* Wire drag for midpoint stop */
+      /* Wire drag for midpoint stop (pointer events: mouse/touch/pen) */
       (function(stopSt,sq2){
-        sq2.addEventListener('mousedown',function(e){
+        sq2.style.touchAction='none';
+        sq2.addEventListener('pointerdown',function(e){
           e.preventDefault();e.stopPropagation();
+          try{sq2.setPointerCapture(e.pointerId);}catch(_){}
           var wrap2=document.getElementById('cvwrap');
           var rect=wrap2.getBoundingClientRect();
           var sc2=getDispScale();
           gSelStop=gStops.indexOf(stopSt);
           if(typeof syncInlineStopControls==='function')syncInlineStopControls();
           function onMove(ev){
-            /* Project mouse onto gradient line */
+            /* Project pointer onto gradient line */
             var mx=(ev.clientX-rect.left)/sc2, my=(ev.clientY-rect.top)/sc2;
             var adx=gX1-gX0, ady=gY1-gY0, len2=adx*adx+ady*ady||1;
             var t=Math.max(0.01,Math.min(0.99,((mx-gX0)*adx+(my-gY0)*ady)/len2));
@@ -251,8 +253,14 @@ function rebuildOverlaySVG(){
             rebuildOverlaySVG();renderPanelPreview();reapplyGradient();
             if(typeof syncInlineStopControls==='function')syncInlineStopControls();
           }
-          function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
-          document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
+          function onUp(){
+            sq2.removeEventListener('pointermove',onMove);
+            sq2.removeEventListener('pointerup',onUp);
+            sq2.removeEventListener('pointercancel',onUp);
+          }
+          sq2.addEventListener('pointermove',onMove);
+          sq2.addEventListener('pointerup',onUp);
+          sq2.addEventListener('pointercancel',onUp);
         });
       })(st,sq);
     }
@@ -408,9 +416,9 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&gActive){removeGradientOverlay();gActive=false;}
 });
 
-/* ── Document-level gradient handle interaction ── */
+/* ── Document-level gradient handle interaction (pointer events: mouse/touch/pen) ── */
 /* Handles drawn in SVG inside pointer-events:none div — we detect proximity here */
-document.addEventListener('mousedown',function(e){
+document.addEventListener('pointerdown',function(e){
   if(!gActive||!gOverlaySVG)return;
   var wrap=document.getElementById('cvwrap');
   if(!wrap)return;
@@ -475,12 +483,14 @@ document.addEventListener('mousedown',function(e){
   }
 
   function onUp(){
-    document.removeEventListener('mousemove',onMove);
-    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('pointermove',onMove);
+    document.removeEventListener('pointerup',onUp);
+    document.removeEventListener('pointercancel',onUp);
     if(window._layersUpdateThumbs)window._layersUpdateThumbs();
   }
-  document.addEventListener('mousemove',onMove);
-  document.addEventListener('mouseup',onUp);
+  document.addEventListener('pointermove',onMove);
+  document.addEventListener('pointerup',onUp);
+  document.addEventListener('pointercancel',onUp);
 },{capture:true});
 
 /* ── Gradient panel preview ── */
@@ -623,16 +633,25 @@ function refreshEditor(){
       m.style.left=(st.pos*100)+'%';
       m.style.backgroundColor=st.color;
       markWrap.appendChild(m);
-      /* Click to select */
-      m.addEventListener('mousedown',function(e){
+      /* Click to select (pointer events: mouse/touch/pen) */
+      m.style.touchAction='none';
+      m.addEventListener('pointerdown',function(e){
         e.stopPropagation();gSelStop=i;updateStopCtrl();refreshEditor();if(typeof syncInlineStopControls==='function')syncInlineStopControls();
+        try{m.setPointerCapture(e.pointerId);}catch(_){}
         /* Drag to move */
         var bc2=document.getElementById('gbar-canvas');
         if(!bc2)return;
         var rect=bc2.getBoundingClientRect();
         function mv(ev){var p=Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width));gStops[i].pos=p;refreshEditor();renderPanelPreview();if(gActive)reapplyGradient();}
-        function up(){document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);updateStopCtrl();}
-        document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+        function up(){
+          m.removeEventListener('pointermove',mv);
+          m.removeEventListener('pointerup',up);
+          m.removeEventListener('pointercancel',up);
+          updateStopCtrl();
+        }
+        m.addEventListener('pointermove',mv);
+        m.addEventListener('pointerup',up);
+        m.addEventListener('pointercancel',up);
       });
     });
   }
@@ -1197,11 +1216,13 @@ function initPickerDrag(){
   head.style.cursor='grab';
   head.style.userSelect='none';
 
-  head.addEventListener('mousedown',function(e){
+  head.style.touchAction='none';
+  head.addEventListener('pointerdown',function(e){
     /* Don't drag if clicking close button */
     if(e.target.id==='gp-close'||e.target.closest('#gp-close'))return;
     e.preventDefault();
     head.style.cursor='grabbing';
+    try{head.setPointerCapture(e.pointerId);}catch(_){}
     var rect=gPickerEl.getBoundingClientRect();
     gDragState={
       startX:e.clientX, startY:e.clientY,
@@ -1221,11 +1242,13 @@ function initPickerDrag(){
     function onUp(){
       gDragState=null;
       head.style.cursor='grab';
-      document.removeEventListener('mousemove',onMove);
-      document.removeEventListener('mouseup',onUp);
+      head.removeEventListener('pointermove',onMove);
+      head.removeEventListener('pointerup',onUp);
+      head.removeEventListener('pointercancel',onUp);
     }
-    document.addEventListener('mousemove',onMove);
-    document.addEventListener('mouseup',onUp);
+    head.addEventListener('pointermove',onMove);
+    head.addEventListener('pointerup',onUp);
+    head.addEventListener('pointercancel',onUp);
   });
 }
 

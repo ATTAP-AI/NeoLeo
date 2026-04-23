@@ -1,0 +1,57 @@
+/* ══════════════════════════════════════════════════════════════════
+   TOUCH / PEN OPTIMIZATIONS
+   Only applies when the primary pointer is coarse (finger on tablet /
+   phone). Desktop mice keep the compact toolchrome. iPad with Apple
+   Pencil reports primary pointer as fine, but pointer:coarse matches
+   any coarse pointer — so we also cover (any-pointer:coarse) to catch
+   touch-first iPads that happen to advertise a fine secondary.
+   Goal: Apple HIG 44×44 pt minimum hit area for tap targets.
+   ══════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse), (any-pointer: coarse) {
+  /* Main toolbar buttons — bump from 28×26 to 44×44 */
+  .tbtn{
+    width:44px;
+    height:44px;
+    font-size:16px;
+  }
+  /* Panel close "×" — bigger hit area without changing the visual glyph */
+  .fx-cls{
+    min-width:44px;
+    min-height:44px;
+    font-size:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+  /* Color swatches in the palette */
+  .swatch{
+    min-width:36px;
+    min-height:36px;
+  }
+  /* Canvas resize grips — bigger hit zone via padding (visual square stays small) */
+  .cv-rh{
+    width:24px !important;
+    height:24px !important;
+  }
+  /* Sliders — thicker thumb for finger use */
+  input[type=range]{
+    height:28px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    width:24px;
+    height:24px;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:24px;
+    height:24px;
+  }
+  /* Generic tappable controls in popups */
+  button, select, .btn{
+    min-height:36px;
+  }
+  /* Smaller sub-icons inside panels — less aggressive bump (32pt) */
+  .fx-hdr button, .fx-hdr .fx-cls{
+    min-width:36px;
+    min-height:36px;
+  }
+}

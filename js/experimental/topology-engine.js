@@ -510,7 +510,7 @@ function onPointerUp(e){
   OBJ.dragging=null;
 }
 
-/* ── Wire event listeners ── */
+/* ── Wire event listeners (unified pointer events: mouse/touch/pen) ── */
 var _eventsWired=false;
 function wireObjEvents(){
   if(_eventsWired)return;
@@ -518,26 +518,25 @@ function wireObjEvents(){
   var target=document.getElementById('cvwrap');
   if(!target) target=document;
   /* Use capture phase to intercept before drawing tools */
-  target.addEventListener('mousedown',function(e){
+  target.addEventListener('pointerdown',function(e){
     if(!OBJ.active||!OBJ.img)return;
     var pos=getCanvasPos(e);
     var hit=hitTest(pos[0],pos[1]);
-    if(hit){onPointerDown(e);}
+    if(hit){
+      try{target.setPointerCapture&&target.setPointerCapture(e.pointerId);}catch(_){}
+      onPointerDown(e);
+    }
   },true);
-  target.addEventListener('mousemove',function(e){onPointerMove(e);},true);
-  target.addEventListener('mouseup',function(e){onPointerUp(e);},true);
-  /* Touch */
-  target.addEventListener('touchstart',function(e){
-    if(!OBJ.active||!OBJ.img)return;
-    var pos=getCanvasPos(e);
-    var hit=hitTest(pos[0],pos[1]);
-    if(hit){onPointerDown(e);}
+  target.addEventListener('pointermove',function(e){
+    if(OBJ.dragging){e.preventDefault();}
+    onPointerMove(e);
   },{capture:true,passive:false});
-  target.addEventListener('touchmove',function(e){if(OBJ.dragging){e.preventDefault();onPointerMove(e);}},{capture:true,passive:false});
-  target.addEventListener('touchend',function(e){onPointerUp(e);},true);
+  target.addEventListener('pointerup',function(e){onPointerUp(e);},true);
+  target.addEventListener('pointercancel',function(e){onPointerUp(e);},true);
 
-  /* Update cursor on hover */
-  target.addEventListener('mousemove',function(e){
+  /* Update cursor on hover (mouse only — touch/pen have no hover state) */
+  target.addEventListener('pointermove',function(e){
+    if(e.pointerType!=='mouse')return;
     if(!OBJ.active||!OBJ.img||OBJ.dragging)return;
     var pos=getCanvasPos(e);
     var hit=hitTest(pos[0],pos[1]);

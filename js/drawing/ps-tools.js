@@ -285,6 +285,8 @@ document.addEventListener('click',function(e){
    set is desktop-only. Touch users can still paint with the clone tool
    after a desktop sets the source. */
 document.addEventListener('pointerdown',function(e){
+  /* Palm rejection: ignore finger touches when Apple Pencil is active */
+  if(window._shouldRejectTouch&&window._shouldRejectTouch(e))return;
   if(curTool==='clone'&&e.altKey&&onCanvas(e)){
     e.preventDefault();e.stopPropagation();
     var pos=getCanvasPos(e);if(!pos)return;
@@ -335,6 +337,8 @@ document.addEventListener('pointerdown',function(e){
 /* ── pointermove for new tools (mouse/touch/pen) ── */
 document.addEventListener('pointermove',function(e){
   if(!isDown)return;
+  /* Palm rejection: suppress finger moves when Pencil is active */
+  if(window._shouldRejectTouch&&window._shouldRejectTouch(e))return;
   var pos=getCanvasPos(e);if(!pos)return;
   var x=pos[0],y=pos[1];
   smudgeDX=x-lastX;smudgeDY=y-lastY;

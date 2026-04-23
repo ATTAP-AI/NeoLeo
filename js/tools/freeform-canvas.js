@@ -75,7 +75,7 @@ function createOverlay(){
   if(overlay) return;
   overlay = document.createElement('canvas');
   overlay.id = 'freeform-overlay';
-  overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;cursor:crosshair;';
+  overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:50;cursor:crosshair;touch-action:none;';
   octx = overlay.getContext('2d');
   document.getElementById('cvwrap').appendChild(overlay);
 }
@@ -305,6 +305,7 @@ function onHandMouseDown(e){
   if(e.button !== 0) return;
   e.preventDefault();
   e.stopPropagation();
+  try{overlay.setPointerCapture(e.pointerId);}catch(_){}
   isDrawing = true;
   points = [getPos(e)];
   render();
@@ -442,28 +443,30 @@ function cancelDrawing(){
   setI('Free Form cancelled');
 }
 
-/* ── Wire / unwire events per mode ── */
+/* ── Wire / unwire events per mode (pointer events: mouse/touch/pen) ── */
 function wireEvents(){
   if(mode === 'polygon'){
-    overlay.addEventListener('mousedown', onPolyMouseDown);
-    overlay.addEventListener('mousemove', onPolyMouseMove);
+    overlay.addEventListener('pointerdown', onPolyMouseDown);
+    overlay.addEventListener('pointermove', onPolyMouseMove);
     overlay.addEventListener('dblclick', onPolyDblClick);
   } else {
-    overlay.addEventListener('mousedown', onHandMouseDown);
-    overlay.addEventListener('mousemove', onHandMouseMove);
-    overlay.addEventListener('mouseup', onHandMouseUp);
+    overlay.addEventListener('pointerdown', onHandMouseDown);
+    overlay.addEventListener('pointermove', onHandMouseMove);
+    overlay.addEventListener('pointerup', onHandMouseUp);
+    overlay.addEventListener('pointercancel', onHandMouseUp);
   }
   document.addEventListener('keydown', onKeyDown, true);
 }
 
 function unwireEvents(){
   if(overlay){
-    overlay.removeEventListener('mousedown', onPolyMouseDown);
-    overlay.removeEventListener('mousemove', onPolyMouseMove);
+    overlay.removeEventListener('pointerdown', onPolyMouseDown);
+    overlay.removeEventListener('pointermove', onPolyMouseMove);
     overlay.removeEventListener('dblclick', onPolyDblClick);
-    overlay.removeEventListener('mousedown', onHandMouseDown);
-    overlay.removeEventListener('mousemove', onHandMouseMove);
-    overlay.removeEventListener('mouseup', onHandMouseUp);
+    overlay.removeEventListener('pointerdown', onHandMouseDown);
+    overlay.removeEventListener('pointermove', onHandMouseMove);
+    overlay.removeEventListener('pointerup', onHandMouseUp);
+    overlay.removeEventListener('pointercancel', onHandMouseUp);
   }
   document.removeEventListener('keydown', onKeyDown, true);
 }

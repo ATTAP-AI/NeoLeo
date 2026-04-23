@@ -19,8 +19,8 @@ function registerPanel(id){
   var pid = p.id || id;
   if(_managedPanels[pid]) return;      // already registered
   _managedPanels[pid] = true;
-  /* Bring to front on any mousedown inside the panel */
-  p.addEventListener('mousedown', function(){ bringToFront(pid); }, true);
+  /* Bring to front on any pointerdown inside the panel (works for mouse/touch/pen) */
+  p.addEventListener('pointerdown', function(){ bringToFront(pid); }, true);
 }
 
 /** Bring a panel to the top of the stack. Auto-registers if needed. */
@@ -88,14 +88,17 @@ window.closePanel=closePanel;
     if(!panel)return;
     var hdr=panel.querySelector('.fx-hdr');
     if(!hdr)return;
+    /* Prevent browser gesture hijack on touch/pen */
+    hdr.style.touchAction='none';
     var drag=null;
-    hdr.addEventListener('mousedown',function(e){
+    hdr.addEventListener('pointerdown',function(e){
       if(e.target.classList.contains('fx-cls'))return;
       e.preventDefault();
       bringToFront(panelId);
       hdr.style.cursor='grabbing';
+      try{hdr.setPointerCapture(e.pointerId);}catch(_){}
       var r=panel.getBoundingClientRect();
-      drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top};
+      drag={sx:e.clientX,sy:e.clientY,ol:r.left,ot:r.top,pid:e.pointerId};
       function onMove(ev){
         if(!drag)return;
         var nl=Math.max(0,Math.min(window.innerWidth-60,drag.ol+(ev.clientX-drag.sx)));
@@ -106,11 +109,13 @@ window.closePanel=closePanel;
       }
       function onUp(){
         drag=null;hdr.style.cursor='grab';
-        document.removeEventListener('mousemove',onMove);
-        document.removeEventListener('mouseup',onUp);
+        hdr.removeEventListener('pointermove',onMove);
+        hdr.removeEventListener('pointerup',onUp);
+        hdr.removeEventListener('pointercancel',onUp);
       }
-      document.addEventListener('mousemove',onMove);
-      document.addEventListener('mouseup',onUp);
+      hdr.addEventListener('pointermove',onMove);
+      hdr.addEventListener('pointerup',onUp);
+      hdr.addEventListener('pointercancel',onUp);
     });
   }
   setTimeout(function(){

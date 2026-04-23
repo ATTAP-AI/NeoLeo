@@ -94,8 +94,9 @@
     dragImgSrc = null;
   });
 
-  // ── MOVE & RESIZE HANDLES ────────────────────────────────
-  placement.addEventListener('mousedown', function(e){
+  // ── MOVE & RESIZE HANDLES (pointer events: mouse/touch/pen) ──
+  placement.style.touchAction='none';
+  placement.addEventListener('pointerdown', function(e){
     if(!pState.active) return;
     var handle = e.target.dataset.handle;
     var r = cvwrap.getBoundingClientRect();
@@ -104,15 +105,17 @@
 
     if(handle){
       // resize
-      dragOp={type:'resize',handle:handle,sx:mx,sy:my,ox:pState.x,oy:pState.y,ow:pState.w,oh:pState.h};
+      dragOp={type:'resize',handle:handle,sx:mx,sy:my,ox:pState.x,oy:pState.y,ow:pState.w,oh:pState.h,pid:e.pointerId};
+      try{e.target.setPointerCapture(e.pointerId);}catch(_){}
     } else if(e.target===placement||e.target===pImg){
       // move
-      dragOp={type:'move',sx:mx,sy:my,ox:pState.x,oy:pState.y};
+      dragOp={type:'move',sx:mx,sy:my,ox:pState.x,oy:pState.y,pid:e.pointerId};
+      try{placement.setPointerCapture(e.pointerId);}catch(_){}
     }
     e.preventDefault();
   });
 
-  document.addEventListener('mousemove', function(e){
+  document.addEventListener('pointermove', function(e){
     if(!dragOp||!pState.active) return;
     var r = cvwrap.getBoundingClientRect();
     var mx = e.clientX - r.left;
@@ -138,7 +141,8 @@
     applyPlacement();
   });
 
-  document.addEventListener('mouseup', function(){ dragOp=null; });
+  document.addEventListener('pointerup', function(){ dragOp=null; });
+  document.addEventListener('pointercancel', function(){ dragOp=null; });
 
   // ── COMMIT: bake placed image to cv ──────────────────────
   pbCommit.addEventListener('click', function(){

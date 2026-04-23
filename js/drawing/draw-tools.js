@@ -28,6 +28,31 @@ function pressureMul(e){
   var p=typeof e.pressure==='number'?e.pressure:0.5;
   return 0.35+0.65*Math.max(0,Math.min(1,p));
 }
+
+/* ── Palm rejection ──
+   When Apple Pencil is actively drawing (or lifted within the last 500ms),
+   ignore simultaneous finger/palm touches on the canvas. Exposes a shared
+   global so ps-tools and other canvas listeners can enforce the same rule.
+   Touch is never rejected on touch-only devices (no pen ever seen). */
+window._penActive = false;
+window._penLastSeen = 0;
+function shouldRejectTouch(e){
+  if(!e||e.pointerType!=='touch')return false;
+  if(window._penActive)return true;
+  /* 500ms grace window after pen lift for resting palm */
+  if((performance.now()-window._penLastSeen)<500)return true;
+  return false;
+}
+window._shouldRejectTouch = shouldRejectTouch;
+document.addEventListener('pointerdown',function(e){
+  if(e.pointerType==='pen'){window._penActive=true;window._penLastSeen=performance.now();}
+},true);
+document.addEventListener('pointerup',function(e){
+  if(e.pointerType==='pen'){window._penActive=false;window._penLastSeen=performance.now();}
+},true);
+document.addEventListener('pointercancel',function(e){
+  if(e.pointerType==='pen'){window._penActive=false;window._penLastSeen=performance.now();}
+},true);
 function getCanvasPos(e){
   const r=dv.getBoundingClientRect();
   if(!r.width||!r.height)return null;
@@ -47,6 +72,8 @@ document.addEventListener('pointerdown',e=>{
   /* Skip if click is inside a UI overlay (brush picker, modals, panel) */
   if(e.target.closest&&(e.target.closest('#bp-modal')||e.target.closest('#panel')||e.target.closest('.modal')))return;
   if(!curTool||!onCanvas(e))return;
+  /* Palm rejection: ignore finger touches while Apple Pencil is in use */
+  if(shouldRejectTouch(e))return;
   if(window._OM&&window._OM.isOn()){
     if(window._OM_cooldown)return;
     /* If clicking on an existing object, let OM handle it -- don't start a new mark */
@@ -75,6 +102,8 @@ document.addEventListener('pointerdown',e=>{
 
 document.addEventListener('pointermove',e=>{
   if(!curTool)return;
+  /* Palm rejection: don't let finger moves interfere while pen is active */
+  if(shouldRejectTouch(e))return;
   if(window._OM&&window._OM.isOn()&&window._OM_cooldown){isDown=false;return;}
   const pos=getCanvasPos(e);if(!pos)return;
   const[x,y]=pos;
