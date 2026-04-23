@@ -35,23 +35,27 @@ function pressureMul(e){
    global so ps-tools and other canvas listeners can enforce the same rule.
    Touch is never rejected on touch-only devices (no pen ever seen). */
 window._penActive = false;
+window._penEverSeen = false;     // has a pen event ever fired in this session?
 window._penLastSeen = 0;
 function shouldRejectTouch(e){
   if(!e||e.pointerType!=='touch')return false;
   if(window._penActive)return true;
-  /* 500ms grace window after pen lift for resting palm */
-  if((performance.now()-window._penLastSeen)<500)return true;
+  /* 500ms grace window after pen lift for resting palm. Gated on
+     _penEverSeen so pure-touch devices (iPhone, finger-only iPad,
+     touchscreen laptop without pen) NEVER reject touch. Otherwise
+     page-load time (<500ms) would spuriously reject the first tap. */
+  if(window._penEverSeen && (performance.now()-window._penLastSeen)<500)return true;
   return false;
 }
 window._shouldRejectTouch = shouldRejectTouch;
 document.addEventListener('pointerdown',function(e){
-  if(e.pointerType==='pen'){window._penActive=true;window._penLastSeen=performance.now();}
+  if(e.pointerType==='pen'){window._penActive=true;window._penEverSeen=true;window._penLastSeen=performance.now();}
 },true);
 document.addEventListener('pointerup',function(e){
-  if(e.pointerType==='pen'){window._penActive=false;window._penLastSeen=performance.now();}
+  if(e.pointerType==='pen'){window._penActive=false;window._penEverSeen=true;window._penLastSeen=performance.now();}
 },true);
 document.addEventListener('pointercancel',function(e){
-  if(e.pointerType==='pen'){window._penActive=false;window._penLastSeen=performance.now();}
+  if(e.pointerType==='pen'){window._penActive=false;window._penEverSeen=true;window._penLastSeen=performance.now();}
 },true);
 function getCanvasPos(e){
   const r=dv.getBoundingClientRect();
