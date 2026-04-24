@@ -192,11 +192,16 @@ document.addEventListener('pointerup',()=>{
       var _actx2=window._getActiveLayerCtx?window._getActiveLayerCtx():dctx;
       applyBrushStroke(_actx2,pts,window.brushType||'round_hard',window.drawCol||'#ff4040',window.brushSz||10,window.brushHd||0.7,window.brushOp||0.9);
       if(window._OM&&window._OM.isOn()){(function(){var _bsz=(window.brushSz||10)+4,_xs=pts.map(function(p){return p[0];}),_ys=pts.map(function(p){return p[1];});window._OM.add({type:'stroke',pts:pts.slice(),brushType:window.brushType||'round_hard',col:window.drawCol||'#ff4040',sz:window.brushSz||10,hd:window.brushHd||0.7,op:window.brushOp||0.9,fill:'stroke',bbox:{x:Math.min.apply(null,_xs)-_bsz,y:Math.min.apply(null,_ys)-_bsz,w:Math.max.apply(null,_xs)-Math.min.apply(null,_xs)+_bsz*2,h:Math.max.apply(null,_ys)-Math.min.apply(null,_ys)+_bsz*2}});})();}
-      /* Store last stroke for live parameter editing */
-      _lastStroke={pts:pts.slice(),type:window.brushType||'round_hard',
-        col:window.drawCol||'#ff4040',sz:window.brushSz||10,
-        hd:window.brushHd||0.7,op:window.brushOp||0.9,
-        preSnap:window._snapLayer||null,ctx:_actx2};
+      /* Committed strokes are immutable: we intentionally do NOT populate
+         _lastStroke here. Changing color / size / opacity / hardness /
+         brush type after a stroke has landed should only affect the NEXT
+         stroke, not retroactively re-render the previous one. The replay
+         code (replayLastStroke + its 9 call sites in sliders and
+         brush-picker) stays in place but becomes a no-op because every
+         call site is gated on `if(_lastStroke)`. Leaving the plumbing
+         intact means we can re-enable live edit behind a UI toggle later
+         without another refactor. */
+      _lastStroke=null;
       if(window._layersCompositeFn)window._layersCompositeFn();
       if(window._layersUpdateThumbs)window._layersUpdateThumbs();
     }
