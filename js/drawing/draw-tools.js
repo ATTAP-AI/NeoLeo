@@ -76,6 +76,8 @@ document.addEventListener('pointerdown',e=>{
   /* Skip if click is inside a UI overlay (brush picker, modals, panel) */
   if(e.target.closest&&(e.target.closest('#bp-modal')||e.target.closest('#panel')||e.target.closest('.modal')))return;
   if(!curTool||!onCanvas(e))return;
+  /* Viewport gesture in progress (2-finger pinch/pan) — suppress drawing */
+  if(window._viewportGestureActive)return;
   /* Palm rejection: ignore finger touches while Apple Pencil is in use */
   if(shouldRejectTouch(e))return;
   if(window._OM&&window._OM.isOn()){
@@ -106,6 +108,8 @@ document.addEventListener('pointerdown',e=>{
 
 document.addEventListener('pointermove',e=>{
   if(!curTool)return;
+  /* Viewport gesture in progress (2-finger pinch/pan) — suppress drawing */
+  if(window._viewportGestureActive){isDown=false;return;}
   /* Palm rejection: don't let finger moves interfere while pen is active */
   if(shouldRejectTouch(e))return;
   if(window._OM&&window._OM.isOn()&&window._OM_cooldown){isDown=false;return;}

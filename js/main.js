@@ -14,6 +14,7 @@
     'js/core/canvas.js',
     'js/core/palette.js',
     'js/core/panels.js',
+    'js/core/viewport.js',
 
     // ── Engines (depend on core) ──
     'js/engines/engine-params.js',
