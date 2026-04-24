@@ -93,6 +93,7 @@
     'js/ui/bg-color-picker.js',
     'js/ui/brush-picker.js',
     'js/ui/fullscreen.js',
+    'js/ui/panel-toggle.js',
     'js/ui/image-adjustments.js',
     'js/ui/happy-hallucinations.js',
     'js/ui/naturalize.js',
