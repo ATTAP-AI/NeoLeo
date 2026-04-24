@@ -7,6 +7,26 @@
    touch-first iPads that happen to advertise a fine secondary.
    Goal: Apple HIG 44×44 pt minimum hit area for tap targets.
    ══════════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════
+   DRAG HANDLE TOUCH-ACTION — applies on ALL devices, not just coarse.
+   touch-action isn't inherited, so setting it on a drag header alone
+   doesn't stop Safari from treating a tap on a child <span>/<button>
+   as a pan gesture (which cancels the pointer stream before we can
+   call setPointerCapture). Apply to every child too.
+   ══════════════════════════════════════════════════════════════════ */
+.fx-hdr, .fx-hdr *,
+#up-drag-hdr, #up-drag-hdr *,
+#tp-head, #tp-head *,
+#exp-drag-hdr, #exp-drag-hdr *,
+#gp-head, #gp-head *,
+#bp-drag-hdr, #bp-drag-hdr *,
+#u-thumb-wrap, #u-thumb-wrap * {
+  touch-action: none;
+}
+/* The canvas layers themselves already have touch-action:none via
+   stage.css — descendants of cvwrap inherit implicitly because
+   canvas elements have no touch-sensitive children. */
+
 @media (pointer: coarse), (any-pointer: coarse) {
   /* Main toolbar buttons — bump from 28×26 to 44×44 */
   .tbtn{

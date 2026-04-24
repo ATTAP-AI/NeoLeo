@@ -94,6 +94,58 @@
     dragImgSrc = null;
   });
 
+  // ── POINTER-BASED DRAG (touch / pen) ─────────────────────
+  // HTML5 DnD above only fires on mouse. On iPad/Pencil we simulate the
+  // same flow with pointer events: pointerdown on the thumb, follow with
+  // a floating ghost image, and on pointerup check whether the pointer
+  // is over cvwrap — if yes, call showPlacement().
+  var ptrDrag = null; // {ghost, pid}
+  thumbWrap.style.touchAction = 'none';
+  thumbWrap.addEventListener('pointerdown', function(e){
+    // Only fire on touch/pen — mouse keeps using native HTML5 DnD
+    if(e.pointerType === 'mouse') return;
+    if(!uploadedImg) return;
+    // Ignore if tap lands on the × delete button
+    if(e.target.id === 'u-del-btn' || (e.target.closest && e.target.closest('#u-del-btn'))) return;
+    e.preventDefault();
+    aspectRatio = uploadedImg.naturalWidth / uploadedImg.naturalHeight;
+    try{ thumbWrap.setPointerCapture(e.pointerId); }catch(_){}
+    // Create a floating ghost that follows the pointer
+    var ghost = document.createElement('img');
+    ghost.src = uploadedImg.src;
+    ghost.style.cssText = 'position:fixed;pointer-events:none;width:120px;height:auto;opacity:0.7;z-index:9999;border:2px dashed #E8F50A;box-shadow:0 4px 16px rgba(0,0,0,.6);transform:translate(-50%,-50%);left:'+e.clientX+'px;top:'+e.clientY+'px;';
+    document.body.appendChild(ghost);
+    ptrDrag = { ghost: ghost, pid: e.pointerId };
+    cvwrap.classList.add('drop-target');
+  });
+
+  thumbWrap.addEventListener('pointermove', function(e){
+    if(!ptrDrag || e.pointerId !== ptrDrag.pid) return;
+    ptrDrag.ghost.style.left = e.clientX + 'px';
+    ptrDrag.ghost.style.top  = e.clientY + 'px';
+    // Highlight cvwrap while hovering
+    var r = cvwrap.getBoundingClientRect();
+    var over = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    cvwrap.classList.toggle('drop-target', over);
+  });
+
+  function endPtrDrag(e){
+    if(!ptrDrag) return;
+    if(e && e.pointerId !== ptrDrag.pid) return;
+    var r = cvwrap.getBoundingClientRect();
+    var cx = (e && typeof e.clientX === 'number') ? e.clientX : -1;
+    var cy = (e && typeof e.clientY === 'number') ? e.clientY : -1;
+    var over = cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
+    if(ptrDrag.ghost && ptrDrag.ghost.parentNode) ptrDrag.ghost.parentNode.removeChild(ptrDrag.ghost);
+    cvwrap.classList.remove('drop-target');
+    if(over && uploadedImg){
+      showPlacement(uploadedImg.src, cx - r.left, cy - r.top);
+    }
+    ptrDrag = null;
+  }
+  thumbWrap.addEventListener('pointerup', endPtrDrag);
+  thumbWrap.addEventListener('pointercancel', endPtrDrag);
+
   // ── MOVE & RESIZE HANDLES (pointer events: mouse/touch/pen) ──
   placement.style.touchAction='none';
   placement.addEventListener('pointerdown', function(e){
