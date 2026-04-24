@@ -651,6 +651,7 @@
     <div class="pm"><div class="pr"><span class="pn">Hardness</span><span class="pv" id="hdv">70%</span></div><input type="range" id="hdr" min="0" max="100" value="70"></div>
     <div class="pm"><div class="pr"><span class="pn">Tolerance</span><span class="pv" id="tlv">30</span></div><input type="range" id="tlr" min="0" max="100" value="30"></div>
     <div class="pm"><div class="pr"><span class="pn">Shape Mode</span></div><select id="fmod"><option value="stroke">Stroke only</option><option value="fill">Fill only</option><option value="both">Fill + Stroke</option></select></div>
+    <label class="fx-tg" id="tweak-last-row" style="margin-top:4px;" title="When ON: changing color / size / opacity / hardness / brush type re-renders the last stroke live. When OFF: committed strokes are immutable; slider changes only affect the next stroke."><input type="checkbox" id="tweak-last-chk"><span style="font-size:9px;color:var(--dim);">Tweak last stroke with sliders</span></label>
     <div class="br"><button class="bb" id="ubtn">&#8617; Undo</button><button class="bb" id="redobtn">&#8618; Redo</button><button class="bb" id="clrbtn">&#10005; Clear</button></div>
   </div>
 

@@ -192,16 +192,21 @@ document.addEventListener('pointerup',()=>{
       var _actx2=window._getActiveLayerCtx?window._getActiveLayerCtx():dctx;
       applyBrushStroke(_actx2,pts,window.brushType||'round_hard',window.drawCol||'#ff4040',window.brushSz||10,window.brushHd||0.7,window.brushOp||0.9);
       if(window._OM&&window._OM.isOn()){(function(){var _bsz=(window.brushSz||10)+4,_xs=pts.map(function(p){return p[0];}),_ys=pts.map(function(p){return p[1];});window._OM.add({type:'stroke',pts:pts.slice(),brushType:window.brushType||'round_hard',col:window.drawCol||'#ff4040',sz:window.brushSz||10,hd:window.brushHd||0.7,op:window.brushOp||0.9,fill:'stroke',bbox:{x:Math.min.apply(null,_xs)-_bsz,y:Math.min.apply(null,_ys)-_bsz,w:Math.max.apply(null,_xs)-Math.min.apply(null,_xs)+_bsz*2,h:Math.max.apply(null,_ys)-Math.min.apply(null,_ys)+_bsz*2}});})();}
-      /* Committed strokes are immutable: we intentionally do NOT populate
-         _lastStroke here. Changing color / size / opacity / hardness /
-         brush type after a stroke has landed should only affect the NEXT
-         stroke, not retroactively re-render the previous one. The replay
-         code (replayLastStroke + its 9 call sites in sliders and
-         brush-picker) stays in place but becomes a no-op because every
-         call site is gated on `if(_lastStroke)`. Leaving the plumbing
-         intact means we can re-enable live edit behind a UI toggle later
-         without another refactor. */
-      _lastStroke=null;
+      /* Committed strokes are immutable by default. The "Tweak last stroke
+         with sliders" toggle (window._tweakLastStroke) flips the behavior:
+         when ON, we stash the stroke so slider/color changes re-render it
+         live via replayLastStroke; when OFF, _lastStroke stays null and
+         every replay call site (9 of them across sliders + brush-picker)
+         becomes a guarded no-op. Persisted across reloads in
+         localStorage.neoleo_tweakLastStroke. */
+      if(window._tweakLastStroke){
+        _lastStroke={pts:pts.slice(),type:window.brushType||'round_hard',
+          col:window.drawCol||'#ff4040',sz:window.brushSz||10,
+          hd:window.brushHd||0.7,op:window.brushOp||0.9,
+          preSnap:window._snapLayer||null,ctx:_actx2};
+      } else {
+        _lastStroke=null;
+      }
       if(window._layersCompositeFn)window._layersCompositeFn();
       if(window._layersUpdateThumbs)window._layersUpdateThumbs();
     }
@@ -335,6 +340,29 @@ document.getElementById('opr').oninput=function(){document.getElementById('opv')
 document.getElementById('hdr').oninput=function(){document.getElementById('hdv').textContent=this.value+'%';brushHd=+this.value/100;var bp=document.getElementById('bp-hd');if(bp){bp.value=this.value;}var bpv=document.getElementById('bp-hd-val');if(bpv)bpv.textContent=this.value+'%';if(_lastStroke){window.brushHd=brushHd;replayLastStroke();}};
 document.getElementById('tlr').oninput=function(){document.getElementById('tlv').textContent=this.value;tol=+this.value;};
 document.getElementById('fmod').onchange=e=>fillMd=e.target.value;
+
+/* ── Tweak-last-stroke toggle ──
+   Default OFF — strokes immutable (standard paint-app behavior).
+   When ON, slider/color changes retroactively re-render the most recent
+   stroke via replayLastStroke. Setting persists in localStorage. */
+(function(){
+  var KEY='neoleo_tweakLastStroke';
+  var saved=null;
+  try{saved=localStorage.getItem(KEY);}catch(_){}
+  window._tweakLastStroke = (saved==='1');
+  var chk=document.getElementById('tweak-last-chk');
+  if(chk){
+    chk.checked = window._tweakLastStroke;
+    chk.addEventListener('change',function(){
+      window._tweakLastStroke = chk.checked;
+      try{localStorage.setItem(KEY, chk.checked?'1':'0');}catch(_){}
+      /* When turning OFF mid-session, drop any pending live-edit target
+         so a subsequent slider nudge doesn't replay a stroke the user
+         has already "finalized" by flipping the toggle off. */
+      if(!chk.checked) _lastStroke=null;
+    });
+  }
+})();
 document.getElementById('ubtn').onclick=function(){ if(window.globalUndo) window.globalUndo(); else doUndo(); };
 /* ── Unified globalUndo / globalRedo ──
    draw-state.js owns _actionLog and calls _logAction inside saveU/genUndoPush so
