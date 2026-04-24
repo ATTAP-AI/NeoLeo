@@ -405,6 +405,7 @@
       <div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding-right:40px;">
         <button id="showcase-btn" title="Open Feature Showcase" style="background:none;border:1px solid #E8F50A;color:#E8F50A;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">★ SHOWCASE</button>
         <button id="help-btn" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? HELP</button>
+        <button id="about-btn" title="About NeoLeo" style="background:none;border:1px solid #28E0D1;color:#28E0D1;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">i ABOUT</button>
       </div>
     </div>
     <div>
@@ -1354,6 +1355,113 @@
 
 <button id="panel-toggle" title="Collapse/expand side panel (frees canvas width)" aria-label="Toggle side panel">&#9654;</button>
 
-<script src="js/main.js?v=7"></script>
+<!-- ABOUT PANEL — floating, expandable, black text on white bg -->
+<div id="about-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:10000;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);"></div>
+<div id="about-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(720px,92vw);height:min(780px,88vh);min-width:320px;min-height:240px;background:#ffffff;color:#000000;border:1px solid #000;border-radius:6px;box-shadow:0 12px 48px rgba(0,0,0,0.6);z-index:10001;flex-direction:column;overflow:hidden;resize:both;font-family:Georgia,'Times New Roman',serif;">
+  <div id="about-header" style="flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #e5e5e5;background:#fafafa;cursor:move;user-select:none;">
+    <div style="font-family:inherit;font-size:13px;letter-spacing:.2em;font-weight:700;color:#000;text-transform:uppercase;">About &#8212; NeoLeo</div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button id="about-expand" title="Maximize / restore" style="background:#fff;border:1px solid #000;color:#000;font-family:inherit;font-size:12px;width:28px;height:28px;cursor:pointer;border-radius:3px;font-weight:700;line-height:1;padding:0;">&#9633;</button>
+      <button id="about-close" title="Close" style="background:#fff;border:1px solid #000;color:#000;font-family:inherit;font-size:14px;width:28px;height:28px;cursor:pointer;border-radius:3px;font-weight:700;line-height:1;padding:0;">&#10005;</button>
+    </div>
+  </div>
+  <div id="about-body" style="flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:22px 28px 28px;line-height:1.65;font-size:14px;color:#000;background:#ffffff;-webkit-overflow-scrolling:touch;">
+    <div style="text-align:center;margin:4px 0 18px;">
+      <div style="font-family:inherit;font-size:28px;font-weight:700;letter-spacing:.32em;color:#000;">N E O L E O</div>
+      <div style="font-size:12px;color:#555;margin-top:4px;letter-spacing:.06em;">&#8212; New Art Forms for a New Age &#8212;</div>
+      <div style="font-size:12px;color:#555;margin-top:2px;">An Open Source Platform for Generative Art</div>
+      <div style="font-size:12px;color:#555;margin-top:2px;font-style:italic;">Human + Machine Collaboration in the Creation of Truly Original Visual Art</div>
+      <div style="font-size:11px;color:#888;margin-top:10px;">Released to Humanity as Open Source &#183; April 2026</div>
+    </div>
+
+    <blockquote style="border-left:3px solid #000;margin:18px 0;padding:6px 14px;color:#222;font-style:italic;font-size:14px;">
+      &ldquo;Painting is poetry that is seen rather than felt, and poetry is painting that is felt rather than seen.&rdquo;<br>
+      <span style="font-style:normal;font-size:12px;color:#666;">&mdash; Leonardo da Vinci</span>
+    </blockquote>
+    <blockquote style="border-left:3px solid #000;margin:18px 0;padding:6px 14px;color:#222;font-style:italic;font-size:14px;">
+      &ldquo;The painter has the Universe in his mind and hands.&rdquo;<br>
+      <span style="font-style:normal;font-size:12px;color:#666;">&mdash; Leonardo da Vinci</span>
+    </blockquote>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">Why NeoLeo</h2>
+    <p>Five hundred years ago, a man in Florence saw no boundary between art and science. Leonardo da Vinci painted the Mona Lisa with the same mind that designed flying machines. He drew the Vitruvian Man with a compass and a deep understanding of human anatomy. He studied the mathematics of light, the fluid dynamics of water, the geometry of nature&mdash;and from these investigations, he created some of the most beautiful works in human history.</p>
+    <p>Leonardo was, in the truest sense, the first computational artist. He understood that beauty is not opposed to mathematics&mdash;it emerges from it. That art is not diminished by understanding&mdash;it is deepened by it. That the hand of the creator and the logic of the universe are not adversaries but collaborators.</p>
+    <p>NeoLeo&mdash;a New Leonardo&mdash;is built on this conviction. It is a platform where art emerges from mathematics, algorithms, and generative systems rather than brush and pigment, but with the same spirit of discovery and beauty that da Vinci embodied. It is named not in imitation of the master, but in continuation of his vision: that the deepest art comes from the deepest understanding of how the world works.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">A New Kind of Art</h2>
+    <p>We live in a time when the word &ldquo;artificial intelligence&rdquo; is spoken in the same breath as &ldquo;art.&rdquo; But most of what is called AI art today is, at its foundation, an act of appropriation. Large language models and diffusion systems are trained on billions of images created by human artists&mdash;they learn to recombine, interpolate, and remix what already exists. The output may be beautiful. It may be surprising. But it is not, in the deepest sense, new. It is a reflection seen through a vast and sophisticated mirror.</p>
+    <p>NeoLeo takes a fundamentally different path. Every image created by NeoLeo emerges from pure mathematical processes&mdash;flow fields, strange attractors, reaction-diffusion systems, Julia sets, fractal flames, Voronoi tessellations, wave interference patterns, cellular automata, L-systems, and dozens more. These are not approximations of existing art. They are the visual expression of the fundamental equations that govern nature itself.</p>
+    <p>When a NeoLeo engine renders a flow field, it is computing the same differential equations that describe wind currents, ocean circulation, and the movement of charged particles in magnetic fields. When it renders a reaction-diffusion pattern, it is simulating the same chemistry that creates the spots on a leopard, the stripes on a zebrafish, the branching of coral. When it renders a Julia set, it is exploring the same infinite boundary between order and chaos that mathematicians have studied for a century.</p>
+    <p style="background:#f4f4f4;border-left:3px solid #000;padding:10px 14px;margin:14px 0;font-style:italic;">No pixel in a NeoLeo image was borrowed from a photograph, a painting, or a training dataset. Every color, every curve, every luminous filament is born from equations&mdash;computed in real time, on your screen, from numbers to light.</p>
+    <p>This is not art that imitates the world. This is art that emerges from the same processes that created the world.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">What NeoLeo Is</h2>
+    <p>NeoLeo is a complete creative platform that runs entirely in your web browser. It requires no installation, no account, no cloud connection, and no subscription. It is free, open source, and yours.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">48 Generative Engines</h3>
+    <p>At its core, NeoLeo contains 48 distinct generative engines, each implementing a different mathematical or natural process. They are organized into families&mdash;Organic &amp; Biological, Particle &amp; Force, Mathematical &amp; Geometric, Noise &amp; Field-Based, Cellular &amp; Emergent, Graph &amp; Network, Iterative &amp; Fractal, Topological &amp; Surface, and Typographic &amp; Signal. Each engine produces an entirely different aesthetic universe. A Physarum simulation looks nothing like a Penrose tiling. A flame fractal shares no visual DNA with a hydraulic erosion map. The range is vast, and every combination of engine, palette, seed, and parameter setting produces a unique, unrepeatable image.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Rich Color Palettes</h3>
+    <p>Ten carefully designed color palettes&mdash;Ember, Ink &amp; Paper, Deep Ocean, Neon Circuit, Earth Strata, Ghost, Aurora, Void, Rust &amp; Salt, and Botanic&mdash;plus a fully custom palette editor with an interactive color wheel. Each palette transforms the character of every engine.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Professional Drawing Tools</h3>
+    <p>26 brush types across three families, plus pencil, line, rectangle, ellipse, triangle, polygon, free shape, fill, color replace, crop, eraser, eyedropper, clone, heal, dodge, burn, blur, sharpen, and smudge. Full control over size, opacity, hardness, and tolerance.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Lighting &amp; Atmosphere</h3>
+    <p>A real-time lighting system with point, spot, and rim lights, bloom, and ambient illumination. An atmosphere system with vignette, fog, film grain, chromatic aberration, and full color grading (temperature, saturation, contrast, brightness). These transform flat renders into cinematic compositions.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Experimental Tools</h3>
+    <p>Intent Sculpting, Temporal Canvases, Morphogenesis, Organic Forms, Topology (rendering true 3D mathematical surfaces&mdash;sphere, torus, M&ouml;bius band, Klein bottle), Probability Painting, Memory-Based Drawing, and the Leonardo engine&mdash;each one a creative instrument unlike anything found in conventional software.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Happy Hallucinations &amp; Multi-Pass Blending</h3>
+    <p>NeoLeo&rsquo;s signature creative feature: automatic composition of layered artworks by combining engines, palettes, and drawing tools in unexpected ways. Multi-pass blending layers multiple render passes with screen, overlay, soft-light, and multiply compositing for extraordinary depth.</p>
+
+    <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">Humanize &amp; Naturalize</h3>
+    <p>Post-processing effects that add organic imperfection&mdash;wobble, jitter, grain, paper texture&mdash;to soften mathematical precision into something that feels alive and hand-touched.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">The Vision: Human + Machine</h2>
+    <p style="font-weight:700;">NeoLeo is not a tool that replaces the artist. It is a tool that extends the artist.</p>
+    <p>The machine brings what machines do best: the ability to compute millions of mathematical operations per second, to explore parameter spaces that no human hand could traverse, to render the visual consequences of equations that exist beyond human intuition.</p>
+    <p>The human brings what humans do best: aesthetic judgment, emotional intent, the ability to recognize beauty, to feel when something resonates, to make the thousand subtle decisions&mdash;this palette, not that one; this seed, not that one; this blend mode, this lighting angle, this atmospheric mood&mdash;that transform raw computation into art.</p>
+    <p>Neither alone could create what both together can. The machine cannot feel beauty. The human cannot compute a Julia set at 2000&times;2000 resolution in real time.</p>
+    <p>Together, they create something that has never existed before: art that is simultaneously mathematically rigorous and emotionally resonant, computationally precise and aesthetically alive.</p>
+    <p>This is the collaboration that Leonardo dreamed of&mdash;the marriage of science and art, of understanding and feeling, of the measurable and the immeasurable.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">Why Open Source</h2>
+    <p>Mathematics belongs to no one. The Julia set was not invented&mdash;it was discovered. Flow fields are not proprietary&mdash;they are the language of fluid dynamics. Reaction-diffusion patterns are not copyrighted&mdash;they are how nature builds form.</p>
+    <p>A platform built on these foundations should be equally free. NeoLeo is released as open source code&mdash;not as a product, not as a service, but as a gift. It belongs to everyone who wants to create with it, learn from it, or extend it.</p>
+    <p>We release NeoLeo with a simple hope: that artists, mathematicians, musicians, students, scientists, children, and curious minds of every kind will take this platform and make it their own. Add new engines. Design new palettes. Create new tools. Build new bridges between mathematics and beauty that we cannot yet imagine.</p>
+    <p style="font-style:italic;">The source code is the seed. What grows from it belongs to all of us.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">An Invitation</h2>
+    <p><b>If you are an artist</b>&mdash;NeoLeo gives you 48 instruments you have never played. Each engine is a new medium, a new voice, a new way of seeing. Combine them. Layer them. Let the mathematics surprise you. Then bring your eye, your taste, your emotional intelligence to shape what emerges into something personal and meaningful to you.</p>
+    <p><b>If you are a programmer</b>&mdash;the architecture is open and modular. Every engine is a pure function: width, height, palette in; pixels out. Write a new one. The mathematics of the natural world is infinite, and we have only begun to explore its visual potential. Fluid simulations, wave equations, graph theory, topology, number theory&mdash;every branch of mathematics contains undiscovered beauty.</p>
+    <p><b>If you are a mathematician</b>&mdash;see your equations rendered in color and light. Watch a strange attractor trace its infinite orbit. See a cellular automaton unfold its emergent complexity. Experience the aesthetic dimension of the structures you study.</p>
+    <p><b>If you are an educator</b>&mdash;use NeoLeo to show students that mathematics is not dry abstraction but the deepest source of beauty in the universe. Let them see a fractal before they learn the equation. Let them feel the wonder first.</p>
+    <p><b>If you are simply curious</b>&mdash;press a button. Change a color. Move a slider. Every interaction produces something you have never seen before and will never see again. There is no wrong answer. There is only discovery.</p>
+
+    <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">A Note on Originality</h2>
+    <p>In an era of generative AI trained on vast corpora of human-created images, NeoLeo stands apart. It appropriates nothing. It samples nothing. It interpolates nothing from any existing visual work.</p>
+    <p>Every NeoLeo image is generated from first principles&mdash;from the mathematics itself. The flow field engine does not know what a painting looks like. The Julia set engine has never seen a photograph. The reaction-diffusion system has no concept of style or genre. They compute. They produce emergent visual structure from pure equations.</p>
+    <p>And the human artist shapes that structure into art. This process will quite likely produce &lsquo;Bad Art&rsquo; &lsquo;Art Slop&rsquo; as well as surprising acts of creativity and originality, but regardless of what is produced it will not be the result of any works appropriated with (or more likely) without permission or explicit approval from artists by the developers and companies that own large language models for the purpose of training their proprietary models.</p>
+    <p>This means that every image created with NeoLeo is, in the most literal sense, original. It has no ancestor in any training dataset. It was not derived from, inspired by, or blended from existing works. It was born from numbers, shaped by human judgment, and rendered in individual freedom and light.</p>
+    <p style="font-weight:700;">This is what we mean by New Art Forms for a New Age.</p>
+
+    <hr style="border:none;border-top:1px solid #ccc;margin:28px 0;">
+    <p>Leonardo kept notebooks. He filled them with sketches of machines, anatomical studies, mathematical proofs, and paintings&mdash;all in the same hand, on the same pages, because to him they were all the same act: the act of understanding the world deeply enough to create beauty from that understanding.</p>
+    <p style="font-style:italic;">NeoLeo is our notebook. It&rsquo;s yours now&mdash;open, unfinished, full of possibility. Hopefully you will fill its pages and share them.</p>
+
+    <div style="text-align:center;margin:28px 0 10px;padding-top:20px;border-top:1px solid #ccc;">
+      <div style="font-size:20px;font-weight:700;letter-spacing:.32em;color:#000;">N E O L E O</div>
+      <div style="font-size:12px;color:#555;margin-top:4px;font-style:italic;">New Art Forms for a New Age</div>
+      <div style="font-size:12px;margin-top:10px;"><a href="https://github.com/ATTAP-AI/NeoLeo" target="_blank" rel="noopener" style="color:#000;">github.com/ATTAP-AI/NeoLeo</a></div>
+      <div style="font-size:11px;color:#666;margin-top:4px;">Open Source &#183; Free Forever &#183; For Everyone</div>
+      <div style="font-size:11px;color:#666;margin-top:12px;">Made with ATTAP (All Things to All People) <a href="https://attap.ai" target="_blank" rel="noopener" style="color:#000;">attap.ai</a> and Anthropic Claude 1617.0</div>
+      <div style="font-size:11px;color:#666;margin-top:2px;">by Bruce Edward Spector &mdash; Artist and Tech Action Junkie</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js?v=8"></script>
 </body>
 </html>
