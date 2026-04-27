@@ -28,6 +28,45 @@
 </head>
 <body>
 
+<!-- ════════════════════════════════════════════════════════════
+     SPLASH SCREEN — full-viewport NeoLeo logo, ~2s hold then
+     fades out and removes itself from the DOM. Pure CSS animation
+     so it triggers on first paint without waiting for any JS.
+     z-index above every floating UI element. pointer-events:none
+     once the fade starts so taps fall through to the app.
+     ═══════════════════════════════════════════════════════════ -->
+<style>
+  #splash{
+    position:fixed; inset:0;
+    background:#000 url('assets/neoleo-splash.jpg?v=1') center center / contain no-repeat;
+    z-index:2147483647;
+    animation: splash-out 2.6s ease forwards;
+    /* Hold full opacity for 2s then fade for 0.5s; the final
+       frame keeps display:none and pointer-events:none. */
+  }
+  @keyframes splash-out{
+    0%   { opacity:1; pointer-events:auto; }
+    77%  { opacity:1; pointer-events:auto; }   /* 2.0s of 2.6s = ~77% */
+    100% { opacity:0; pointer-events:none; visibility:hidden; }
+  }
+  /* Reduced-motion users still see the splash but it leaves a hair
+     faster — and never animates if they've turned off animations. */
+  @media (prefers-reduced-motion: reduce){
+    #splash{ animation: splash-out 2.2s linear forwards; }
+  }
+</style>
+<div id="splash" aria-hidden="true"></div>
+<script>
+  /* Belt-and-braces: even if the CSS animation fails, kill the
+     splash after 2.6s so the app is never permanently covered. */
+  (function(){
+    setTimeout(function(){
+      var s = document.getElementById('splash');
+      if(s && s.parentNode){ s.parentNode.removeChild(s); }
+    }, 2800);
+  })();
+</script>
+
 <div id="stage">
     <div id="fs-bar" style="position:absolute;top:0;left:0;right:0;height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;z-index:20;pointer-events:none;">
       <div style="display:flex;gap:6px;pointer-events:all;">
