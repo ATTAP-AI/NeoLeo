@@ -831,6 +831,7 @@ setTimeout(function(){
       '  <option value="void">Void</option>',
       '  <option value="rust">Rust &amp; Salt</option>',
       '  <option value="botanic">Botanic</option>',
+      '  <option value="anime">Anime</option>',
       '  <option value="custom">&#10022; Custom</option>',
       '</select>',
 
