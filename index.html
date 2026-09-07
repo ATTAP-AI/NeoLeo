@@ -439,12 +439,12 @@
     <div style="padding:4px 2px 10px;border-bottom:1px solid var(--brd);margin-bottom:10px;">
       <div style="display:flex;align-items:baseline;justify-content:flex-start;gap:10px;">
         <div style="font-size:17px;font-weight:bold;letter-spacing:.28em;color:#E8F50A;text-transform:uppercase;line-height:1;">NeoLeo</div>
-        <div style="font-size:11px;letter-spacing:.08em;color:#28E0D1;font-style:italic;white-space:nowrap;">New Art Forms for a New Age</div>
+        <div style="font-size:13px;letter-spacing:.08em;color:#28E0D1;font-style:italic;white-space:nowrap;">New Art Forms for a New Age</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding-right:40px;">
-        <button id="showcase-btn" title="Open Feature Showcase" style="background:none;border:1px solid #E8F50A;color:#E8F50A;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">★ SHOWCASE</button>
-        <button id="help-btn" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? HELP</button>
-        <button id="about-btn" title="About NeoLeo" style="background:none;border:1px solid #28E0D1;color:#28E0D1;font-family:inherit;font-size:9px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">i ABOUT</button>
+        <button id="showcase-btn" title="Open Feature Showcase" style="background:none;border:1px solid #E8F50A;color:#E8F50A;font-family:inherit;font-size:12px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">★ SHOWCASE</button>
+        <button id="help-btn" title="Open NeoLeo Help Guide" style="background:none;border:1px solid #97c3b0;color:#97c3b0;font-family:inherit;font-size:12px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">? HELP</button>
+        <button id="about-btn" title="About NeoLeo" style="background:none;border:1px solid #28E0D1;color:#28E0D1;font-family:inherit;font-size:12px;padding:3px 12px;cursor:pointer;letter-spacing:.1em;border-radius:2px;text-transform:uppercase;font-weight:600;">i ABOUT</button>
       </div>
     </div>
     <div>
@@ -473,8 +473,8 @@
       <div id="hist-actions">
         <button id="hist-restore-btn">&#8617; Restore</button>
         <button id="hist-export-btn">&#8595; Export</button>
-        <button id="hist-delete-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #5a2020;color:#ff6060;">&#10005; Del</button>
-        <button id="hist-save-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #206050;color:#40c8a0;">&#9632; Save</button>
+        <button id="hist-delete-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #5a2020;color:#ff6060;">&#10005; Del</button>
+        <button id="hist-save-btn" style="flex:0.6;padding:4px;background:none;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;border:1px solid #206050;color:#40c8a0;">&#9632; Save</button>
       </div>
     </div>
     <div id="qa-row">
@@ -507,8 +507,8 @@
           <div id="res-preview-inner"></div>
         </div>
         <div>
-          <div id="res-preview-label" style="font-size:9px;color:var(--dim);letter-spacing:.06em;font-family:'Courier New',monospace;">1:1</div>
-          <div id="res-px-label" style="font-size:9px;color:#40c8a0;font-family:'Courier New',monospace;letter-spacing:.04em;margin-top:2px;">750 &#215; 750</div>
+          <div id="res-preview-label" style="font-size:12px;color:var(--dim);letter-spacing:.06em;font-family:'Courier New',monospace;">1:1</div>
+          <div id="res-px-label" style="font-size:12px;color:#40c8a0;font-family:'Courier New',monospace;letter-spacing:.04em;margin-top:2px;">750 &#215; 750</div>
         </div>
       </div>
     </div>
@@ -518,7 +518,7 @@
       <input type="number" id="res-ch" value="750" min="100" max="4096" step="1" placeholder="H">
       <span>px</span>
     </div>
-    <div id="res-info" style="font-size:9px;color:var(--dim);margin-top:4px;">Canvas: <span id="res-disp">&#8212;</span></div>
+    <div id="res-info" style="font-size:12px;color:var(--dim);margin-top:4px;">Canvas: <span id="res-disp">&#8212;</span></div>
   </div>
 
   <!-- Background colour — always visible, outside collapsible section -->
@@ -527,8 +527,8 @@
     <div id="bg-col-swatch" style="width:22px;height:22px;background:#000000;border:1px solid #ffffff;cursor:pointer;position:relative;flex-shrink:0;border-radius:2px;" title="Open color picker">
     </div>
     <input type="color" id="bg-col-picker" value="#000000" style="display:none;">
-    <span id="bg-col-hex" style="font-size:9px;color:var(--dim);font-family:'Courier New',monospace;min-width:52px;cursor:pointer;" title="Click swatch to open picker">#000000</span>
-    <button id="bg-col-transparent" title="Transparent" style="background:none;border:1px solid var(--brd);color:var(--dim);font-size:8px;cursor:pointer;padding:2px 6px;letter-spacing:.06em;border-radius:2px;">&#9636; Trans</button>
+    <span id="bg-col-hex" style="font-size:12px;color:var(--dim);font-family:'Courier New',monospace;min-width:52px;cursor:pointer;" title="Click swatch to open picker">#000000</span>
+    <button id="bg-col-transparent" title="Transparent" style="background:none;border:1px solid var(--brd);color:var(--dim);font-size:12px;cursor:pointer;padding:2px 6px;letter-spacing:.06em;border-radius:2px;">&#9636; Trans</button>
   </div>
 
   <!-- Background Color Picker Panel -->
@@ -538,19 +538,19 @@
       <canvas id="bg-hue-strip" width="20" height="160" style="cursor:crosshair;border:1px solid rgba(255,255,255,0.15);border-radius:3px;flex-shrink:0;"></canvas>
     </div>
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-      <span style="font-size:8px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">OPACITY</span>
+      <span style="font-size:12px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">OPACITY</span>
       <input type="range" id="bg-opacity-sl" min="0" max="100" value="100" style="flex:1;-webkit-appearance:none;height:3px;background:rgba(255,255,255,0.15);outline:none;cursor:pointer;border-radius:2px;">
-      <span id="bg-opacity-val" style="font-size:9px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">100%</span>
+      <span id="bg-opacity-val" style="font-size:12px;color:rgba(255,255,255,0.6);min-width:30px;text-align:right;">100%</span>
     </div>
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-      <span style="font-size:8px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">HEX</span>
-      <input type="text" id="bg-hex-input" value="#000000" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);color:#fff;font-family:'Courier New',monospace;font-size:10px;padding:3px 6px;outline:none;border-radius:2px;">
+      <span style="font-size:12px;color:rgba(255,255,255,0.5);min-width:42px;letter-spacing:.06em;">HEX</span>
+      <input type="text" id="bg-hex-input" value="#000000" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);color:#fff;font-family:'Courier New',monospace;font-size:12px;padding:3px 6px;outline:none;border-radius:2px;">
       <div id="bg-preview-swatch" style="width:24px;height:24px;background:#000000;border:1px solid rgba(255,255,255,0.2);border-radius:2px;flex-shrink:0;"></div>
     </div>
     <div id="bg-preset-row" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:8px;"></div>
     <div style="display:flex;gap:6px;">
-      <button id="bg-default-btn" style="flex:1;padding:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">&#9632; Default (Black)</button>
-      <button id="bg-picker-close" style="padding:5px 10px;background:none;border:1px solid rgba(255,255,255,0.2);color:#ff9742;font-family:inherit;font-size:8px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">Close</button>
+      <button id="bg-default-btn" style="flex:1;padding:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">&#9632; Default (Black)</button>
+      <button id="bg-picker-close" style="padding:5px 10px;background:none;border:1px solid rgba(255,255,255,0.2);color:#ff9742;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;">Close</button>
     </div>
   </div>
 
@@ -560,7 +560,7 @@
     <button class="sec-hdr-btn" id="eng-toggle" style="flex:1;">Engines <span class="chev">&#9650;</span></button>
     <button id="eng-cycle-btn" title="Cycle through engines in sequence — all sliders at max" class="cycle-btn">&#10024; Cycle</button>
   </div>
-  <div id="eng-cycle-label" style="font-size:8px;color:var(--acc);padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="eng-cycle-name">&#8212;</span></div>
+  <div id="eng-cycle-label" style="font-size:12px;color:var(--acc);padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="eng-cycle-name">&#8212;</span></div>
   <div class="sec-body" id="eng-body">
     <div class="pm" style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--brd);">
       <div class="pr"><span class="pn">Opacity</span><span class="pv" id="eng-op-v">100%</span></div>
@@ -574,7 +574,7 @@
     <button class="eng" data-e="growth">05 &#8212; Differential Growth</button>
     <button class="eng" data-e="lissajous">06 &#8212; Lissajous Mesh</button>
     <button id="more-engines-btn">&#9660; More Engines (42)</button>
-    <div id="eng-current-label" style="font-size:8px;color:var(--acc);letter-spacing:.1em;padding:3px 0 2px;opacity:0.8;display:none;">&#9654; <span id="eng-current-name">Flow Field</span></div>
+    <div id="eng-current-label" style="font-size:12px;color:var(--acc);letter-spacing:.1em;padding:3px 0 2px;opacity:0.8;display:none;">&#9654; <span id="eng-current-name">Flow Field</span></div>
     <div id="more-engines-list">
       <div class="eng-cat organic">&#9672; Organic &amp; Biological</div>
       <button class="eng" data-e="physarum">07 &#8212; Physarum / Slime Mold</button>
@@ -677,10 +677,10 @@
 </div>
   <!-- DRAWING TOOLS toggle -->
   <button class="sec-hdr-btn" id="dt-toggle">Drawing Tools <span class="chev">&#9650;</span></button>
-  <button id="hh-btn" style="width:100%;margin:3px 0;padding:8px 10px;background:rgba(232,245,10,0.12);border:1px solid rgba(232,245,10,0.4);color:#E8F50A;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;" title="Generate a composite artwork: random engine + palette + drawing tool overlay (brush, pencil, shapes, lines)">&#10024; Happy Hallucinations</button>
-  <button id="hh-multi-btn" style="width:100%;margin:0 0 3px;padding:6px 10px;background:rgba(232,245,10,0.05);border:1px solid rgba(232,245,10,0.2);color:#E8F50A;font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-weight:600;" title="Multi-pass HH with blend controls">&#10024;&#10024; Multi-Pass Blend</button>
+  <button id="hh-btn" style="width:100%;margin:3px 0;padding:8px 10px;background:rgba(232,245,10,0.12);border:1px solid rgba(232,245,10,0.4);color:#E8F50A;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;" title="Generate a composite artwork: random engine + palette + drawing tool overlay (brush, pencil, shapes, lines)">&#10024; Happy Hallucinations</button>
+  <button id="hh-multi-btn" style="width:100%;margin:0 0 3px;padding:6px 10px;background:rgba(232,245,10,0.05);border:1px solid rgba(232,245,10,0.2);color:#E8F50A;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;font-weight:600;" title="Multi-pass HH with blend controls">&#10024;&#10024; Multi-Pass Blend</button>
   <div id="hh-hist-wrap" style="display:none;padding:4px 6px;background:rgba(0,0,0,0.2);border-bottom:1px solid var(--brd);">
-    <div id="hh-mood-label" style="font-size:8px;color:#E8F50A;letter-spacing:.06em;margin-bottom:4px;"></div>
+    <div id="hh-mood-label" style="font-size:12px;color:#E8F50A;letter-spacing:.06em;margin-bottom:4px;"></div>
     <div id="hh-hist-strip" style="display:flex;gap:3px;overflow-x:auto;padding-bottom:2px;"></div>
   </div>
 
@@ -691,7 +691,7 @@
     <div class="pm"><div class="pr"><span class="pn">Hardness</span><span class="pv" id="hdv">70%</span></div><input type="range" id="hdr" min="0" max="100" value="70"></div>
     <div class="pm"><div class="pr"><span class="pn">Tolerance</span><span class="pv" id="tlv">30</span></div><input type="range" id="tlr" min="0" max="100" value="30"></div>
     <div class="pm"><div class="pr"><span class="pn">Shape Mode</span></div><select id="fmod"><option value="stroke">Stroke only</option><option value="fill">Fill only</option><option value="both">Fill + Stroke</option></select></div>
-    <label id="tweak-last-row" title="When ON: changing color / size / opacity / hardness / brush type re-renders the last stroke live. When OFF: committed strokes are immutable; slider changes only affect the next stroke." style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:6px 0;padding:8px 8px;min-height:36px;background:rgba(151,195,176,0.06);border:1px solid rgba(151,195,176,0.2);border-radius:3px;"><input type="checkbox" id="tweak-last-chk" style="accent-color:#40c8a0;cursor:pointer;width:18px;height:18px;flex-shrink:0;"><span style="font-size:11px;color:#c0d8cc;letter-spacing:.04em;">Tweak last stroke with sliders</span></label>
+    <label id="tweak-last-row" title="When ON: changing color / size / opacity / hardness / brush type re-renders the last stroke live. When OFF: committed strokes are immutable; slider changes only affect the next stroke." style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:6px 0;padding:8px 8px;min-height:36px;background:rgba(151,195,176,0.06);border:1px solid rgba(151,195,176,0.2);border-radius:3px;"><input type="checkbox" id="tweak-last-chk" style="accent-color:#40c8a0;cursor:pointer;width:18px;height:18px;flex-shrink:0;"><span style="font-size:13px;color:#c0d8cc;letter-spacing:.04em;">Tweak last stroke with sliders</span></label>
     <div class="br"><button class="bb" id="ubtn">&#8617; Undo</button><button class="bb" id="redobtn">&#8618; Redo</button><button class="bb" id="clrbtn">&#10005; Clear</button></div>
   </div>
 
@@ -702,8 +702,8 @@
 
   <!-- EXPERIMENTAL TOOLS -->
   <div style="display:flex;align-items:stretch;gap:0;border-top:1px solid #3a0a5a;">
-    <button class="sec-hdr-btn" id="exp-toggle" style="flex:1;border-top:none;color:#c060ff;">&#9670; Experimental Tools <span id="is-badge" style="display:none;font-size:8px;background:rgba(151,195,176,0.15);border:1px solid #97c3b0;color:#97c3b0;padding:1px 5px;border-radius:2px;letter-spacing:.08em;margin-left:4px;">&#9672; SIGNAL</span><span class="chev" style="color:#8040b0;transform:rotate(180deg);">&#9650;</span></button>
-    <button id="eng-connect-btn" title="Connect: tool renders blend ON TOP of engine. Disconnect: tool renders independently." onclick="window._ENG_CONNECT=!window._ENG_CONNECT;this.textContent=window._ENG_CONNECT?'&#9939; Connected':'&#128279; Connect';this.style.background=window._ENG_CONNECT?'rgba(151,195,176,0.15)':'none';this.style.borderColor=window._ENG_CONNECT?'#97c3b0':'var(--brd)';this.style.color=window._ENG_CONNECT?'#97c3b0':'var(--dim)';document.getElementById('si').textContent=window._ENG_CONNECT?'Tools CONNECTED \u2014 experimental renders blend on top of engine output':'Tools disconnected \u2014 experimental renders replace canvas';" style="padding:0 10px;background:none;border:1px solid var(--brd);border-left:none;color:var(--dim);font-family:inherit;font-size:9px;cursor:pointer;letter-spacing:.08em;white-space:nowrap;flex-shrink:0;">&#128279; Connect</button>
+    <button class="sec-hdr-btn" id="exp-toggle" style="flex:1;border-top:none;color:#c060ff;">&#9670; Experimental Tools <span id="is-badge" style="display:none;font-size:12px;background:rgba(151,195,176,0.15);border:1px solid #97c3b0;color:#97c3b0;padding:1px 5px;border-radius:2px;letter-spacing:.08em;margin-left:4px;">&#9672; SIGNAL</span><span class="chev" style="color:#8040b0;transform:rotate(180deg);">&#9650;</span></button>
+    <button id="eng-connect-btn" title="Connect: tool renders blend ON TOP of engine. Disconnect: tool renders independently." onclick="window._ENG_CONNECT=!window._ENG_CONNECT;this.textContent=window._ENG_CONNECT?'&#9939; Connected':'&#128279; Connect';this.style.background=window._ENG_CONNECT?'rgba(151,195,176,0.15)':'none';this.style.borderColor=window._ENG_CONNECT?'#97c3b0':'var(--brd)';this.style.color=window._ENG_CONNECT?'#97c3b0':'var(--dim)';document.getElementById('si').textContent=window._ENG_CONNECT?'Tools CONNECTED \u2014 experimental renders blend on top of engine output':'Tools disconnected \u2014 experimental renders replace canvas';" style="padding:0 10px;background:none;border:1px solid var(--brd);border-left:none;color:var(--dim);font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.08em;white-space:nowrap;flex-shrink:0;">&#128279; Connect</button>
   </div>
   <div class="sec-body" id="exp-body">
     <div class="pm" style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #1a0a2a;">
@@ -712,15 +712,15 @@
     </div>
     <div id="intent-sculpt-sec">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="intent-sculpt-toggle" onclick="(function(){var b=document.getElementById('intent-sculpt-body');var t=document.getElementById('intent-sculpt-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,96,255,0.12)':'none';t.style.borderColor=open?'#7030b0':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="intent-sculpt-toggle" onclick="(function(){var b=document.getElementById('intent-sculpt-body');var t=document.getElementById('intent-sculpt-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,96,255,0.12)':'none';t.style.borderColor=open?'#7030b0':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9670; Intent Sculpting</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="intent-cycle-btn" title="Cycle through Intent Sculpting modalities — all forces at modality max" class="cycle-btn">Cycle</button>
       </div>
-      <div id="intent-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(192,96,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="intent-cycle-name">&#8212;</span></div>
+      <div id="intent-cycle-label" style="font-size:12px;color:#97c3b0;padding:2px 10px 3px;background:rgba(192,96,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="intent-cycle-name">&#8212;</span></div>
       <div id="intent-sculpt-body" style="display:none;padding-top:6px;">
-      <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a0a2a;padding-bottom:6px;">Force Field Aesthetics &#8212; sculpt a field where forms want to happen</div>
+      <div style="font-size:12px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a0a2a;padding-bottom:6px;">Force Field Aesthetics &#8212; sculpt a field where forms want to happen</div>
       <div id="force-sliders"></div>
       <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
         <button class="fx-bb" id="intent-sculpt-btn" style="flex:1;border-color:#7030b0;color:#97c3b0;min-width:80px;">&#9672; Activate</button>
@@ -758,20 +758,20 @@
     <!-- TEMPORAL CANVASES -->
     <div id="temporal-sec">
       <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
-      <button id="temporal-toggle" onclick="(function(){var b=document.getElementById('temporal-body');var t=document.getElementById('temporal-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(40,224,209,0.08)':'none';t.style.borderColor=open?'#28E0D1':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';if(open){if(typeof initTemporal==='function'){initTemporal();if(typeof renderFrame==='function')renderFrame(0);}}})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+      <button id="temporal-toggle" onclick="(function(){var b=document.getElementById('temporal-body');var t=document.getElementById('temporal-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(40,224,209,0.08)':'none';t.style.borderColor=open?'#28E0D1':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';if(open){if(typeof initTemporal==='function'){initTemporal();if(typeof renderFrame==='function')renderFrame(0);}}})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
         <span>&#9670; Temporal Canvases</span>
-        <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+        <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
       </button>
       <button id="tc-rand-hdr-btn" title="Cycle through Temporal modes — all sliders max" class="cycle-btn">Cycle</button>
       </div>
-      <div id="tc-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(40,224,209,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="tc-cycle-name">&#8212;</span></div>
+      <div id="tc-cycle-label" style="font-size:12px;color:#97c3b0;padding:2px 10px 3px;background:rgba(40,224,209,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="tc-cycle-name">&#8212;</span></div>
       <div id="temporal-body" style="display:none;padding-top:6px;">
-      <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Time-first composition &#8212; scrub through becoming</div>
+      <div style="font-size:12px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Time-first composition &#8212; scrub through becoming</div>
 
       <!-- Mode selector -->
       <div class="fx-pm">
         <div class="fx-pr"><span class="fx-pn" style="color:#97c3b0;">Temporal Mode</span></div>
-        <select id="tc-mode" style="width:100%;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:3px;">
+        <select id="tc-mode" style="width:100%;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:12px;padding:3px;">
           <option value="emergence">Emergence &#8212; calm &#8594; structure</option>
           <option value="dissolution">Dissolution &#8212; order &#8594; chaos</option>
           <option value="oscillation">Oscillation &#8212; wave memory</option>
@@ -799,7 +799,7 @@
       <div class="fx-pm" style="margin-top:4px;">
         <div class="fx-pr">
           <span class="fx-pn">Frames</span>
-          <input type="number" id="tc-frames" min="10" max="9999" value="1000" style="width:52px;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-size:9px;padding:2px 4px;font-family:inherit;text-align:right;">
+          <input type="number" id="tc-frames" min="10" max="9999" value="1000" style="width:52px;background:#06060a;border:1px solid var(--brd);color:#97c3b0;font-size:12px;padding:2px 4px;font-family:inherit;text-align:right;">
         </div>
       </div>
 
@@ -830,7 +830,7 @@
       <!-- Capture frame button -->
       <div style="display:flex;gap:4px;margin-top:5px;">
         <button class="fx-bb" id="tc-capture-btn" style="flex:1;border-color:#0a3040;color:#97c3b0;">&#9632; Capture Frame</button>
-        <button id="tc-rand-btn" style="flex:0.8;padding:3px 10px;background:#cc1a1a;border:1px solid #ff3030;color:#ffffff;font-family:inherit;font-size:9px;font-weight:600;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Cycle</button>
+        <button id="tc-rand-btn" style="flex:0.8;padding:3px 10px;background:#cc1a1a;border:1px solid #ff3030;color:#ffffff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;">Cycle</button>
       </div>
       <!-- Undo / Redo / Clear -->
       <div style="display:flex;gap:4px;margin-top:4px;">
@@ -842,35 +842,35 @@
     <!-- PROBABILITY PAINTING -->
     <div id="pp-sec" style="border-top:1px solid #1a0a2a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="pp-toggle" onclick="(function(){var b=document.getElementById('pp-body');var t=document.getElementById('pp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(232,245,10,0.06)':'none';t.style.borderColor=open?'#E8F50A':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="pp-toggle" onclick="(function(){var b=document.getElementById('pp-body');var t=document.getElementById('pp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(232,245,10,0.06)':'none';t.style.borderColor=open?'#E8F50A':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9688; Probability Painting</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="pp-cycle-btn" class="cycle-btn" onclick="window._PP&&window._PP.cycle()">Cycle</button>
       </div>
-      <div id="pp-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="pp-cycle-name">--</span></div>
+      <div id="pp-cycle-label" style="font-size:12px;color:#97c3b0;padding:2px 10px 3px;background:rgba(232,245,10,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="pp-cycle-name">--</span></div>
       <div id="pp-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a00;padding-bottom:6px;">Certainty is the enemy of emergence. Each mark is a probability cloud.</div>
+        <div style="font-size:12px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a00;padding-bottom:6px;">Certainty is the enemy of emergence. Each mark is a probability cloud.</div>
         <div style="display:flex;gap:4px;margin-bottom:10px;">
           <button id="pp-activate-btn" class="fx-bb" style="flex:1;border-color:#E8F50A;color:#97c3b0;" onclick="window._PP&&window._PP.toggle()">&#9688; Activate</button>
           <button id="pp-reseed-btn" class="fx-bb" style="flex:1;border-color:#aaaa00;color:#97c3b0;" onclick="window._PP&&window._PP.reseed()">&#8635; Reseed</button>
         </div>
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:6px;">EXPRESSIONS</div>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-bottom:6px;">EXPRESSIONS</div>
         <div id="pp-expr-list" style="margin-bottom:10px;"></div>
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">PROBABILITY WEIGHTS</div>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">PROBABILITY WEIGHTS</div>
         <div class="pm"><div class="pr"><span class="pn">Curve</span><span class="pv" id="pp-curve-v">70%</span></div><input type="range" id="pp-curve" min="0" max="100" value="70"></div>
         <div class="pm"><div class="pr"><span class="pn">Fracture</span><span class="pv" id="pp-frac-v">20%</span></div><input type="range" id="pp-frac" min="0" max="100" value="20"></div>
         <div class="pm"><div class="pr"><span class="pn">Dissolve</span><span class="pv" id="pp-dis-v">10%</span></div><input type="range" id="pp-dis" min="0" max="100" value="10"></div>
-        <div id="pp-weight-warn" style="font-size:8px;color:#ff4040;display:none;margin-bottom:4px;">Weights exceed 100% -- normalised</div>
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-top:8px;margin-bottom:4px;">EXPRESSION</div>
+        <div id="pp-weight-warn" style="font-size:12px;color:#ff4040;display:none;margin-bottom:4px;">Weights exceed 100% -- normalised</div>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-top:8px;margin-bottom:4px;">EXPRESSION</div>
         <div class="pm"><div class="pr"><span class="pn">Multiplicity</span><span class="pv" id="pp-mult-v">3</span></div><input type="range" id="pp-mult" min="1" max="8" value="3"></div>
         <div class="pm"><div class="pr"><span class="pn">Volatility</span><span class="pv" id="pp-vol-v">40%</span></div><input type="range" id="pp-vol" min="0" max="100" value="40"></div>
         <div class="pm"><div class="pr"><span class="pn">Ghost Opacity</span><span class="pv" id="pp-ghost-v">22%</span></div><input type="range" id="pp-ghost" min="0" max="100" value="22"></div>
         <div class="pm"><div class="pr"><span class="pn">Scatter</span><span class="pv" id="pp-scatter-v">24</span></div><input type="range" id="pp-scatter" min="0" max="80" value="24"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:8px;padding:4px 6px;background:rgba(232,245,10,0.04);border:1px solid rgba(232,245,10,0.15);border-radius:2px;">
-          <span style="font-size:8px;color:#97c3b0;letter-spacing:.08em;">SEED</span>
-          <span id="pp-seed-display" style="font-size:9px;font-family:monospace;color:#97c3b0;flex:1;">--</span>
-          <button class="fx-bb" style="padding:1px 6px;font-size:8px;border-color:#444;color:#97c3b0;" onclick="window._PP&&window._PP.lockSeed()">&#128274; Lock</button>
+          <span style="font-size:12px;color:#97c3b0;letter-spacing:.08em;">SEED</span>
+          <span id="pp-seed-display" style="font-size:12px;font-family:monospace;color:#97c3b0;flex:1;">--</span>
+          <button class="fx-bb" style="padding:1px 6px;font-size:12px;border-color:#444;color:#97c3b0;" onclick="window._PP&&window._PP.lockSeed()">&#128274; Lock</button>
         </div>
       </div>
     </div>
@@ -878,26 +878,26 @@
     <!-- MEMORY-BASED DRAWING — Latent Emotional Architecture -->
     <div id="mbd-sec" style="border-top:1px solid #1a0a2a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="mbd-toggle" onclick="(function(){var b=document.getElementById('mbd-body');var t=document.getElementById('mbd-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(180,140,255,0.07)':'none';t.style.borderColor=open?'#b48cff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="mbd-toggle" onclick="(function(){var b=document.getElementById('mbd-body');var t=document.getElementById('mbd-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(180,140,255,0.07)':'none';t.style.borderColor=open?'#b48cff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#97c3b0;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9762; Memory Architecture</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="mbd-cycle-btn" class="cycle-btn" onclick="window._MBD&&window._MBD.cycle()">Cycle</button>
       </div>
-      <div id="mbd-cycle-label" style="font-size:8px;color:#97c3b0;padding:2px 10px 3px;background:rgba(180,140,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="mbd-cycle-name">--</span></div>
+      <div id="mbd-cycle-label" style="font-size:12px;color:#97c3b0;padding:2px 10px 3px;background:rgba(180,140,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="mbd-cycle-name">--</span></div>
       <div id="mbd-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #120a1e;padding-bottom:6px;">Visuals constructed from latent emotional structures &#8212; zero derivation from existing artworks.</div>
+        <div style="font-size:12px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #120a1e;padding-bottom:6px;">Visuals constructed from latent emotional structures &#8212; zero derivation from existing artworks.</div>
 
         <!-- Memory input -->
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">MEMORY INSCRIPTION</div>
-        <textarea id="mbd-input" placeholder="A place that felt like waiting but hopeful&#10;The texture of a childhood afternoon&#10;The colour of a sound you almost remember&#10;..." style="width:100%;height:64px;background:rgba(180,140,255,0.04);border:1px solid rgba(180,140,255,0.2);color:#d0b8ff;font-family:inherit;font-size:8px;padding:6px;resize:none;box-sizing:border-box;line-height:1.6;outline:none;margin-bottom:6px;"></textarea>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;">MEMORY INSCRIPTION</div>
+        <textarea id="mbd-input" placeholder="A place that felt like waiting but hopeful&#10;The texture of a childhood afternoon&#10;The colour of a sound you almost remember&#10;..." style="width:100%;height:64px;background:rgba(180,140,255,0.04);border:1px solid rgba(180,140,255,0.2);color:#d0b8ff;font-family:inherit;font-size:12px;padding:6px;resize:none;box-sizing:border-box;line-height:1.6;outline:none;margin-bottom:6px;"></textarea>
 
         <!-- Preset memory architectures -->
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:5px;">LATENT ARCHITECTURES</div>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-bottom:5px;">LATENT ARCHITECTURES</div>
         <div id="mbd-arch-list" style="margin-bottom:8px;"></div>
 
         <!-- Emotional dimension sliders -->
-        <div style="font-size:8px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;margin-top:4px;">EMOTIONAL DIMENSIONS</div>
+        <div style="font-size:12px;color:#97c3b0;letter-spacing:.1em;margin-bottom:4px;margin-top:4px;">EMOTIONAL DIMENSIONS</div>
         <div class="pm"><div class="pr"><span class="pn">Warmth</span><span class="pv" id="mbd-warm-v">60%</span></div><input type="range" id="mbd-warm" min="0" max="100" value="60"></div>
         <div class="pm"><div class="pr"><span class="pn">Weight</span><span class="pv" id="mbd-weight-v">40%</span></div><input type="range" id="mbd-weight" min="0" max="100" value="40"></div>
         <div class="pm"><div class="pr"><span class="pn">Temporal Blur</span><span class="pv" id="mbd-time-v">70%</span></div><input type="range" id="mbd-time" min="0" max="100" value="70"></div>
@@ -911,7 +911,7 @@
           <button id="mbd-render-btn" class="fx-bb" style="flex:2;border-color:#b48cff;color:#97c3b0;" onclick="window._MBD&&window._MBD.render()">&#9762; Inscribe Memory</button>
           <button class="fx-bb" style="flex:1;border-color:#6a4a8a;color:#97c3b0;" onclick="window._MBD&&window._MBD.clear()">&#10005; Clear</button>
         </div>
-        <div id="mbd-status" style="font-size:8px;color:#97c3b0;margin-top:5px;line-height:1.5;min-height:14px;font-style:italic;"></div>
+        <div id="mbd-status" style="font-size:12px;color:#97c3b0;margin-top:5px;line-height:1.5;min-height:14px;font-style:italic;"></div>
       </div>
     </div>
 
@@ -919,25 +919,25 @@
     <!-- TOPOLOGICAL 3D — Mathematical topology shapes -->
     <div id="topo-sec" style="border-top:1px solid #0a1a2a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="topo-toggle" onclick="(function(){var b=document.getElementById('topo-body');var t=document.getElementById('topo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,232,255,0.07)':'none';t.style.borderColor=open?'#40e8ff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40e8ff;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="topo-toggle" onclick="(function(){var b=document.getElementById('topo-body');var t=document.getElementById('topo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,232,255,0.07)':'none';t.style.borderColor=open?'#40e8ff':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40e8ff;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9674; Topological 3D</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="topo-cycle-btn" class="cycle-btn" onclick="window._TOPO&&window._TOPO.cycle()">Cycle</button>
       </div>
-      <div id="topo-cycle-label" style="font-size:8px;color:#40e8ff;padding:2px 10px 3px;background:rgba(64,232,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="topo-cycle-name">--</span></div>
+      <div id="topo-cycle-label" style="font-size:12px;color:#40e8ff;padding:2px 10px 3px;background:rgba(64,232,255,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="topo-cycle-name">--</span></div>
       <div id="topo-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#97c3d0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Rubber-sheet geometry rendered in 3D. Sphere, torus, M&ouml;bius band, Klein bottle and beyond &mdash; continuous deformations of mathematical space.</div>
+        <div style="font-size:12px;color:#97c3d0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a1a2a;padding-bottom:6px;">Rubber-sheet geometry rendered in 3D. Sphere, torus, M&ouml;bius band, Klein bottle and beyond &mdash; continuous deformations of mathematical space.</div>
 
         <!-- Shape list -->
-        <div style="font-size:8px;color:#40e8ff;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
+        <div style="font-size:12px;color:#40e8ff;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
         <div id="topo-shape-list" style="margin-bottom:8px;"></div>
 
         <!-- Description -->
         <div id="topo-desc" style="display:none;"></div>
 
         <!-- Parameter sliders -->
-        <div style="font-size:8px;color:#40e8ff;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div style="font-size:12px;color:#40e8ff;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn">Resolution</span><span class="pv" id="topo-resolution-v">50</span></div><input type="range" id="topo-resolution" min="12" max="300" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn">Zoom</span><span class="pv" id="topo-zoom-v">1.0&times;</span></div><input type="range" id="topo-zoom" min="10" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn">Rotation</span><span class="pv" id="topo-rotation-v">50%</span></div><input type="range" id="topo-rotation" min="0" max="100" value="50"></div>
@@ -949,8 +949,8 @@
 
         <!-- Object Mode -->
         <div style="margin-top:10px;border-top:1px solid rgba(64,232,255,0.15);padding-top:8px;">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#40e8ff;font-weight:600;margin-bottom:6px;">Object Mode</div>
-          <button id="topo-obj-btn" style="width:100%;padding:7px 12px;background:rgba(64,232,255,0.08);border:1.5px solid rgba(64,232,255,0.4);color:#40e8ff;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;">ENABLE OBJECT MODE</button>
+          <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#40e8ff;font-weight:600;margin-bottom:6px;">Object Mode</div>
+          <button id="topo-obj-btn" style="width:100%;padding:7px 12px;background:rgba(64,232,255,0.08);border:1.5px solid rgba(64,232,255,0.4);color:#40e8ff;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;">ENABLE OBJECT MODE</button>
           <div style="font-size:7.5px;color:rgba(255,255,255,0.4);margin-top:4px;line-height:1.5;text-align:center;">Drag to move &middot; corners to resize &middot; circle to rotate</div>
         </div>
 
@@ -959,7 +959,7 @@
           <button id="topo-render-btn" class="fx-bb" style="flex:2;border-color:#40e8ff;color:#40e8ff;" onclick="window._TOPO&&window._TOPO.render()">&#9674; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#1a3040;color:#97c3d0;" onclick="window._TOPO&&window._TOPO.randomise()">&#8635; Rand</button>
         </div>
-        <div id="topo-status" style="font-size:8px;color:#97c3d0;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="topo-status" style="font-size:12px;color:#97c3d0;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
@@ -967,25 +967,25 @@
     <!-- MORPHOGENESIS — Natural & Organic Forms -->
     <div id="morph-sec" style="border-top:1px solid #0a2a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="morph-toggle" onclick="(function(){var b=document.getElementById('morph-body');var t=document.getElementById('morph-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,192,96,0.07)':'none';t.style.borderColor=open?'#40c060':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40c060;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="morph-toggle" onclick="(function(){var b=document.getElementById('morph-body');var t=document.getElementById('morph-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(64,192,96,0.07)':'none';t.style.borderColor=open?'#40c060':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#40c060;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9784; Morphogenesis</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="morph-cycle-btn" class="cycle-btn" onclick="window._MORPH&&window._MORPH.cycle()">Cycle</button>
       </div>
-      <div id="morph-cycle-label" style="font-size:8px;color:#40c060;padding:2px 10px 3px;background:rgba(64,192,96,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="morph-cycle-name">--</span></div>
+      <div id="morph-cycle-label" style="font-size:12px;color:#40c060;padding:2px 10px 3px;background:rgba(64,192,96,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="morph-cycle-name">--</span></div>
       <div id="morph-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a2a0a;padding-bottom:6px;">Physics, geometry and mathematics of living form. No images. No corpus. Pure first principles.</div>
+        <div style="font-size:12px;color:#97c3b0;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #0a2a0a;padding-bottom:6px;">Physics, geometry and mathematics of living form. No images. No corpus. Pure first principles.</div>
 
         <!-- System list — all 5 displayed, click to select -->
-        <div style="font-size:8px;color:#40c060;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div style="font-size:12px;color:#40c060;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
         <div id="morph-sys-list" style="margin-bottom:8px;"></div>
 
         <!-- Description line -->
         <div id="morph-desc" style="display:none;"></div>
 
         <!-- Parameter sliders -->
-        <div style="font-size:8px;color:#40c060;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div style="font-size:12px;color:#40c060;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="morph-l1">Param 1</span><span class="pv" id="morph-v1">--</span></div><input type="range" id="morph-p1" min="0" max="100" value="37"></div>
         <div class="pm"><div class="pr"><span class="pn" id="morph-l2">Param 2</span><span class="pv" id="morph-v2">--</span></div><input type="range" id="morph-p2" min="0" max="100" value="60"></div>
         <div class="pm"><div class="pr"><span class="pn" id="morph-l3">Param 3</span><span class="pv" id="morph-v3">--</span></div><input type="range" id="morph-p3" min="0" max="100" value="20"></div>
@@ -997,32 +997,32 @@
           <button id="morph-render-btn" class="fx-bb" style="flex:2;border-color:#40c060;color:#40c060;" onclick="window._MORPH&&window._MORPH.render()">&#9784; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#1a4020;color:#97c3b0;" onclick="window._MORPH&&window._MORPH.randomise()">&#8635; Rand</button>
         </div>
-        <div id="morph-status" style="font-size:8px;color:#97c3b0;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="morph-status" style="font-size:12px;color:#97c3b0;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
     <!-- ORGANIC FORMS — Smooth, Sculptural, Blobby Shapes -->
     <div id="orgf-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="orgf-toggle" onclick="(function(){var b=document.getElementById('orgf-body');var t=document.getElementById('orgf-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,160,64,0.07)':'none';t.style.borderColor=open?'#c0a040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c0a040;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="orgf-toggle" onclick="(function(){var b=document.getElementById('orgf-body');var t=document.getElementById('orgf-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,160,64,0.07)':'none';t.style.borderColor=open?'#c0a040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c0a040;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9673; Organic Forms</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="orgf-cycle-btn" class="cycle-btn" onclick="window._ORGF&&window._ORGF.cycle()">Cycle</button>
       </div>
-      <div id="orgf-cycle-label" style="font-size:8px;color:#c0a040;padding:2px 10px 3px;background:rgba(192,160,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="orgf-cycle-name">--</span></div>
+      <div id="orgf-cycle-label" style="font-size:12px;color:#c0a040;padding:2px 10px 3px;background:rgba(192,160,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="orgf-cycle-name">--</span></div>
       <div id="orgf-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#b09060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Smooth, sculptural forms from pure mathematics. Metaballs, superformula, noise blobs, fluid shapes, radiolaria.</div>
+        <div style="font-size:12px;color:#b09060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Smooth, sculptural forms from pure mathematics. Metaballs, superformula, noise blobs, fluid shapes, radiolaria.</div>
 
         <!-- System list -->
-        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div style="font-size:12px;color:#c0a040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
         <div id="orgf-sys-list" style="margin-bottom:8px;"></div>
 
         <!-- Description -->
         <div id="orgf-desc" style="display:none;"></div>
 
         <!-- Parameter sliders -->
-        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div style="font-size:12px;color:#c0a040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="orgf-l1">Param 1</span><span class="pv" id="orgf-v1">--</span></div><input type="range" id="orgf-p1" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="orgf-l2">Param 2</span><span class="pv" id="orgf-v2">--</span></div><input type="range" id="orgf-p2" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="orgf-l3">Param 3</span><span class="pv" id="orgf-v3">--</span></div><input type="range" id="orgf-p3" min="0" max="100" value="50"></div>
@@ -1034,26 +1034,26 @@
           <button id="orgf-render-btn" class="fx-bb" style="flex:2;border-color:#c0a040;color:#c0a040;" onclick="window._ORGF&&window._ORGF.render()">&#9673; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#4a3a1a;color:#b09060;" onclick="window._ORGF&&window._ORGF.randomise()">&#8635; Rand</button>
         </div>
-        <div id="orgf-status" style="font-size:8px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="orgf-status" style="font-size:12px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
     <!-- ◈ TEXTURES — Procedural texture synthesis -->
     <div id="tex-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="tex-toggle" onclick="(function(){var b=document.getElementById('tex-body');var t=document.getElementById('tex-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,144,96,0.07)':'none';t.style.borderColor=open?'#c09060':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c09060;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="tex-toggle" onclick="(function(){var b=document.getElementById('tex-body');var t=document.getElementById('tex-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,144,96,0.07)':'none';t.style.borderColor=open?'#c09060':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c09060;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9672; Textures</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="tex-cycle-btn" class="cycle-btn" onclick="window._TEX&&window._TEX.cycle()">Cycle</button>
       </div>
-      <div id="tex-cycle-label" style="font-size:8px;color:#c09060;padding:2px 10px 3px;background:rgba(192,144,96,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="tex-cycle-name">--</span></div>
+      <div id="tex-cycle-label" style="font-size:12px;color:#c09060;padding:2px 10px 3px;background:rgba(192,144,96,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="tex-cycle-name">--</span></div>
       <div id="tex-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#a08060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Procedural texture synthesis &mdash; surfaces from mathematics. Stone, wood, fabric, metal &mdash; all generated from noise functions and physics, not photographs.</div>
-        <div style="font-size:8px;color:#c09060;letter-spacing:.1em;margin-bottom:5px;">TEXTURES &mdash; click to select &amp; render</div>
+        <div style="font-size:12px;color:#a08060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Procedural texture synthesis &mdash; surfaces from mathematics. Stone, wood, fabric, metal &mdash; all generated from noise functions and physics, not photographs.</div>
+        <div style="font-size:12px;color:#c09060;letter-spacing:.1em;margin-bottom:5px;">TEXTURES &mdash; click to select &amp; render</div>
         <div id="tex-list" style="margin-bottom:8px;"></div>
-        <div id="tex-desc" style="display:none;font-size:8px;color:#a08060;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
-        <div style="font-size:8px;color:#c09060;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div id="tex-desc" style="display:none;font-size:12px;color:#a08060;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
+        <div style="font-size:12px;color:#c09060;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="tex-l1">Param 1</span><span class="pv" id="tex-v1">50%</span></div><input type="range" id="tex-p1" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="tex-l2">Param 2</span><span class="pv" id="tex-v2">50%</span></div><input type="range" id="tex-p2" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="tex-l3">Param 3</span><span class="pv" id="tex-v3">50%</span></div><input type="range" id="tex-p3" min="0" max="100" value="50"></div>
@@ -1062,8 +1062,8 @@
 
         <!-- Mapping section -->
         <div style="margin-top:10px;border-top:1px solid rgba(192,144,96,0.15);padding-top:8px;">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#c09060;font-weight:600;margin-bottom:6px;">Mapping</div>
-          <div style="font-size:8px;color:#a08060;margin-bottom:6px;line-height:1.5;">
+          <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#c09060;font-weight:600;margin-bottom:6px;">Mapping</div>
+          <div style="font-size:12px;color:#a08060;margin-bottom:6px;line-height:1.5;">
             <label style="cursor:pointer;margin-right:10px;"><input type="radio" name="tex-map" value="none" checked style="margin-right:3px;">Canvas</label>
             <label style="cursor:pointer;margin-right:10px;"><input type="radio" name="tex-map" value="fill" style="margin-right:3px;">Tiled Fill</label>
             <label style="cursor:pointer;"><input type="radio" name="tex-map" value="map3d" style="margin-right:3px;">3D Map</label>
@@ -1075,26 +1075,26 @@
           <button id="tex-render-btn" class="fx-bb" style="flex:2;border-color:#c09060;color:#c09060;" onclick="window._TEX&&window._TEX.render()">&#9672; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#3a2a1a;color:#a08060;" onclick="window._TEX&&window._TEX.randomise()">&#8635; Rand</button>
         </div>
-        <div id="tex-status" style="font-size:8px;color:#a08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="tex-status" style="font-size:12px;color:#a08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
     <!-- ◆ 3D — Software 3D renderer on 2D canvas -->
     <div id="td-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="td-toggle" onclick="(function(){var b=document.getElementById('td-body');var t=document.getElementById('td-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(255,160,60,0.07)':'none';t.style.borderColor=open?'#ffa03c':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#ffa03c;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="td-toggle" onclick="(function(){var b=document.getElementById('td-body');var t=document.getElementById('td-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(255,160,60,0.07)':'none';t.style.borderColor=open?'#ffa03c':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#ffa03c;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#11042; 3D</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="td-cycle-btn" class="cycle-btn" onclick="window._TD&&window._TD.cycle()">Cycle</button>
       </div>
-      <div id="td-cycle-label" style="font-size:8px;color:#ffa03c;padding:2px 10px 3px;background:rgba(255,160,60,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="td-cycle-name">--</span></div>
+      <div id="td-cycle-label" style="font-size:12px;color:#ffa03c;padding:2px 10px 3px;background:rgba(255,160,60,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="td-cycle-name">--</span></div>
       <div id="td-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Software 3D renderer &mdash; perspective projection, z-sorted painter&rsquo;s algorithm, Blinn-Phong shading, palette-driven materials. 3D objects drawn entirely on the 2D canvas.</div>
-        <div style="font-size:8px;color:#ffa03c;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
+        <div style="font-size:12px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Software 3D renderer &mdash; perspective projection, z-sorted painter&rsquo;s algorithm, Blinn-Phong shading, palette-driven materials. 3D objects drawn entirely on the 2D canvas.</div>
+        <div style="font-size:12px;color:#ffa03c;letter-spacing:.1em;margin-bottom:5px;">SHAPES &mdash; click to select &amp; render</div>
         <div id="td-shape-list" style="margin-bottom:8px;"></div>
-        <div id="td-desc" style="display:none;font-size:8px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
-        <div style="font-size:8px;color:#ffa03c;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div id="td-desc" style="display:none;font-size:12px;color:#cc9050;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
+        <div style="font-size:12px;color:#ffa03c;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn">Resolution</span><span class="pv" id="td-resolution-v">80</span></div><input type="range" id="td-resolution" min="6" max="1000" value="80"></div>
         <div class="pm"><div class="pr"><span class="pn">Zoom</span><span class="pv" id="td-zoom-v">1.0&times;</span></div><input type="range" id="td-zoom" min="15" max="150" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn">Rotate X</span><span class="pv" id="td-rotx-v">15%</span></div><input type="range" id="td-rotx" min="0" max="100" value="15"></div>
@@ -1106,10 +1106,10 @@
         <div class="pm"><div class="pr"><span class="pn">Ambient</span><span class="pv" id="td-ambient-v">30%</span></div><input type="range" id="td-ambient" min="0" max="100" value="30"></div>
         <!-- Object Mode -->
         <div style="margin-top:10px;border-top:1px solid rgba(255,160,60,0.15);padding-top:8px;">
-          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#ffa03c;font-weight:600;margin-bottom:6px;">Object Mode</div>
+          <div style="font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#ffa03c;font-weight:600;margin-bottom:6px;">Object Mode</div>
           <div style="display:flex;gap:4px;">
-            <button id="td-obj-btn" style="flex:2;padding:7px 12px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.4);color:#ffa03c;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.toggleObj()">ENABLE OBJECT MODE</button>
-            <button id="td-place-btn" style="flex:1;padding:7px 8px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.25);color:#cc9050;font-family:inherit;font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.placeObj()">&#10003; PLACE</button>
+            <button id="td-obj-btn" style="flex:2;padding:7px 12px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.4);color:#ffa03c;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.toggleObj()">ENABLE OBJECT MODE</button>
+            <button id="td-place-btn" style="flex:1;padding:7px 8px;background:rgba(255,160,60,0.08);border:1.5px solid rgba(255,160,60,0.25);color:#cc9050;font-family:inherit;font-size:12px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border-radius:4px;transition:all .15s;" onclick="window._TD&&window._TD.placeObj()">&#10003; PLACE</button>
           </div>
           <div style="font-size:7.5px;color:rgba(255,255,255,0.4);margin-top:4px;line-height:1.5;text-align:center;">Drag to move &middot; corners to resize &middot; circle to rotate &middot; Place to set</div>
         </div>
@@ -1119,26 +1119,26 @@
           <button class="fx-bb" style="flex:1;border-color:#3a2a1a;color:#cc9050;" onclick="window._TD&&window._TD.randomise()">&#8635; Rand</button>
           <button id="td-anim-btn" class="fx-bb" style="flex:1;border-color:#3a2a1a;color:#ffa03c;" onclick="window._TD&&window._TD.toggleAnim()">&#9654; Animate</button>
         </div>
-        <div id="td-status" style="font-size:8px;color:#cc9050;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="td-status" style="font-size:12px;color:#cc9050;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
     <!-- ◆ CHROMATIC PHYSICS — Color as physical phenomenon -->
     <div id="chrp-sec" style="border-top:1px solid #1a1a2a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="chrp-toggle" onclick="(function(){var b=document.getElementById('chrp-body');var t=document.getElementById('chrp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(106,140,204,0.07)':'none';t.style.borderColor=open?'#6a8ccc':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#6a8ccc;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="chrp-toggle" onclick="(function(){var b=document.getElementById('chrp-body');var t=document.getElementById('chrp-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(106,140,204,0.07)':'none';t.style.borderColor=open?'#6a8ccc':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#6a8ccc;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9672; Chromatic Physics</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="chrp-cycle-btn" class="cycle-btn" onclick="window._CHRP&&window._CHRP.cycle()">Cycle</button>
       </div>
-      <div id="chrp-cycle-label" style="font-size:8px;color:#6a8ccc;padding:2px 10px 3px;background:rgba(106,140,204,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="chrp-cycle-name">--</span></div>
+      <div id="chrp-cycle-label" style="font-size:12px;color:#6a8ccc;padding:2px 10px 3px;background:rgba(106,140,204,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="chrp-cycle-name">--</span></div>
       <div id="chrp-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a2a;padding-bottom:6px;">Color as a living, physical phenomenon. Spectral wavelengths, interference, pigment diffusion &mdash; colors that emerge from physics, not palettes.</div>
-        <div style="font-size:8px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div style="font-size:12px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #1a1a2a;padding-bottom:6px;">Color as a living, physical phenomenon. Spectral wavelengths, interference, pigment diffusion &mdash; colors that emerge from physics, not palettes.</div>
+        <div style="font-size:12px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
         <div id="chrp-sys-list" style="margin-bottom:8px;"></div>
-        <div id="chrp-desc" style="display:none;font-size:8px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
-        <div style="font-size:8px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div id="chrp-desc" style="display:none;font-size:12px;color:#5a7aaa;font-style:italic;margin-bottom:8px;line-height:1.5;"></div>
+        <div style="font-size:12px;color:#6a8ccc;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="chrp-l1">Param 1</span><span class="pv" id="chrp-v1">--</span></div><input type="range" id="chrp-p1" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="chrp-l2">Param 2</span><span class="pv" id="chrp-v2">--</span></div><input type="range" id="chrp-p2" min="0" max="100" value="50"></div>
         <div class="pm"><div class="pr"><span class="pn" id="chrp-l3">Param 3</span><span class="pv" id="chrp-v3">--</span></div><input type="range" id="chrp-p3" min="0" max="100" value="50"></div>
@@ -1148,32 +1148,32 @@
           <button id="chrp-render-btn" class="fx-bb" style="flex:2;border-color:#6a8ccc;color:#6a8ccc;" onclick="window._CHRP&&window._CHRP.render()">&#9672; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#2a2a4a;color:#5a7aaa;" onclick="window._CHRP&&window._CHRP.randomise()">&#8635; Rand</button>
         </div>
-        <div id="chrp-status" style="font-size:8px;color:#5a7aaa;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="chrp-status" style="font-size:12px;color:#5a7aaa;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 
     <!-- ≋ MOTION — Kinetic Energy & Movement -->
     <div id="motn-sec" style="border-top:1px solid #2a0a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="motn-toggle" onclick="(function(){var b=document.getElementById('motn-body');var t=document.getElementById('motn-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(224,96,64,0.07)':'none';t.style.borderColor=open?'#e06040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#e06040;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="motn-toggle" onclick="(function(){var b=document.getElementById('motn-body');var t=document.getElementById('motn-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(224,96,64,0.07)':'none';t.style.borderColor=open?'#e06040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#e06040;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#8779; Motion</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="motn-cycle-btn" class="cycle-btn" onclick="window._MOTN&&window._MOTN.cycle()">Cycle</button>
       </div>
-      <div id="motn-cycle-label" style="font-size:8px;color:#e06040;padding:2px 10px 3px;background:rgba(224,96,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="motn-cycle-name">--</span></div>
+      <div id="motn-cycle-label" style="font-size:12px;color:#e06040;padding:2px 10px 3px;background:rgba(224,96,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="motn-cycle-name">--</span></div>
       <div id="motn-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a0a0a;padding-bottom:6px;">Kinetic energy frozen in a still image. Flow fields, speed lines, spiral vortices, stroboscopic trails, and shockwaves &mdash; all from pure mathematics.</div>
+        <div style="font-size:12px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a0a0a;padding-bottom:6px;">Kinetic energy frozen in a still image. Flow fields, speed lines, spiral vortices, stroboscopic trails, and shockwaves &mdash; all from pure mathematics.</div>
 
         <!-- System list — all 5 displayed, click to select -->
-        <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div style="font-size:12px;color:#e06040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
         <div id="motn-sys-list" style="margin-bottom:8px;"></div>
 
         <!-- Description line -->
         <div id="motn-desc" style="display:none;"></div>
 
         <!-- Parameter sliders -->
-        <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div style="font-size:12px;color:#e06040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="motn-l1">Param 1</span><span class="pv" id="motn-v1">--</span></div><input type="range" id="motn-p1" min="0" max="100" value="55"></div>
         <div class="pm"><div class="pr"><span class="pn" id="motn-l2">Param 2</span><span class="pv" id="motn-v2">--</span></div><input type="range" id="motn-p2" min="0" max="100" value="40"></div>
         <div class="pm"><div class="pr"><span class="pn" id="motn-l3">Param 3</span><span class="pv" id="motn-v3">--</span></div><input type="range" id="motn-p3" min="0" max="100" value="60"></div>
@@ -1185,12 +1185,12 @@
           <button id="motn-render-btn" class="fx-bb" style="flex:2;border-color:#e06040;color:#e06040;" onclick="window._MOTN&&window._MOTN.render()">&#8779; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#4a2020;color:#c08060;" onclick="window._MOTN&&window._MOTN.randomise()">&#8635; Rand</button>
         </div>
-        <div id="motn-status" style="font-size:8px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="motn-status" style="font-size:12px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
 
         <!-- ANIMATE & RECORD -->
         <div style="border-top:1px solid #2a0a0a;margin-top:10px;padding-top:8px;">
-          <div style="font-size:8px;color:#e06040;letter-spacing:.1em;margin-bottom:6px;">&#9654; ANIMATE &amp; RECORD</div>
-          <div style="font-size:8px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.5;">Animates the current motion system and records it as a downloadable video.</div>
+          <div style="font-size:12px;color:#e06040;letter-spacing:.1em;margin-bottom:6px;">&#9654; ANIMATE &amp; RECORD</div>
+          <div style="font-size:12px;color:#c08060;font-style:italic;margin-bottom:8px;line-height:1.5;">Animates the current motion system and records it as a downloadable video.</div>
 
           <!-- Duration selector -->
           <div class="pm" style="margin-bottom:6px;">
@@ -1203,7 +1203,7 @@
           </div>
 
           <!-- Record button -->
-          <button id="motn-rec-btn" class="fx-bb" style="width:100%;border-color:#60c080;color:#60c080;font-size:9px;letter-spacing:.1em;"
+          <button id="motn-rec-btn" class="fx-bb" style="width:100%;border-color:#60c080;color:#60c080;font-size:12px;letter-spacing:.1em;"
             onclick="window._MOTN&&window._MOTN.toggleRecord()">&#9654; Record</button>
 
           <!-- Progress bar -->
@@ -1212,9 +1212,9 @@
           </div>
 
           <!-- Status + download -->
-          <div id="motn-rec-status" style="font-size:8px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+          <div id="motn-rec-status" style="font-size:12px;color:#c08060;margin-top:5px;min-height:12px;font-style:italic;"></div>
           <div id="motn-rec-link" style="display:none;margin-top:5px;">
-            <a id="motn-dl-link" href="#" style="font-size:8px;color:#60c080;letter-spacing:.08em;text-decoration:none;border:1px solid #60c080;padding:3px 8px;display:inline-block;border-radius:2px;">&#8595; Download Video</a>
+            <a id="motn-dl-link" href="#" style="font-size:12px;color:#60c080;letter-spacing:.08em;text-decoration:none;border:1px solid #60c080;padding:3px 8px;display:inline-block;border-radius:2px;">&#8595; Download Video</a>
           </div>
         </div>
       </div>
@@ -1223,22 +1223,22 @@
     <!-- ◆ LEO TOOLSET — Renaissance ink-and-vellum primitives -->
     <div id="leo-sec" style="border-top:1px solid #2a1a0a;margin-top:8px;padding-top:8px;">
       <div style="display:flex;align-items:stretch;gap:0;">
-        <button id="leo-toggle" onclick="(function(){var b=document.getElementById('leo-body');var t=document.getElementById('leo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,160,64,0.07)':'none';t.style.borderColor=open?'#c0a040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c0a040;font-family:inherit;font-size:9px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+        <button id="leo-toggle" onclick="(function(){var b=document.getElementById('leo-body');var t=document.getElementById('leo-toggle');var open=b.style.display==='none'||!b.style.display;b.style.display=open?'block':'none';t.style.background=open?'rgba(192,160,64,0.07)':'none';t.style.borderColor=open?'#c0a040':'var(--brd)';t.querySelector('.tc-chev').style.transform=open?'rotate(180deg)':'';})()" style="flex:1;text-align:left;background:none;border:1px solid var(--brd);color:#c0a040;font-family:inherit;font-size:12px;padding:5px 8px;cursor:pointer;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
           <span>&#9998; Leo Toolset</span>
-          <span class="tc-chev" style="font-size:8px;transition:transform .2s;">&#9650;</span>
+          <span class="tc-chev" style="font-size:12px;transition:transform .2s;">&#9650;</span>
         </button>
         <button id="leo-cycle-btn" class="cycle-btn" onclick="window._LEO&&window._LEO.cycle&&window._LEO.cycle()">Cycle</button>
       </div>
-      <div id="leo-cycle-label" style="font-size:8px;color:#c0a040;padding:2px 10px 3px;background:rgba(192,160,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="leo-cycle-name">--</span></div>
+      <div id="leo-cycle-label" style="font-size:12px;color:#c0a040;padding:2px 10px 3px;background:rgba(192,160,64,0.04);border-left:1px solid var(--brd);border-right:1px solid var(--brd);display:none;letter-spacing:.06em;">&#9654; <span id="leo-cycle-name">--</span></div>
       <div id="leo-body" style="display:none;padding-top:8px;">
-        <div style="font-size:8px;color:#b09060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Renaissance ink-and-vellum primitives extracted from Leonardo da Vinci&rsquo;s notebooks. Aged paper, iron-gall line, sanguine chalk, chiaroscuro hatching, mirror-writing margins.</div>
+        <div style="font-size:12px;color:#b09060;font-style:italic;margin-bottom:8px;line-height:1.6;border-bottom:1px solid #2a1a0a;padding-bottom:6px;">Renaissance ink-and-vellum primitives extracted from Leonardo da Vinci&rsquo;s notebooks. Aged paper, iron-gall line, sanguine chalk, chiaroscuro hatching, mirror-writing margins.</div>
 
         <!-- System list -->
-        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
+        <div style="font-size:12px;color:#c0a040;letter-spacing:.1em;margin-bottom:5px;">SYSTEMS &#8212; click to select &amp; render</div>
         <div id="leo-sys-list" style="margin-bottom:8px;"></div>
 
         <!-- Parameter sliders -->
-        <div style="font-size:8px;color:#c0a040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
+        <div style="font-size:12px;color:#c0a040;letter-spacing:.1em;margin-bottom:4px;">PARAMETERS</div>
         <div class="pm"><div class="pr"><span class="pn" id="leo-l1">Line tremor</span><span class="pv" id="leo-v1">60%</span></div><input type="range" id="leo-p1" min="0" max="100" value="60"></div>
         <div class="pm"><div class="pr"><span class="pn" id="leo-l2">Hatch density</span><span class="pv" id="leo-v2">60%</span></div><input type="range" id="leo-p2" min="0" max="100" value="60"></div>
         <div class="pm"><div class="pr"><span class="pn" id="leo-l3">Foxing spots</span><span class="pv" id="leo-v3">60%</span></div><input type="range" id="leo-p3" min="0" max="100" value="60"></div>
@@ -1258,7 +1258,7 @@
           <button id="leo-render-btn" class="fx-bb" style="flex:2;border-color:#c0a040;color:#c0a040;" onclick="window._LEO&&window._LEO.render&&window._LEO.render()">&#9998; Generate</button>
           <button class="fx-bb" style="flex:1;border-color:#4a3a1a;color:#b09060;" onclick="window._LEO&&window._LEO.randomise&&window._LEO.randomise()">&#8635; Rand</button>
         </div>
-        <div id="leo-status" style="font-size:8px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
+        <div id="leo-status" style="font-size:12px;color:#b09060;margin-top:5px;min-height:12px;font-style:italic;"></div>
       </div>
     </div>
 

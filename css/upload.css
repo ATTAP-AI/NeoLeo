@@ -23,16 +23,16 @@
 /* upload drop zone */
 #u-dropzone{border:1px dashed #206050;padding:16px 10px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:6px;background:rgba(64,200,160,.04);}
 #u-dropzone:hover,#u-dropzone.drag{border-color:var(--up);background:rgba(64,200,160,.1);}
-#u-dropzone-lbl{font-size:10px;color:var(--dim);line-height:1.6;}
-#u-dropzone-lbl b{color:var(--up);display:block;font-size:12px;margin-bottom:3px;}
+#u-dropzone-lbl{font-size:12px;color:var(--dim);line-height:1.6;}
+#u-dropzone-lbl b{color:var(--up);display:block;font-size:14px;margin-bottom:3px;}
 #u-preview{display:none;position:relative;margin-bottom:6px;}
 #u-preview canvas{width:100%;height:auto;display:block;border:1px solid #206050;}
-#u-preview-info{font-size:9px;color:var(--dim);margin-top:3px;line-height:1.5;}
+#u-preview-info{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.5;}
 #u-preview-info span{color:var(--txt);}
-#u-err{font-size:9px;color:#ff6060;margin-top:4px;display:none;}
+#u-err{font-size:12px;color:#ff6060;margin-top:4px;display:none;}
 
 /* ── DRAG-TO-CANVAS PLACEMENT OVERLAY ── */
-.u-drag-hint{font-size:8px;color:var(--up);text-align:center;padding:4px 0;letter-spacing:.08em;opacity:.7;cursor:grab;}
+.u-drag-hint{font-size:11px;color:var(--up);text-align:center;padding:5px 0;letter-spacing:.08em;opacity:.85;cursor:grab;}
 #u-thumb-wrap{position:relative;cursor:grab;}
 #u-thumb-wrap:active{cursor:grabbing;}
 #u-drag-badge{position:absolute;top:4px;right:4px;background:rgba(64,200,160,.85);color:#000;font-size:7px;padding:2px 5px;border-radius:2px;pointer-events:none;letter-spacing:.08em;font-family:'Courier New',monospace;}
