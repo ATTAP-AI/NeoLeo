@@ -497,4 +497,12 @@ openHumPanel=function(){
   _origOpenHP();
 };
 
+/* Expose so scripts and the AI applier can build the panel DOM before
+   setting slider values (buildHumPanel is idempotent). openHumPanel
+   also opens the floating window; use _humEnsureBuilt when you only
+   want the sliders present. */
+window._humEnsureBuilt = function(){ buildHumPanel(); };
+window._humOpen = function(){ openHumPanel(); };
+window._humClose = function(){ closeHumPanel(); };
+
 })();

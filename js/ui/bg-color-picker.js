@@ -99,6 +99,10 @@ swatch.addEventListener('click',()=>{
 applyBg('#000000');
 swatch.classList.add('active');
 
+/* Expose so the AI command applier and other modules can drive the
+   canvas background programmatically. */
+window._setCanvasBg = applyBg;
+
 })();
 
 /* ══════════════════════════════════════════════════════════
