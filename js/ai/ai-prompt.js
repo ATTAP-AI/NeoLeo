@@ -125,7 +125,7 @@ async function doSend(){
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:chatHist})
+      body: JSON.stringify({model:'claude-sonnet-5',max_tokens:1000,system:SYS,messages:chatHist})
     });
     if(_aborted)throw new DOMException('Aborted','AbortError');
     var data = await resp.json();
