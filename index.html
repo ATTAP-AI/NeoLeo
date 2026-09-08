@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="css/panel.css?v=4">
 <link rel="stylesheet" href="css/fx-panel.css">
 <link rel="stylesheet" href="css/upload.css">
-<link rel="stylesheet" href="css/prompt.css">
+<link rel="stylesheet" href="css/prompt.css?v=2">
 <link rel="stylesheet" href="css/palette.css">
 <link rel="stylesheet" href="css/save-state.css">
 <link rel="stylesheet" href="css/resolution.css">
@@ -330,7 +330,7 @@
   <div id="ai-history"><div class="ai-msg sys">Enter your Anthropic API key above, then describe what to change.</div></div>
   <div id="ai-input-wrap">
     <textarea id="ai-textarea" placeholder="e.g. make it more chaotic and warm, add a soft blue rim light, reduce contrast..." spellcheck="false"></textarea>
-    <div id="ai-send-row"><button id="ai-send">Send</button><button id="ai-stop" title="Stop">&#9632; Stop</button><button id="ai-clrh" title="Clear history">&#8635;</button></div>
+    <div id="ai-send-row"><button id="ai-mic" title="Speak your prompt (tap to start, tap to stop)" style="display:none;">&#127908;</button><button id="ai-send">Send</button><button id="ai-stop" title="Stop">&#9632; Stop</button><button id="ai-clrh" title="Clear history">&#8635;</button></div>
     <div id="ai-status"></div>
   </div>
 </div>
@@ -1555,6 +1555,6 @@
   #gallery-btn:hover{background:#6e40a0 !important;}
 </style>
 
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=10"></script>
 </body>
 </html>

@@ -48,6 +48,7 @@
 
     // ── AI (depends on engines + state) ──
     'js/ai/ai-prompt.js',
+    'js/ai/ai-voice.js',
 
     // ── Tools (depend on drawing + core) ──
     'js/tools/crop.js',
