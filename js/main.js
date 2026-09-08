@@ -101,6 +101,9 @@
     'js/ui/about-panel.js',
     'js/ui/showcase.js',
 
+    // ── Gallery (depends on export + core canvas) ──
+    'js/gallery/gallery.js',
+
     // ── Engine init (depends on drawing, layers, experimental — wires engine buttons + palette + resetToBlank) ──
     'js/engines/engine-init.js',
 
