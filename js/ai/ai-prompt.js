@@ -125,7 +125,7 @@ var SYS = [
 ' watercolor: wc_l(4-40) wc_b(0.5-3) wc_bl(0-20) wc_w(0.2-2)',
 ' diatom: dt_sym(3-16) dt_ri(2-12) dt_pt(20-120) dt_lw(0.3-3) dt_co(1-12)',
 ' fungal_network: fn_se(1-12) fn_st(50-300) fn_an(5-45) fn_tp(0.7-0.98) fn_an2(0-50)',
-' anatomy: an_p(standing|vitruvian|contrapposto|seated) an_v(front|threeQ|side|back|above) an_s(wireframe|contour|hatched|xray) an_d(1-3 detail level) an_r(0-360 rotation) an_l(0.3-3 line wt)',
+' anatomy: an_p(standing|vitruvian|contrapposto|seated) an_v(front|threeQ|side|back|above) an_s(wireframe|contour|hatched|xray) an_d(1-3 detail level) an_r(0-360 rotation) an_l(0.3-3 line wt) an_3d(off|on — painter-sorted depth + depth-fade shading, default on) an_om(off|figure — when Object Mode is engaged, "figure" registers the whole mannequin as one movable/rotatable/resizable object)',
 '',
 'LIGHTING: on(bool) l1/l2: on type(point|spot|rim) col(hex) int(0-100) px(0-100) py(0-100) rad(20-600) bloom(0-40) ambCol(hex) ambInt(0-100)',
 'ATMOSPHERE: on(bool) vig.str/soft(0-100) vig.col fog.type(none|flat|radial|bottom|top) fog.col fog.den(0-100) grain(0-100) grade.temp/sat/con/bri(-100 to 100) aber(0-50)',

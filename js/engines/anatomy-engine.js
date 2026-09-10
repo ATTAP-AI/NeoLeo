@@ -153,31 +153,61 @@
     };
   }
 
+  /* ── Primitive-list plumbing for 3D mode + Object Mode ──────────
+     Each helper below builds an anonymous zero-arg draw closure and
+     hands it to `emit(z, fn)` along with a representative depth. In
+     non-3D mode `emit` draws immediately; in 3D mode it stores each
+     closure with its z, then a flush at the end sorts back-to-front
+     (painter's algorithm) and calls each with an alpha multiplier
+     derived from depth (front = 1.0, far back = 0.35). All screen-
+     space points also feed a running bbox so Object Mode can register
+     the whole figure as one movable object.  ────────────────────── */
+  var _PRIMS = null;   /* set inside anatomy() per render */
+  var _BBOX  = null;
+  var _emit  = function(z, fn){ fn(1); };   /* replaced per render */
+  function _pt(x, y){
+    if(!_BBOX) return;
+    if(x < _BBOX.x0) _BBOX.x0 = x;
+    if(x > _BBOX.x1) _BBOX.x1 = x;
+    if(y < _BBOX.y0) _BBOX.y0 = y;
+    if(y > _BBOX.y1) _BBOX.y1 = y;
+  }
+
   /* ── Build a filled/hollow sphere as a series of parallel circles.
      Returns projected circles ordered back-to-front for painter's
      algorithm. ── */
   function drawSphere(project, cx, cy, cz, r, col, lw, filled){
-    var rings = 9;
+    var rings = 9, steps = 24;
     for(var i = 0; i < rings; i++){
       var t = i / (rings - 1);
       var y = cy + (t - 0.5) * 2 * r;
       var rr = Math.sqrt(Math.max(0, r*r - (y-cy)*(y-cy)));
-      /* Sample the ring */
-      var steps = 24;
-      ctx.beginPath();
+      /* Sample the ring, capture points + representative z. */
+      var pts = new Array(steps + 1), zSum = 0;
       for(var s = 0; s <= steps; s++){
         var ang = s / steps * Math.PI * 2;
         var px = cx + rr * Math.cos(ang);
         var pz = cz + rr * Math.sin(ang);
         var q = project(px, y, pz);
-        if(s === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+        pts[s] = q; zSum += q.z; _pt(q.x, q.y);
       }
-      ctx.strokeStyle = col;
-      ctx.lineWidth   = lw;
-      ctx.globalAlpha = filled ? 0.55 : 0.85;
-      ctx.stroke();
+      var zAvg = zSum / (steps + 1);
+      var baseA = filled ? 0.55 : 0.85;
+      _emit(zAvg, function(pts2, baseA2){
+        return function(am){
+          ctx.beginPath();
+          for(var s2 = 0; s2 <= steps; s2++){
+            if(s2 === 0) ctx.moveTo(pts2[s2].x, pts2[s2].y);
+            else         ctx.lineTo(pts2[s2].x, pts2[s2].y);
+          }
+          ctx.strokeStyle = col;
+          ctx.lineWidth   = lw;
+          ctx.globalAlpha = baseA2 * am;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        };
+      }(pts, baseA));
     }
-    ctx.globalAlpha = 1;
   }
 
   /* ── Draw a capsule (cylinder+hemispheres) between two joints.
@@ -207,26 +237,36 @@
     var wz = ux*vy - uy*vx;
 
     var rings = 6, sides = 12;
-    ctx.strokeStyle = col;
-    ctx.lineWidth   = lw;
 
     /* Cross-section rings */
     if(mode === 'contour' || mode === 'wireframe' || mode === 'hatched'){
       for(var i = 0; i <= rings; i++){
         var t  = i / rings;
-        var cx = p0[0] + dx*t, cy = p0[1] + dy*t, cz = p0[2] + dz*t;
+        var cxc = p0[0] + dx*t, cyc = p0[1] + dy*t, czc = p0[2] + dz*t;
         var r  = r0 + (r1 - r0) * t;
-        ctx.beginPath();
+        var ringPts = new Array(sides + 1), zSum = 0;
         for(var s = 0; s <= sides; s++){
           var a = s / sides * Math.PI * 2;
           var ca = Math.cos(a) * r, sa = Math.sin(a) * r;
-          var px = cx + vx*ca + wx*sa;
-          var py = cy + vy*ca + wy*sa;
-          var pz = cz + vz*ca + wz*sa;
+          var px = cxc + vx*ca + wx*sa;
+          var py = cyc + vy*ca + wy*sa;
+          var pz = czc + vz*ca + wz*sa;
           var q = project(px, py, pz);
-          if(s === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+          ringPts[s] = q; zSum += q.z; _pt(q.x, q.y);
         }
-        ctx.stroke();
+        var zAvg = zSum / (sides + 1);
+        _emit(zAvg, function(pts, n){ return function(am){
+          ctx.beginPath();
+          for(var k = 0; k <= n; k++){
+            if(k === 0) ctx.moveTo(pts[k].x, pts[k].y);
+            else        ctx.lineTo(pts[k].x, pts[k].y);
+          }
+          ctx.strokeStyle = col;
+          ctx.lineWidth   = lw;
+          ctx.globalAlpha = am;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }; }(ringPts, sides));
       }
     }
 
@@ -235,7 +275,7 @@
       for(var s2 = 0; s2 < sides; s2 += 2){
         var a2 = s2 / sides * Math.PI * 2;
         var ca2 = Math.cos(a2), sa2 = Math.sin(a2);
-        ctx.beginPath();
+        var longPts = new Array(rings + 1), zSum2 = 0;
         for(var i2 = 0; i2 <= rings; i2++){
           var t2 = i2 / rings;
           var r2 = r0 + (r1 - r0) * t2;
@@ -244,9 +284,21 @@
           var py2 = cy2 + vy*ca2*r2 + wy*sa2*r2;
           var pz2 = cz2 + vz*ca2*r2 + wz*sa2*r2;
           var q2 = project(px2, py2, pz2);
-          if(i2 === 0) ctx.moveTo(q2.x, q2.y); else ctx.lineTo(q2.x, q2.y);
+          longPts[i2] = q2; zSum2 += q2.z; _pt(q2.x, q2.y);
         }
-        ctx.stroke();
+        var zAvg2 = zSum2 / (rings + 1);
+        _emit(zAvg2, function(pts, n){ return function(am){
+          ctx.beginPath();
+          for(var k = 0; k <= n; k++){
+            if(k === 0) ctx.moveTo(pts[k].x, pts[k].y);
+            else        ctx.lineTo(pts[k].x, pts[k].y);
+          }
+          ctx.strokeStyle = col;
+          ctx.lineWidth   = lw;
+          ctx.globalAlpha = am;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }; }(longPts, rings));
       }
     }
   }
@@ -254,50 +306,60 @@
   /* ── Ribcage: a set of arcs from the spine outward, forming the
      characteristic cage of parallel curves. ── */
   function drawRibcage(project, top, bot, col, lw, mode){
-    var count = 8;   /* pairs of ribs */
+    var count = 8;
     for(var i = 0; i < count; i++){
       var t = i / (count - 1);
       var y = top[1] + (bot[1] - top[1]) * t;
-      /* Rib width grows and then shrinks (barrel-shaped) */
       var w = 0.13 + 0.05 * Math.sin(t * Math.PI);
       var d = 0.09 + 0.02 * Math.sin(t * Math.PI);
       for(var side = -1; side <= 1; side += 2){
-        ctx.beginPath();
-        ctx.strokeStyle = col;
-        ctx.lineWidth   = lw;
         var steps = 18;
+        var pts = new Array(steps + 1), zSum = 0;
         for(var s = 0; s <= steps; s++){
-          var u = s / steps;                          /* 0=back 1=front */
-          var ang = u * Math.PI;                       /* half circle */
+          var u = s / steps;
+          var ang = u * Math.PI;
           var xr = side * w * Math.sin(ang);
           var zr = -d * Math.cos(ang);
-          var q  = project(xr, y, zr);
-          if(s === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+          var q = project(xr, y, zr);
+          pts[s] = q; zSum += q.z; _pt(q.x, q.y);
         }
-        ctx.stroke();
+        var zAvg = zSum / (steps + 1);
+        _emit(zAvg, function(pts2, n){ return function(am){
+          ctx.beginPath();
+          for(var k = 0; k <= n; k++){
+            if(k === 0) ctx.moveTo(pts2[k].x, pts2[k].y);
+            else        ctx.lineTo(pts2[k].x, pts2[k].y);
+          }
+          ctx.strokeStyle = col;
+          ctx.lineWidth   = lw;
+          ctx.globalAlpha = am;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }; }(pts, steps));
       }
     }
     /* Sternum: a straight midline from top to bottom on the front */
     if(mode === 'wireframe' || mode === 'contour'){
-      ctx.beginPath();
       var q1 = project(0, top[1], -0.09);
       var q2 = project(0, bot[1], -0.09);
-      ctx.moveTo(q1.x, q1.y); ctx.lineTo(q2.x, q2.y);
-      ctx.stroke();
+      _pt(q1.x, q1.y); _pt(q2.x, q2.y);
+      var zAvg = (q1.z + q2.z) * 0.5;
+      _emit(zAvg, function(){
+        ctx.beginPath();
+        ctx.moveTo(q1.x, q1.y); ctx.lineTo(q2.x, q2.y);
+        ctx.strokeStyle = col; ctx.lineWidth = lw;
+        ctx.stroke();
+      });
     }
   }
 
   /* ── Spine: a cubic Bezier from base of skull to pelvis with a
      slight S-curve (thoracic kyphosis + lumbar lordosis). ── */
   function drawSpine(project, skull, pelvis, col, lw){
-    ctx.beginPath();
-    ctx.strokeStyle = col;
-    ctx.lineWidth   = lw;
     var steps = 40;
-    /* Control points offset toward +z at chest, -z at lumbar for the
-       natural S-curve when viewed from the side. */
     var c1 = [skull[0], skull[1] + 0.20, skull[2] + 0.05];
     var c2 = [pelvis[0], pelvis[1] - 0.20, pelvis[2] - 0.04];
+    var pts = new Array(steps + 1), zSum = 0;
     for(var i = 0; i <= steps; i++){
       var t = i / steps;
       var mt = 1 - t;
@@ -305,9 +367,19 @@
       var y = mt*mt*mt*skull[1] + 3*mt*mt*t*c1[1] + 3*mt*t*t*c2[1] + t*t*t*pelvis[1];
       var z = mt*mt*mt*skull[2] + 3*mt*mt*t*c1[2] + 3*mt*t*t*c2[2] + t*t*t*pelvis[2];
       var q = project(x, y, z);
-      if(i === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+      pts[i] = q; zSum += q.z; _pt(q.x, q.y);
     }
-    ctx.stroke();
+    var zAvg = zSum / (steps + 1);
+    _emit(zAvg, function(){
+      ctx.beginPath();
+      ctx.strokeStyle = col;
+      ctx.lineWidth   = lw;
+      for(var k = 0; k <= steps; k++){
+        if(k === 0) ctx.moveTo(pts[k].x, pts[k].y);
+        else        ctx.lineTo(pts[k].x, pts[k].y);
+      }
+      ctx.stroke();
+    });
   }
 
   /* ── Cross-hatched shading for the "hatched" style — parallel
@@ -317,21 +389,24 @@
     var dx = p1[0]-p0[0], dy = p1[1]-p0[1], dz = p1[2]-p0[2];
     var len = Math.sqrt(dx*dx + dy*dy + dz*dz);
     if(len < 1e-6) return;
-    ctx.strokeStyle = col;
-    ctx.lineWidth   = lw * 0.55;
-    ctx.globalAlpha = 0.7;
     var count = Math.round(len * 40);
     for(var i = 1; i < count; i++){
       var t = i / count;
       var cx = p0[0] + dx*t, cy = p0[1] + dy*t, cz = p0[2] + dz*t;
-      /* Two short hatches perpendicular to axis */
       var q1 = project(cx - r*0.8, cy, cz);
       var q2 = project(cx + r*0.8, cy, cz);
-      ctx.beginPath();
-      ctx.moveTo(q1.x, q1.y); ctx.lineTo(q2.x, q2.y);
-      ctx.stroke();
+      _pt(q1.x, q1.y); _pt(q2.x, q2.y);
+      var zAvg = (q1.z + q2.z) * 0.5;
+      _emit(zAvg, function(a, b){ return function(am){
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = col;
+        ctx.lineWidth   = lw * 0.55;
+        ctx.globalAlpha = 0.7 * am;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }; }(q1, q2));
     }
-    ctx.globalAlpha = 1;
   }
 
   /* ── Main engine entry ── */
@@ -342,6 +417,22 @@
     var det   = gp('an_d');
     var rotOffDeg = gp('an_r');
     var lw    = gp('an_l');
+    /* New: 3D depth-sort mode + Object Mode emission ('off' | 'figure'
+       | 'parts'). 'parts' is reserved for a later phase — treated as
+       'figure' for now (one movable object rather than N per-limb). */
+    var mode3d = gp('an_3d');
+    var omMode = gp('an_om');
+
+    /* Set up per-render primitive buffer + bbox tracker. In 3D mode
+       `_emit` collects; in non-3D mode it draws immediately. */
+    _PRIMS = (mode3d === 'on') ? [] : null;
+    _BBOX  = {x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9};
+    /* Local reference so the collect closures find the current mode. */
+    var immediate = (mode3d !== 'on');
+    _emit = function(z, drawFn){
+      if(immediate){ drawFn(1); }
+      else         { _PRIMS.push({z: z, draw: drawFn}); }
+    };
 
     ctx.fillStyle = p.bg;
     ctx.fillRect(0, 0, W, H);
@@ -406,22 +497,90 @@
 
     /* Silhouette outline for xray style: a light convex-ish outline
        traced through the joint set — not anatomically precise, but
-       reads as a figure at a glance. */
+       reads as a figure at a glance. Collect its projected points
+       through _pt so Object Mode's bbox stays honest. */
     if(style === 'xray'){
-      ctx.strokeStyle = pcol(p, 0.30, 0.30);
-      ctx.lineWidth   = lw * 2.5;
-      ctx.beginPath();
       var order = ['skull','shoulder_L','elbow_L','wrist_L','hip_L','knee_L','ankle_L',
                    'ankle_R','knee_R','hip_R','wrist_R','elbow_R','shoulder_R','skull'];
-      order.forEach(function(k, i){
+      var silPts = [], zSum = 0;
+      order.forEach(function(k){
         var pt2 = Ppos[k]; if(!pt2) return;
         var qq = project(pt2[0], pt2[1], pt2[2]);
-        if(i === 0) ctx.moveTo(qq.x, qq.y); else ctx.lineTo(qq.x, qq.y);
+        silPts.push(qq); zSum += qq.z; _pt(qq.x, qq.y);
       });
-      ctx.stroke();
+      var zAvg = silPts.length ? zSum / silPts.length : 0;
+      _emit(zAvg, function(){
+        ctx.strokeStyle = pcol(p, 0.30, 0.30);
+        ctx.lineWidth   = lw * 2.5;
+        ctx.beginPath();
+        silPts.forEach(function(qq, i){
+          if(i === 0) ctx.moveTo(qq.x, qq.y);
+          else        ctx.lineTo(qq.x, qq.y);
+        });
+        ctx.stroke();
+      });
     }
 
-    setI('Anatomy ' + pose + ' / ' + view + ' / ' + style);
+    /* ── 3D flush: sort primitives back-to-front, apply depth-fade,
+       and draw. z ranges roughly from -0.5 (near) to +0.5 (far) in
+       normalized model space; map that to alpha 1.0 (near) → 0.35
+       (far) so back bones read as recessive. When 3D is off, `_emit`
+       already drew everything inline. ── */
+    if(_PRIMS){
+      _PRIMS.sort(function(a, b){ return b.z - a.z; });   /* far first */
+      var zMin =  1e9, zMax = -1e9;
+      _PRIMS.forEach(function(x){
+        if(x.z < zMin) zMin = x.z;
+        if(x.z > zMax) zMax = x.z;
+      });
+      var span = Math.max(0.0001, zMax - zMin);
+      _PRIMS.forEach(function(x){
+        var t = (x.z - zMin) / span;   /* 0 near, 1 far */
+        var am = 1 - t * 0.65;          /* 1.0 → 0.35 */
+        x.draw(am);
+      });
+      _PRIMS = null;
+    }
+
+    /* ── Object Mode emission: if requested and Object Mode is engaged,
+       register the whole figure as a single addressable object with
+       the running bbox. The stroke type is used so `renderObj` calls
+       applyBrushStroke to redraw it — the outline is a compact set of
+       joint-order points, sufficient for the user to grab, move, or
+       rotate the figure as a unit. The canvas already shows the full
+       parametric render underneath. ── */
+    if(omMode && omMode !== 'off' && window._OM && window._OM.isOn() &&
+       _BBOX.x0 < _BBOX.x1){
+      var order2 = ['skull','shoulder_L','elbow_L','wrist_L','hip_L','knee_L','ankle_L',
+                    'ankle_R','knee_R','hip_R','wrist_R','elbow_R','shoulder_R','skull'];
+      var omPts = [];
+      order2.forEach(function(k){
+        var pt3 = Ppos[k]; if(!pt3) return;
+        var qq = project(pt3[0], pt3[1], pt3[2]);
+        omPts.push([qq.x, qq.y]);
+      });
+      var pad = 12;
+      window._OM.add({
+        type: 'stroke',
+        pts:  omPts,
+        brushType: 'round_hard',
+        col:  pcol(p, 0.65, 0.90),
+        sz:   Math.max(2, lw * 2),
+        hd:   0.9,
+        op:   0.9,
+        fill: 'stroke',
+        bbox: {
+          x: _BBOX.x0 - pad,
+          y: _BBOX.y0 - pad,
+          w: (_BBOX.x1 - _BBOX.x0) + pad * 2,
+          h: (_BBOX.y1 - _BBOX.y0) + pad * 2
+        }
+      });
+    }
+
+    setI('Anatomy ' + pose + ' / ' + view + ' / ' + style +
+         (mode3d === 'on' ? ' · 3D' : '') +
+         (omMode && omMode !== 'off' && window._OM && window._OM.isOn() ? ' · Object' : ''));
   }
 
   /* Expose on window for the engine registry. */
