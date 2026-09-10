@@ -6,7 +6,7 @@
   btn.addEventListener('click',()=>{
     const open=list.classList.toggle('open');
     btn.classList.toggle('open',open);
-    btn.textContent=(open?'\u25B2':'\u25BC')+' More Engines (33)';
+    btn.textContent=(open?'\u25B2':'\u25BC')+' More Engines (43)';
   });
   /* When a more-engine button is clicked, auto-expand the list and keep it open */
   list.querySelectorAll('.eng').forEach(function(b){
@@ -16,7 +16,7 @@
       /* Ensure list stays open so selected engine remains visible */
       list.classList.add('open');
       btn.classList.add('open');
-      btn.textContent='\u25B2 More Engines (33)';
+      btn.textContent='\u25B2 More Engines (43)';
     };
   });
 })();

@@ -21,6 +21,7 @@
     'js/engines/core-engines.js',
     'js/engines/extended-engines.js',
     'js/engines/organic-engines.js',
+    'js/engines/anatomy-engine.js',
     'js/engines/engine-registry.js',
     'js/engines/generate.js',
     'js/engines/engine-cycle.js',

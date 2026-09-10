@@ -575,7 +575,7 @@
     <button class="eng" data-e="interference">04 &#8212; Wave Interference</button>
     <button class="eng" data-e="growth">05 &#8212; Differential Growth</button>
     <button class="eng" data-e="lissajous">06 &#8212; Lissajous Mesh</button>
-    <button id="more-engines-btn">&#9660; More Engines (42)</button>
+    <button id="more-engines-btn">&#9660; More Engines (43)</button>
     <div id="eng-current-label" style="font-size:12px;color:var(--acc);letter-spacing:.1em;padding:3px 0 2px;opacity:0.8;display:none;">&#9654; <span id="eng-current-name">Flow Field</span></div>
     <div id="more-engines-list">
       <div class="eng-cat organic">&#9672; Organic &amp; Biological</div>
@@ -629,6 +629,8 @@
       <button class="eng" data-e="oscilloscope">46 &#8212; Oscilloscope</button>
       <button class="eng" data-e="ascii_density">47 &#8212; ASCII Density Map</button>
       <button class="eng" data-e="wfc">48 &#8212; Waveform Collapse</button>
+      <div class="eng-cat">&#9672; Figure &amp; Anatomy</div>
+      <button class="eng" data-e="anatomy" title="Parametric anatomical mannequin (data, not images)">49 &#8212; Anatomy</button>
     </div>
     <div id="psec" style="padding:4px 2px;border-top:1px solid var(--brd);margin-top:6px;"></div>
   </div>
@@ -1434,6 +1436,7 @@
     <p>NeoLeo takes a fundamentally different path. Every image created by NeoLeo emerges from pure mathematical processes&mdash;flow fields, strange attractors, reaction-diffusion systems, Julia sets, fractal flames, Voronoi tessellations, wave interference patterns, cellular automata, L-systems, and dozens more. These are not approximations of existing art. They are the visual expression of the fundamental equations that govern nature itself.</p>
     <p>When a NeoLeo engine renders a flow field, it is computing the same differential equations that describe wind currents, ocean circulation, and the movement of charged particles in magnetic fields. When it renders a reaction-diffusion pattern, it is simulating the same chemistry that creates the spots on a leopard, the stripes on a zebrafish, the branching of coral. When it renders a Julia set, it is exploring the same infinite boundary between order and chaos that mathematicians have studied for a century.</p>
     <p style="background:#f4f4f4;border-left:3px solid #000;padding:10px 14px;margin:14px 0;font-style:italic;">No pixel in a NeoLeo image was borrowed from a photograph, a painting, or a training dataset. Every color, every curve, every luminous filament is born from equations&mdash;computed in real time, on your screen, from numbers to light.</p>
+    <p style="background:#faf3e0;border-left:3px solid #8a6a10;padding:10px 14px;margin:14px 0;font-size:13px;">One deliberate exception: the <b>Anatomy</b> engine references anatomical <i>data</i> (joint positions, bone lengths, ribcage geometry) drawn from public-domain academic reference &mdash; Vitruvian proportion, Vesalius, Gray&rsquo;s Anatomy 1st ed. All figures are still rendered from equations at runtime: spheres for joints, capsules for bones, Bezier for the spine. No anatomical image, photograph, or trained model is loaded. Data is used as a small set of numeric constants, not as visual material appropriated from any artist.</p>
     <p>This is not art that imitates the world. This is art that emerges from the same processes that created the world.</p>
 
     <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">What NeoLeo Is</h2>
@@ -1555,6 +1558,6 @@
   #gallery-btn:hover{background:#6e40a0 !important;}
 </style>
 
-<script src="js/main.js?v=10"></script>
+<script src="js/main.js?v=11"></script>
 </body>
 </html>
