@@ -42,7 +42,7 @@
     if(inMore){
       inMore.classList.add('open');
       var mBtn=document.getElementById('more-engines-btn');
-      if(mBtn){mBtn.classList.add('open');mBtn.textContent='▲ More Engines (33)';}
+      if(mBtn){mBtn.classList.add('open');mBtn.textContent='▲ More Engines (43)';}
     }
 
     /* Update current-engine persistent label */
@@ -58,6 +58,7 @@
     /* Build params, set ALL to MAX, generate */
     buildP(e);
     maxParams(e);
+    if(typeof window._focusOnParams === 'function') window._focusOnParams();
     /* Ensure Experimental Tools section is closed so generate() is not gated */
     var expBody=document.getElementById('exp-body');
     if(expBody&&expBody.classList.contains('open')){

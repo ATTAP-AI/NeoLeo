@@ -63,6 +63,40 @@ function resetToBlank(){
 window.resetToBlank=resetToBlank;
 
 /* ── Engine button click handlers ── */
+/* Focus the panel on the freshly-built parameter sliders. After
+   buildP() re-populates #psec, callers invoke this so the user
+   never has to hunt for the newly-relevant controls. Uses a manual
+   panel.scrollTo (rather than scrollIntoView) so we only move the
+   panel's own scroll \u2014 never the page or an ancestor. Deferred one
+   frame so #psec has laid out its new sliders before we measure. */
+function focusOnParams(){
+  /* setTimeout rather than requestAnimationFrame — setTimeout still
+     fires when the tab is backgrounded, so this works from cron/CI
+     drives and headless previews. A 16 ms delay (~one frame) gives
+     buildP() time to lay out the new sliders before we measure. */
+  setTimeout(function(){
+    var panel = document.getElementById('panel');
+    var psec  = document.getElementById('psec');
+    if(!panel || !psec) return;
+    var pRect = panel.getBoundingClientRect();
+    var sRect = psec.getBoundingClientRect();
+    /* 12 px of top breathing room so the "PARAMETERS" label is
+       anchored, not flush against the panel edge. */
+    var delta = sRect.top - pRect.top - 12;
+    if(Math.abs(delta) < 4) return;
+    var target = panel.scrollTop + delta;
+    /* Try smooth scroll first for a nice easing feel; some browsers
+       (and hidden preview frames) silently drop smooth scrolls, so
+       ~one frame later we hard-set scrollTop as a fallback if we're
+       still not where we expected. */
+    try{ panel.scrollTo({top: target, behavior: 'smooth'}); }catch(e){}
+    setTimeout(function(){
+      if(Math.abs(panel.scrollTop - target) > 4) panel.scrollTop = target;
+    }, 280);
+  }, 16);
+}
+window._focusOnParams = focusOnParams;
+
 document.querySelectorAll('.eng').forEach(function(b){
   b.onclick=function(){
     document.querySelectorAll('.eng').forEach(function(x){x.classList.remove('on');});
@@ -72,6 +106,7 @@ document.querySelectorAll('.eng').forEach(function(b){
     buildP(eng);randP(eng);generate();
     var lbl=document.getElementById('eng-current-label'),nm=document.getElementById('eng-current-name');
     if(lbl&&nm){var inMore=b.closest('#more-engines-list');lbl.style.display=inMore?'block':'none';if(inMore)nm.textContent=b.textContent.replace(/^\d+\s*[\u2014\-]\s*/,'');}
+    focusOnParams();
   };
 });
 
@@ -93,6 +128,7 @@ document.getElementById('ranbtn').onclick=function(){
   buildP(eng);randP(eng);
   document.getElementById('pal').value=rp(Object.keys(PALS));
   drawSw();generate();
+  focusOnParams();
 };
 
 /* ── Palette change handler ── */
