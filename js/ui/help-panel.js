@@ -195,7 +195,7 @@ var SECTIONS = [
   },
   {
     title: 'AI Creative Assistant',
-    body: '<p>NeoLeo includes an optional AI assistant that can help you explore creative directions. Click the '+L('AI button','#aitool','open-panel:prompt-panel')+' in the toolbar (or press Shift+P) to open the prompt panel.</p>' +
+    body: '<p>NeoLeo includes an optional AI assistant that can help you explore creative directions. Click the '+L('AI button','#aitool','open-panel:prompt-panel')+' in the toolbar (or press Shift+P) to open the prompt panel. It runs on your ATTAP account: each answer costs 1 credit (1\u00A2), charged only when an answer arrives.</p>' +
       '<p>Describe what you want in plain language \u2014 for example, "make it warmer and more dramatic" or "switch to something organic and flowing" \u2014 and the assistant will adjust the engine, palette, lighting, and atmosphere settings to match your vision.</p>' +
       '<p>The AI only changes settings and parameters. It does not generate images, access external data, or use any pre-existing artwork. All visual output is still created entirely by NeoLeo\u2019s own engines.</p>'
   },

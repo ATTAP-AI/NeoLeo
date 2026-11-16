@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- ATTAP sign-in. First, so the page is covered before it paints. The AI
+     prompt runs on the reader's ATTAP account; nobody brings a key. -->
+<script src="https://attap.ai/attap-gate.js?v=20261116-gate1" data-agent="NeoLeo"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>NeoLeo</title>
@@ -326,8 +329,7 @@
     <div style="font-size:8px;color:var(--dim);line-height:1.6;margin-bottom:6px;">Describe changes in plain language. The AI reads the current canvas and all settings, then adjusts engines, palettes, lighting and atmosphere to match.</div>
     <label id="ai-ctx-row"><input type="checkbox" id="ai-send-img" checked> Send canvas snapshot with prompt</label>
   </div>
-  <div id="ai-key-row"><label>ANTHROPIC API KEY (required)</label><input type="password" id="ai-key-in" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"></div>
-  <div id="ai-history"><div class="ai-msg sys">Enter your Anthropic API key above, then describe what to change.</div></div>
+  <div id="ai-history"><div class="ai-msg sys">Describe what to change. Each request runs on your ATTAP account: 1 credit (1&cent;) per answer, charged only when an answer arrives.</div></div>
   <div id="ai-input-wrap">
     <textarea id="ai-textarea" placeholder="e.g. make it more chaotic and warm, add a soft blue rim light, reduce contrast..." spellcheck="false"></textarea>
     <div id="ai-send-row"><button id="ai-mic" title="Speak your prompt (tap to start, tap to stop)" style="display:none;">&#127908;</button><button id="ai-send">Send</button><button id="ai-stop" title="Stop">&#9632; Stop</button><button id="ai-clrh" title="Clear history">&#8635;</button></div>
@@ -1440,7 +1442,7 @@
     <p>This is not art that imitates the world. This is art that emerges from the same processes that created the world.</p>
 
     <h2 style="font-size:18px;margin:28px 0 10px;color:#000;font-weight:700;border-bottom:1px solid #ccc;padding-bottom:4px;">What NeoLeo Is</h2>
-    <p>NeoLeo is a complete creative platform that runs entirely in your web browser. It requires no installation, no account, no cloud connection, and no subscription. It is free, open source, and yours.</p>
+    <p>NeoLeo is a complete creative platform that runs in your web browser. It requires no installation and no subscription. You sign in once with your ATTAP account; the engines, tools and your artwork run entirely on your device and cost nothing. Only the optional AI assistant uses ATTAP credits, one credit (one cent) per answer. It is open source, and yours.</p>
 
     <h3 style="font-size:15px;margin:18px 0 6px;color:#000;font-weight:700;">48 Generative Engines</h3>
     <p>At its core, NeoLeo contains 48 distinct generative engines, each implementing a different mathematical or natural process. They are organized into families&mdash;Organic &amp; Biological, Particle &amp; Force, Mathematical &amp; Geometric, Noise &amp; Field-Based, Cellular &amp; Emergent, Graph &amp; Network, Iterative &amp; Fractal, Topological &amp; Surface, and Typographic &amp; Signal. Each engine produces an entirely different aesthetic universe. A Physarum simulation looks nothing like a Penrose tiling. A flame fractal shares no visual DNA with a hydraulic erosion map. The range is vast, and every combination of engine, palette, seed, and parameter setting produces a unique, unrepeatable image.</p>

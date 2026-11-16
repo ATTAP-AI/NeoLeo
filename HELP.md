@@ -276,7 +276,7 @@ You can bring your own images into NeoLeo to combine with generated art:
 
 ## AI Creative Assistant
 
-NeoLeo includes an optional AI assistant that can help you explore creative directions. Click the AI button in the toolbar (or press Shift+P) to open the prompt panel.
+NeoLeo includes an optional AI assistant that can help you explore creative directions. Click the AI button in the toolbar (or press Shift+P) to open the prompt panel. It runs on your ATTAP account: each answer costs 1 credit (1¢), charged only when an answer arrives.
 
 Describe what you want in plain language — for example, "make it warmer and more dramatic" or "switch to something organic and flowing" — and the assistant will adjust the engine, palette, lighting, and atmosphere settings to match your vision.
 

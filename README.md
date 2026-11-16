@@ -85,9 +85,9 @@ Extract palette, density map, and gradient data from an uploaded image. Broadcas
 - **Multi-Pass Blend** — generate multiple layers with configurable blend mode and opacity per pass
 - **Object Mode** — draw marks, select bounding boxes, and transform objects with persistent ID tracking
 
-### AI Prompt (Requires Anthropic API Key)
+### AI Prompt (runs on your ATTAP account)
 
-Describe what you want in plain language. The AI selects engines, palettes, lighting, atmosphere, and drawing parameters. Supports streaming responses and chat history.
+Describe what you want in plain language. The AI selects engines, palettes, lighting, atmosphere, and drawing parameters. Supports chat history. NeoLeo is signed in with an ATTAP account (attap.ai/attap-gate.js); answers run on ATTAP's keys at 1 credit (1¢) each. Nobody brings a key.
 
 ### Export & Save
 

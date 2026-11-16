@@ -24,11 +24,6 @@
 #lyr-list{overflow-y:auto;max-height:340px;scrollbar-width:thin;scrollbar-color:#333 transparent;}
 
 
-#ai-key-row{padding:4px 10px 6px;border-bottom:1px solid #1a2040;}
-#ai-key-row label{font-size:12px;color:var(--dim);letter-spacing:.08em;display:block;margin-bottom:3px;}
-#ai-key-in{width:100%;background:#050810;border:1px solid #203070;color:#aac;font-family:'Courier New',monospace;font-size:12px;padding:6px 8px;outline:none;letter-spacing:.04em;}
-#ai-key-in:focus{border-color:#60a0ff;}
-#ai-key-in::placeholder{color:#333;letter-spacing:0;}
 
 
 /* ── ENGINE LAYERS ── */

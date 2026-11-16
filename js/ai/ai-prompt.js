@@ -356,6 +356,19 @@ function doStop(){
   ta.focus();
 }
 
+/* chatHist keeps the original block shape ({type:'text'} / {type:'image'});
+   this turns one turn into the OpenAI-style message ATTAP.chat sends. */
+function toAttapMsg(m){
+  if(typeof m.content==='string')return {role:m.role,content:m.content};
+  if(m.role!=='user'){
+    return {role:m.role,content:m.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('')};
+  }
+  return {role:'user',content:m.content.map(function(b){
+    if(b.type==='image')return {type:'image_url',image_url:{url:'data:'+b.source.media_type+';base64,'+b.source.data}};
+    return {type:'text',text:b.text};
+  })};
+}
+
 async function doSend(){
   var txt=ta.value.trim();
   if(!txt||isSending)return;
@@ -373,31 +386,28 @@ async function doSend(){
   chatHist.push({role:'user',content:uc});
   if(chatHist.length>12)chatHist=chatHist.slice(-12);
 
-  var apiKey = (document.getElementById('ai-key-in').value||'').trim();
-  if(!apiKey){
-    addMsg('aerr','Please enter your Anthropic API key above.');
+  /* Runs on the reader's ATTAP account (attap-gate.js, loaded first in the
+     page): ATTAP's keys, the reader's credits, charged only when an answer
+     arrives. Nobody brings a key. ATTAP.chat speaks OpenAI-style messages, so
+     toAttapMsg sends the canvas snapshot as an image_url data URL. */
+  if(!window.ATTAP){
+    addMsg('aerr','Sign-in could not load. Reload the page and sign in to your ATTAP account.');
     setSending(false); setStatus(''); return;
   }
 
   var _aborted = false;
-  abortCtrl = { _flagAbort: function(){ _aborted = true; } };
+  var ctrl = typeof AbortController==='function' ? new AbortController() : null;
+  abortCtrl = { _flagAbort: function(){ _aborted = true; if(ctrl) ctrl.abort(); } };
 
   try{
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({model:'claude-sonnet-5',max_tokens:1000,system:SYS,messages:chatHist})
+    var raw = await ATTAP.chat({
+      system: SYS,
+      messages: chatHist.map(toAttapMsg),
+      max_tokens: 1000,
+      signal: ctrl ? ctrl.signal : undefined
     });
     if(_aborted)throw new DOMException('Aborted','AbortError');
-    var data = await resp.json();
-    if(_aborted)throw new DOMException('Aborted','AbortError');
-    if(data.error)throw new Error(data.error.message||'API error');
-    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    if(!raw)throw new Error('The model returned no answer. Nothing was charged.');
     chatHist.push({role:'assistant',content:[{type:'text',text:raw}]});
     var parsed;
     try{

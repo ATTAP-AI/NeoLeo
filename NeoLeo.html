@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- ATTAP sign-in. First, so the page is covered before it paints. The AI
+     prompt runs on the reader's ATTAP account; nobody brings a key. -->
+<script src="https://attap.ai/attap-gate.js?v=20261116-gate1" data-agent="NeoLeo"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NeoLeo — 2026-04-01 16:51 UTC checkpoint 2</title>
@@ -549,11 +552,6 @@ select{width:100%;background:#000;color:var(--txt);border:1px solid var(--brd);f
 #lyr-list{overflow-y:auto;max-height:340px;scrollbar-width:thin;scrollbar-color:#333 transparent;}
 
 
-#ai-key-row{padding:4px 10px 6px;border-bottom:1px solid #1a2040;}
-#ai-key-row label{font-size:8px;color:var(--dim);letter-spacing:.08em;display:block;margin-bottom:3px;}
-#ai-key-in{width:100%;background:#050810;border:1px solid #203070;color:#aac;font-family:'Courier New',monospace;font-size:9px;padding:4px 6px;outline:none;letter-spacing:.04em;}
-#ai-key-in:focus{border-color:#60a0ff;}
-#ai-key-in::placeholder{color:#333;letter-spacing:0;}
 
 
 /* ── ENGINE LAYERS ── */
@@ -971,8 +969,7 @@ select{width:100%;background:#000;color:var(--txt);border:1px solid var(--brd);f
     <div style="font-size:8px;color:var(--dim);line-height:1.6;margin-bottom:6px;">Describe changes in plain language. The AI reads the current canvas and all settings, then adjusts engines, palettes, lighting and atmosphere to match.</div>
     <label id="ai-ctx-row"><input type="checkbox" id="ai-send-img" checked> Send canvas snapshot with prompt</label>
   </div>
-  <div id="ai-key-row"><label>ANTHROPIC API KEY (required)</label><input type="password" id="ai-key-in" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"></div>
-  <div id="ai-history"><div class="ai-msg sys">Enter your Anthropic API key above, then describe what to change.</div></div>
+  <div id="ai-history"><div class="ai-msg sys">Describe what to change. Each request runs on your ATTAP account: 1 credit (1&cent;) per answer, charged only when an answer arrives.</div></div>
   <div id="ai-input-wrap">
     <textarea id="ai-textarea" placeholder="e.g. make it more chaotic and warm, add a soft blue rim light, reduce contrast..." spellcheck="false"></textarea>
     <div id="ai-send-row"><button id="ai-send">Send</button><button id="ai-stop" title="Stop">&#9632; Stop</button><button id="ai-clrh" title="Clear history">&#8635;</button></div>
@@ -5041,6 +5038,19 @@ function doStop(){
   ta.focus();
 }
 
+/* chatHist keeps the original block shape ({type:'text'} / {type:'image'});
+   this turns one turn into the OpenAI-style message ATTAP.chat sends. */
+function toAttapMsg(m){
+  if(typeof m.content==='string')return {role:m.role,content:m.content};
+  if(m.role!=='user'){
+    return {role:m.role,content:m.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('')};
+  }
+  return {role:'user',content:m.content.map(function(b){
+    if(b.type==='image')return {type:'image_url',image_url:{url:'data:'+b.source.media_type+';base64,'+b.source.data}};
+    return {type:'text',text:b.text};
+  })};
+}
+
 async function doSend(){
   const txt=ta.value.trim();
   if(!txt||isSending)return;
@@ -5058,31 +5068,28 @@ async function doSend(){
   chatHist.push({role:'user',content:uc});
   if(chatHist.length>12)chatHist=chatHist.slice(-12);
 
-  const apiKey = (document.getElementById('ai-key-in').value||'').trim();
-  if(!apiKey){
-    addMsg('aerr','Please enter your Anthropic API key above.');
+  /* Runs on the reader's ATTAP account (attap-gate.js, loaded first in the
+     page): ATTAP's keys, the reader's credits, charged only when an answer
+     arrives. Nobody brings a key. ATTAP.chat speaks OpenAI-style messages, so
+     toAttapMsg sends the canvas snapshot as an image_url data URL. */
+  if(!window.ATTAP){
+    addMsg('aerr','Sign-in could not load. Reload the page and sign in to your ATTAP account.');
     setSending(false); setStatus(''); return;
   }
 
   let _aborted = false;
-  abortCtrl = { _flagAbort: () => { _aborted = true; } };
+  const ctrl = typeof AbortController==='function' ? new AbortController() : null;
+  abortCtrl = { _flagAbort: function(){ _aborted = true; if(ctrl) ctrl.abort(); } };
 
   try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({model:'claude-sonnet-5',max_tokens:1000,system:SYS,messages:chatHist})
+    const raw = await ATTAP.chat({
+      system: SYS,
+      messages: chatHist.map(toAttapMsg),
+      max_tokens: 1000,
+      signal: ctrl ? ctrl.signal : undefined
     });
     if(_aborted)throw new DOMException('Aborted','AbortError');
-    const data = await resp.json();
-    if(_aborted)throw new DOMException('Aborted','AbortError');
-    if(data.error)throw new Error(data.error.message||'API error');
-    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    if(!raw)throw new Error('The model returned no answer. Nothing was charged.');
     chatHist.push({role:'assistant',content:[{type:'text',text:raw}]});
     let parsed;
     try{
